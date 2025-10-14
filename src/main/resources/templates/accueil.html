@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Liste des programmeurs</title>
+</head>
+<body>
+<h1>Liste des programmeurs</h1>
+
+<table border="1">
+    <thead>
+    <tr>
+        <th>Nom</th>
+        <th>Prénom</th>
+        <th>Language</th>
+        <th>Adresse</th>
+        <th>Livre</th>
+        <th>Salaire</th>
+    </tr>
+    </thead>
+    <tbody>
+    <!-- Boucle for-each Thymeleaf -->
+    <tr th:each="programmeur : ${listeProgrammeurs}">
+        <td th:text="${programmeur.nom}"></td>
+        <td th:text="${programmeur.prenom}"></td>
+        <td th:text="${programmeur.langage}"></td>
+        <td th:text="${programmeur.adresse}"></td>
+        <td th:text="${programmeur.livre}"></td>
+        <td th:text="${programmeur.salaire}"></td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>
