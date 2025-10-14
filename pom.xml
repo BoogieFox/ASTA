@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>altn72</groupId>
-	<artifactId>TpFilRouge</artifactId>
+	<artifactId>ASTA</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>TpFilRouge</name>
-	<description>TP Dev FullStack Java</description>
+	<name>ASTA</name>
+	<description>Projet Etudiant de suivi de tutorat d'apprentis</description>
 	<url/>
 	<licenses>
 		<license/>
