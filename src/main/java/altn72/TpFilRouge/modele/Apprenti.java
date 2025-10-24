@@ -27,9 +27,8 @@ public class Apprenti {
     @Column(name = "majeure", nullable = false, length = 100)
     private String majeure;
 
-    @ManyToOne
-    @JoinColumn(name = "annee_academique_id")
-    private AnneeAcademique anneeAcademique;
+    @OneToMany(mappedBy = "apprenti", cascade = CascadeType.ALL)
+    private List<DossierAnnuel> dossierAnnuels = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "entreprise_id")
@@ -39,25 +38,14 @@ public class Apprenti {
     @JoinColumn(name = "maitre_apprentissage_id")
     private MaitreApprentissage maitreApprentissage;
 
-    // Relations bidirectionnelles avec cascade pour permettre l'ajout via l'apprenti
-    @OneToMany(mappedBy = "apprenti", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Mission> missions;
+    // Relation bidirectionnelle OneToOne avec Mission
+    @OneToOne(mappedBy = "apprenti", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private Mission mission;
 
-    @OneToMany(mappedBy = "apprenti", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Visite> visites;
-
-    @OneToMany(mappedBy = "apprenti", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Rapport> rapports;
-
-    @OneToMany(mappedBy = "apprenti", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Soutenance> soutenances;
 
     // Constructors
     public Apprenti() {
-        this.missions = new ArrayList<>();
-        this.visites = new ArrayList<>();
-        this.rapports = new ArrayList<>();
-        this.soutenances = new ArrayList<>();
+        // Pas besoin d'initialiser mission car c'est une relation OneToOne
     }
 
     public Apprenti(String nom, String prenom, String email, String telephone, String majeure) {
@@ -117,13 +105,6 @@ public class Apprenti {
         this.majeure = majeure;
     }
 
-    public AnneeAcademique getAnneeAcademique() {
-        return anneeAcademique;
-    }
-
-    public void setAnneeAcademique(AnneeAcademique anneeAcademique) {
-        this.anneeAcademique = anneeAcademique;
-    }
 
     public Entreprise getEntreprise() {
         return entreprise;
@@ -141,35 +122,14 @@ public class Apprenti {
         this.maitreApprentissage = maitreApprentissage;
     }
 
-    public List<Mission> getMissions() {
-        return missions;
+    public Mission getMission() {
+        return mission;
     }
 
-    public void setMissions(List<Mission> missions) {
-        this.missions = missions;
+    public void setMission(Mission mission) {
+        this.mission = mission;
     }
 
-    public List<Visite> getVisites() {
-        return visites;
-    }
 
-    public void setVisites(List<Visite> visites) {
-        this.visites = visites;
-    }
 
-    public List<Rapport> getRapports() {
-        return rapports;
-    }
-
-    public void setRapports(List<Rapport> rapports) {
-        this.rapports = rapports;
-    }
-
-    public List<Soutenance> getSoutenances() {
-        return soutenances;
-    }
-
-    public void setSoutenances(List<Soutenance> soutenances) {
-        this.soutenances = soutenances;
-    }
 }

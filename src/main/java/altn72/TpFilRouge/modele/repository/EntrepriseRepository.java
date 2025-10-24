@@ -8,5 +8,5 @@ import java.util.Optional;
 
 @Repository
 public interface EntrepriseRepository extends JpaRepository<Entreprise, Integer> {
-    Optional<Entreprise> findByRaisonSociale(String raisonSociale);
+
 }

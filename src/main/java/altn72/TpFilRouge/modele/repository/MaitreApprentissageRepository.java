@@ -9,6 +9,5 @@ import java.util.Optional;
 
 @Repository
 public interface MaitreApprentissageRepository extends JpaRepository<MaitreApprentissage, Integer> {
-    Optional<MaitreApprentissage> findByEmail(String email);
-    List<MaitreApprentissage> findByEntrepriseEntrepriseId(Integer entrepriseId);
+
 }

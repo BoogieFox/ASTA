@@ -20,23 +20,18 @@ public class Visite {
     @Column(name = "commentaires", length = 1024)
     private String commentaires;
 
-    @ManyToOne
-    @JoinColumn(name = "apprenti_id", nullable = false)
-    private Apprenti apprenti;
-
-    @ManyToOne
-    @JoinColumn(name = "annee_academique_id", nullable = false)
-    private AnneeAcademique anneeAcademique;
+    @OneToOne
+    @JoinColumn(name = "dossier_annuel_id", nullable = false)
+    private DossierAnnuel dossierAnnuel;
 
     // Constructors
     public Visite() {
     }
 
-    public Visite(LocalDate date, String format, Apprenti apprenti, AnneeAcademique anneeAcademique) {
+    public Visite(LocalDate date, String format, DossierAnnuel dossierAnnuel) {
         this.date = date;
         this.format = format;
-        this.apprenti = apprenti;
-        this.anneeAcademique = anneeAcademique;
+        this.dossierAnnuel = dossierAnnuel;
     }
 
     // Getters and Setters
@@ -72,19 +67,11 @@ public class Visite {
         this.commentaires = commentaires;
     }
 
-    public Apprenti getApprenti() {
-        return apprenti;
+    public DossierAnnuel getDossierAnnuel() {
+        return dossierAnnuel;
     }
 
-    public void setApprenti(Apprenti apprenti) {
-        this.apprenti = apprenti;
-    }
-
-    public AnneeAcademique getAnneeAcademique() {
-        return anneeAcademique;
-    }
-
-    public void setAnneeAcademique(AnneeAcademique anneeAcademique) {
-        this.anneeAcademique = anneeAcademique;
+    public void setDossierAnnuel(DossierAnnuel dossierAnnuel) {
+        this.dossierAnnuel = dossierAnnuel;
     }
 }

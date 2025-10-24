@@ -20,22 +20,17 @@ public class Soutenance {
     @Column(name = "commentaires", length = 1024)
     private String commentaires;
 
-    @ManyToOne
-    @JoinColumn(name = "apprenti_id", nullable = false)
-    private Apprenti apprenti;
-
-    @ManyToOne
-    @JoinColumn(name = "annee_academique_id", nullable = false)
-    private AnneeAcademique anneeAcademique;
+    @OneToOne
+    @JoinColumn(name = "dossier_annuel_id", nullable = false)
+    private DossierAnnuel dossierAnnuel;
 
     // Constructors
     public Soutenance() {
     }
 
-    public Soutenance(LocalDate date, Apprenti apprenti, AnneeAcademique anneeAcademique) {
+    public Soutenance(LocalDate date, DossierAnnuel dossierAnnuel) {
         this.date = date;
-        this.apprenti = apprenti;
-        this.anneeAcademique = anneeAcademique;
+        this.dossierAnnuel = dossierAnnuel;
     }
 
     // Getters and Setters
@@ -71,19 +66,11 @@ public class Soutenance {
         this.commentaires = commentaires;
     }
 
-    public Apprenti getApprenti() {
-        return apprenti;
+    public DossierAnnuel getDossierAnnuel() {
+        return dossierAnnuel;
     }
 
-    public void setApprenti(Apprenti apprenti) {
-        this.apprenti = apprenti;
-    }
-
-    public AnneeAcademique getAnneeAcademique() {
-        return anneeAcademique;
-    }
-
-    public void setAnneeAcademique(AnneeAcademique anneeAcademique) {
-        this.anneeAcademique = anneeAcademique;
+    public void setDossierAnnuel(DossierAnnuel dossierAnnuel) {
+        this.dossierAnnuel = dossierAnnuel;
     }
 }

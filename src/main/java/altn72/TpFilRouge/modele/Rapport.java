@@ -19,17 +19,17 @@ public class Rapport {
     @Column(name = "commentaires", length = 1024)
     private String commentaires;
 
-    @ManyToOne
-    @JoinColumn(name = "apprenti_id", nullable = false)
-    private Apprenti apprenti;
+    @OneToOne
+    @JoinColumn(name = "dossier_annuel_id", nullable = false)
+    private DossierAnnuel dossierAnnuel;
 
     // Constructors
     public Rapport() {
     }
 
-    public Rapport(String sujet, Apprenti apprenti) {
+    public Rapport(String sujet, DossierAnnuel dossierAnnuel) {
         this.sujet = sujet;
-        this.apprenti = apprenti;
+        this.dossierAnnuel = dossierAnnuel;
     }
 
     // Getters and Setters
@@ -65,11 +65,11 @@ public class Rapport {
         this.commentaires = commentaires;
     }
 
-    public Apprenti getApprenti() {
-        return apprenti;
+    public DossierAnnuel getDossierAnnuel() {
+        return dossierAnnuel;
     }
 
-    public void setApprenti(Apprenti apprenti) {
-        this.apprenti = apprenti;
+    public void setDossierAnnuel(DossierAnnuel dossierAnnuel) {
+        this.dossierAnnuel = dossierAnnuel;
     }
 }

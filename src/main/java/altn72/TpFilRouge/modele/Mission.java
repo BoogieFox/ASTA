@@ -19,8 +19,8 @@ public class Mission {
     @Column(name = "commentaires", length = 1024)
     private String commentaires;
 
-    @ManyToOne
-    @JoinColumn(name = "apprenti_id", nullable = false)
+    @OneToOne
+    @JoinColumn(name = "apprenti_id", nullable = false, unique = true)
     private Apprenti apprenti;
 
     @ManyToOne

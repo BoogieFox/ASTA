@@ -8,6 +8,5 @@ import java.util.List;
 
 @Repository
 public interface MissionRepository extends JpaRepository<Mission, Integer> {
-    List<Mission> findByApprentiApprentiId(Integer apprentiId);
-    List<Mission> findByAnneeAcademiqueAnneeAcademiqueId(Integer anneeAcademiqueId);
+
 }

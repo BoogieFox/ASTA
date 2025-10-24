@@ -14,8 +14,8 @@ public class AnneeAcademique {
     @Column(name = "annee_academique", nullable = false, length = 20, unique = true)
     private String anneeAcademique;
 
-    @OneToMany(mappedBy = "anneeAcademique")
-    private List<Apprenti> apprentis;
+    @OneToMany(mappedBy = "anneeAcademique", cascade = CascadeType.ALL)
+    private List<DossierAnnuel> dossierAnnuels;
 
     // Constructors
     public AnneeAcademique() {
@@ -42,11 +42,11 @@ public class AnneeAcademique {
         this.anneeAcademique = anneeAcademique;
     }
 
-    public List<Apprenti> getApprentis() {
-        return apprentis;
+    public List<DossierAnnuel> getDossierAnnuels() {
+        return dossierAnnuels;
     }
 
-    public void setApprentis(List<Apprenti> apprentis) {
-        this.apprentis = apprentis;
+    public void setDossierAnnuels(List<DossierAnnuel> dossierAnnuels) {
+        this.dossierAnnuels = dossierAnnuels;
     }
 }
