@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Détails de l'apprenti - ASTA</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <nav th:replace="~{index :: navigation}"></nav>
+
+    <div class="container">
+        <div class="page-header">
+            <div class="page-header-actions">
+                <h1 th:text="${apprenti.prenom + ' ' + apprenti.nom}">Apprenti</h1>
+                <div>
+                    <a th:href="@{/apprentis/{id}/modifier(id=${apprenti.apprentiId})}" class="btn btn-primary">Modifier</a>
+                    <a th:href="@{/apprentis}" class="btn btn-secondary">Retour</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Informations personnelles -->
+        <div class="card">
+            <div class="card-header">📋 Informations personnelles</div>
+            <div class="detail-grid">
+                <div class="detail-item">
+                    <div class="detail-label">Nom</div>
+                    <div class="detail-value" th:text="${apprenti.nom}">Nom</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Prénom</div>
+                    <div class="detail-value" th:text="${apprenti.prenom}">Prénom</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Email</div>
+                    <div class="detail-value" th:text="${apprenti.email}">Email</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Téléphone</div>
+                    <div class="detail-value" th:text="${apprenti.telephone}">Téléphone</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Majeure</div>
+                    <div class="detail-value" th:text="${apprenti.majeure}">Majeure</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Année Académique</div>
+                    <div class="detail-value" th:text="${apprenti.anneeAcademique != null ? apprenti.anneeAcademique.anneeAcademique : 'N/A'}">Année</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Entreprise -->
+        <div class="card" th:if="${apprenti.entreprise != null}">
+            <div class="card-header">🏢 Entreprise</div>
+            <div class="detail-grid">
+                <div class="detail-item">
+                    <div class="detail-label">Raison Sociale</div>
+                    <div class="detail-value" th:text="${apprenti.entreprise.raisonSociale}">Entreprise</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Adresse</div>
+                    <div class="detail-value" th:text="${apprenti.entreprise.adresse}">Adresse</div>
+                </div>
+                <div class="detail-item" style="grid-column: 1 / -1;" th:if="${apprenti.entreprise.informationsLocaux != null}">
+                    <div class="detail-label">Informations sur les locaux</div>
+                    <div class="detail-value" th:text="${apprenti.entreprise.informationsLocaux}">Info</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Maître d'Apprentissage -->
+        <div class="card" th:if="${apprenti.maitreApprentissage != null}">
+            <div class="card-header">👔 Maître d'Apprentissage</div>
+            <div class="detail-grid">
+                <div class="detail-item">
+                    <div class="detail-label">Nom</div>
+                    <div class="detail-value" th:text="${apprenti.maitreApprentissage.prenom + ' ' + apprenti.maitreApprentissage.nom}">Maître</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Poste</div>
+                    <div class="detail-value" th:text="${apprenti.maitreApprentissage.poste}">Poste</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Email</div>
+                    <div class="detail-value" th:text="${apprenti.maitreApprentissage.email}">Email</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Téléphone</div>
+                    <div class="detail-value" th:text="${apprenti.maitreApprentissage.telephone}">Téléphone</div>
+                </div>
+                <div class="detail-item" style="grid-column: 1 / -1;" th:if="${apprenti.maitreApprentissage.remarques != null}">
+                    <div class="detail-label">Remarques</div>
+                    <div class="detail-value" th:text="${apprenti.maitreApprentissage.remarques}">Remarques</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Missions -->
+        <div class="card">
+            <div class="card-header">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span>📋 Missions</span>
+                    <button class="btn btn-primary btn-small" onclick="toggleForm('mission-form')">+ Ajouter</button>
+                </div>
+            </div>
+            
+            <!-- Formulaire d'ajout de mission -->
+            <div id="mission-form" style="display: none; padding: 1rem; background: var(--background); border-radius: 0.375rem; margin-bottom: 1rem;">
+                <form th:action="@{/apprentis/{id}/missions(id=${apprenti.apprentiId})}" method="post">
+                    
+                    <div class="form-group">
+                        <label for="mission-motsCles">Mots-clés</label>
+                        <input type="text" id="mission-motsCles" name="motsCles" placeholder="Développement web, API REST...">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="mission-metierCible">Métier cible</label>
+                        <input type="text" id="mission-metierCible" name="metierCible" placeholder="Développeur Full Stack...">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="mission-commentaires">Commentaires</label>
+                        <textarea id="mission-commentaires" name="commentaires" rows="3"></textarea>
+                    </div>
+                    
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button type="submit" class="btn btn-success btn-small">Enregistrer</button>
+                        <button type="button" class="btn btn-secondary btn-small" onclick="toggleForm('mission-form')">Annuler</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Liste des missions -->
+            <div th:if="${missions != null and !missions.empty}">
+                <div th:each="mission : ${missions}" style="padding: 1rem; border-top: 1px solid var(--border-color);">
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <div class="detail-label">Mots-clés</div>
+                            <div class="detail-value" th:text="${mission.motsCles != null ? mission.motsCles : 'N/A'}">Mots-clés</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Métier cible</div>
+                            <div class="detail-value" th:text="${mission.metierCible != null ? mission.metierCible : 'N/A'}">Métier</div>
+                        </div>
+                        <div class="detail-item" style="grid-column: 1 / -1;" th:if="${mission.commentaires != null}">
+                            <div class="detail-label">Commentaires</div>
+                            <div class="detail-value" th:text="${mission.commentaires}">Commentaires</div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 0.5rem;">
+                        <form th:action="@{/apprentis/{id}/missions/{missionId}/supprimer(id=${apprenti.apprentiId},missionId=${mission.missionId})}" method="post" style="display: inline;">
+                            <button type="submit" class="btn btn-danger btn-small" onclick="return confirm('Supprimer cette mission ?')">Supprimer</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div th:if="${missions == null or missions.empty}" class="text-center text-muted" style="padding: 2rem;">
+                Aucune mission enregistrée
+            </div>
+        </div>
+
+        <!-- Visites -->
+        <div class="card">
+            <div class="card-header">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span>🔍 Visites</span>
+                    <button class="btn btn-primary btn-small" onclick="toggleForm('visite-form')">+ Ajouter</button>
+                </div>
+            </div>
+            
+            <!-- Formulaire d'ajout de visite -->
+            <div id="visite-form" style="display: none; padding: 1rem; background: var(--background); border-radius: 0.375rem; margin-bottom: 1rem;">
+                <form th:action="@{/apprentis/{id}/visites(id=${apprenti.apprentiId})}" method="post">
+                    
+                    <div class="form-group">
+                        <label for="visite-date">Date</label>
+                        <input type="date" id="visite-date" name="date">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="visite-format">Format</label>
+                        <select id="visite-format" name="format">
+                            <option value="">-- Sélectionner --</option>
+                            <option value="Présentiel">Présentiel</option>
+                            <option value="Distanciel">Distanciel</option>
+                            <option value="Hybride">Hybride</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="visite-commentaires">Commentaires</label>
+                        <textarea id="visite-commentaires" name="commentaires" rows="3"></textarea>
+                    </div>
+                    
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button type="submit" class="btn btn-success btn-small">Enregistrer</button>
+                        <button type="button" class="btn btn-secondary btn-small" onclick="toggleForm('visite-form')">Annuler</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Liste des visites -->
+            <div th:if="${visites != null and !visites.empty}">
+                <div th:each="visite : ${visites}" style="padding: 1rem; border-top: 1px solid var(--border-color);">
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <div class="detail-label">Date</div>
+                            <div class="detail-value" th:text="${visite.date != null ? visite.date : 'N/A'}">Date</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Format</div>
+                            <div class="detail-value" th:text="${visite.format != null ? visite.format : 'N/A'}">Format</div>
+                        </div>
+                        <div class="detail-item" style="grid-column: 1 / -1;" th:if="${visite.commentaires != null}">
+                            <div class="detail-label">Commentaires</div>
+                            <div class="detail-value" th:text="${visite.commentaires}">Commentaires</div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 0.5rem;">
+                        <form th:action="@{/apprentis/{id}/visites/{visiteId}/supprimer(id=${apprenti.apprentiId},visiteId=${visite.visiteId})}" method="post" style="display: inline;">
+                            <button type="submit" class="btn btn-danger btn-small" onclick="return confirm('Supprimer cette visite ?')">Supprimer</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div th:if="${visites == null or visites.empty}" class="text-center text-muted" style="padding: 2rem;">
+                Aucune visite enregistrée
+            </div>
+        </div>
+
+        <!-- Rapports -->
+        <div class="card">
+            <div class="card-header">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span>📄 Rapports</span>
+                    <button class="btn btn-primary btn-small" onclick="toggleForm('rapport-form')">+ Ajouter</button>
+                </div>
+            </div>
+            
+            <!-- Formulaire d'ajout de rapport -->
+            <div id="rapport-form" style="display: none; padding: 1rem; background: var(--background); border-radius: 0.375rem; margin-bottom: 1rem;">
+                <form th:action="@{/apprentis/{id}/rapports(id=${apprenti.apprentiId})}" method="post">
+                    
+                    <div class="form-group">
+                        <label for="rapport-sujet">Sujet</label>
+                        <input type="text" id="rapport-sujet" name="sujet" placeholder="Titre du rapport...">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="rapport-noteFinale">Note finale (sur 20)</label>
+                        <input type="number" id="rapport-noteFinale" name="noteFinale" step="0.5" min="0" max="20">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="rapport-commentaires">Commentaires</label>
+                        <textarea id="rapport-commentaires" name="commentaires" rows="3"></textarea>
+                    </div>
+                    
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button type="submit" class="btn btn-success btn-small">Enregistrer</button>
+                        <button type="button" class="btn btn-secondary btn-small" onclick="toggleForm('rapport-form')">Annuler</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Liste des rapports -->
+            <div th:if="${rapports != null and !rapports.empty}">
+                <div th:each="rapport : ${rapports}" style="padding: 1rem; border-top: 1px solid var(--border-color);">
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <div class="detail-label">Sujet</div>
+                            <div class="detail-value" th:text="${rapport.sujet != null ? rapport.sujet : 'N/A'}">Sujet</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Note finale</div>
+                            <div class="detail-value" th:text="${rapport.noteFinale != null ? rapport.noteFinale + '/20' : 'N/A'}">Note</div>
+                        </div>
+                        <div class="detail-item" style="grid-column: 1 / -1;" th:if="${rapport.commentaires != null}">
+                            <div class="detail-label">Commentaires</div>
+                            <div class="detail-value" th:text="${rapport.commentaires}">Commentaires</div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 0.5rem;">
+                        <form th:action="@{/apprentis/{id}/rapports/{rapportId}/supprimer(id=${apprenti.apprentiId},rapportId=${rapport.rapportId})}" method="post" style="display: inline;">
+                            <button type="submit" class="btn btn-danger btn-small" onclick="return confirm('Supprimer ce rapport ?')">Supprimer</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div th:if="${rapports == null or rapports.empty}" class="text-center text-muted" style="padding: 2rem;">
+                Aucun rapport enregistré
+            </div>
+        </div>
+
+        <!-- Soutenances -->
+        <div class="card">
+            <div class="card-header">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span>🎓 Soutenances</span>
+                    <button class="btn btn-primary btn-small" onclick="toggleForm('soutenance-form')">+ Ajouter</button>
+                </div>
+            </div>
+            
+            <!-- Formulaire d'ajout de soutenance -->
+            <div id="soutenance-form" style="display: none; padding: 1rem; background: var(--background); border-radius: 0.375rem; margin-bottom: 1rem;">
+                <form th:action="@{/apprentis/{id}/soutenances(id=${apprenti.apprentiId})}" method="post">
+                    
+                    <div class="form-group">
+                        <label for="soutenance-date">Date</label>
+                        <input type="date" id="soutenance-date" name="date">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="soutenance-noteFinale">Note finale (sur 20)</label>
+                        <input type="number" id="soutenance-noteFinale" name="noteFinale" step="0.5" min="0" max="20">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="soutenance-commentaires">Commentaires</label>
+                        <textarea id="soutenance-commentaires" name="commentaires" rows="3"></textarea>
+                    </div>
+                    
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button type="submit" class="btn btn-success btn-small">Enregistrer</button>
+                        <button type="button" class="btn btn-secondary btn-small" onclick="toggleForm('soutenance-form')">Annuler</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Liste des soutenances -->
+            <div th:if="${soutenances != null and !soutenances.empty}">
+                <div th:each="soutenance : ${soutenances}" style="padding: 1rem; border-top: 1px solid var(--border-color);">
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <div class="detail-label">Date</div>
+                            <div class="detail-value" th:text="${soutenance.date != null ? soutenance.date : 'N/A'}">Date</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Note finale</div>
+                            <div class="detail-value" th:text="${soutenance.noteFinale != null ? soutenance.noteFinale + '/20' : 'N/A'}">Note</div>
+                        </div>
+                        <div class="detail-item" style="grid-column: 1 / -1;" th:if="${soutenance.commentaires != null}">
+                            <div class="detail-label">Commentaires</div>
+                            <div class="detail-value" th:text="${soutenance.commentaires}">Commentaires</div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 0.5rem;">
+                        <form th:action="@{/apprentis/{id}/soutenances/{soutenanceId}/supprimer(id=${apprenti.apprentiId},soutenanceId=${soutenance.soutenanceId})}" method="post" style="display: inline;">
+                            <button type="submit" class="btn btn-danger btn-small" onclick="return confirm('Supprimer cette soutenance ?')">Supprimer</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div th:if="${soutenances == null or soutenances.empty}" class="text-center text-muted" style="padding: 2rem;">
+                Aucune soutenance enregistrée
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleForm(formId) {
+            const form = document.getElementById(formId);
+            if (form.style.display === 'none') {
+                form.style.display = 'block';
+            } else {
+                form.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

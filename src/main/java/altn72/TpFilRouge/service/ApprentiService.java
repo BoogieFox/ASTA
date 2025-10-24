@@ -11,52 +11,44 @@ import java.util.Optional;
 
 @Service
 public class ApprentiService {
-    private final ApprentiRepository ApprentiRepository;
+    private final ApprentiRepository apprentiRepository;
 
-    public ApprentiService(ApprentiRepository ApprentiRepository) {
-        this.ApprentiRepository = ApprentiRepository;
+    public ApprentiService(ApprentiRepository apprentiRepository) {
+        this.apprentiRepository = apprentiRepository;
     }
 
     public List<Apprenti> getApprentis() {
-        return ApprentiRepository.findAll();
+        return apprentiRepository.findAll();
     }
 
     public Optional<Apprenti> getUnApprenti(Integer idApprenti) {
-        Optional<Apprenti> unApprenti = ApprentiRepository.findById(idApprenti);
-
-        return Optional.ofNullable(
-                unApprenti.orElseThrow(
-                        () -> new IllegalStateException(
-                                "Le Apprenti dont l'id est " + idApprenti + " n'existe pas")));
+        return apprentiRepository.findById(idApprenti);
     }
 
     @Transactional
     public void supprimerApprenti(Integer idApprenti) {
-        Optional<Apprenti> unApprenti = ApprentiRepository.findById(idApprenti);
+        Optional<Apprenti> unApprenti = apprentiRepository.findById(idApprenti);
 
         if (unApprenti.isPresent()) {
-            ApprentiRepository.deleteById(idApprenti);
+            apprentiRepository.deleteById(idApprenti);
         } else {
             throw new IllegalStateException(
-                    "Le Apprenti dont l'id est " + idApprenti + " n'existe pas");
+                    "L'apprenti dont l'id est " + idApprenti + " n'existe pas");
         }
     }
 
     @Transactional
-    public void ajouterApprenti(Apprenti Apprenti) {
-        ApprentiRepository.save(Apprenti);
+    public Apprenti ajouterApprenti(Apprenti apprenti) {
+        return apprentiRepository.save(apprenti);
     }
 
     @Transactional
-    public void modifierApprenti(
-            Integer idApprenti,
-            Apprenti ApprentiModified) {
-        Apprenti ApprentiToModify = ApprentiRepository.findById(idApprenti).orElseThrow();
+    public Apprenti modifierApprenti(Integer idApprenti, Apprenti apprentiModified) {
+        Apprenti apprentiToModify = apprentiRepository.findById(idApprenti)
+                .orElseThrow(() -> new IllegalStateException("L'apprenti dont l'id est " + idApprenti + " n'existe pas"));
 
-        if (ApprentiToModify != null) {
-            BeanUtils.copyProperties(ApprentiModified, ApprentiToModify, "id");
-            ApprentiRepository.save(ApprentiToModify);
-        }
+        BeanUtils.copyProperties(apprentiModified, apprentiToModify, "apprentiId");
+        return apprentiRepository.save(apprentiToModify);
     }
 }
 

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apprentis - ASTA</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <nav th:replace="~{index :: navigation}"></nav>
+
+    <div class="container">
+        <div class="page-header">
+            <div class="page-header-actions">
+                <h1>👨‍🎓 Liste des Apprentis</h1>
+                <a th:href="@{/apprentis/nouveau}" class="btn btn-primary">+ Nouvel Apprenti</a>
+            </div>
+        </div>
+
+        <div class="card" th:if="${apprentis != null and !apprentis.empty}">
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nom</th>
+                            <th>Prénom</th>
+                            <th>Email</th>
+                            <th>Téléphone</th>
+                            <th>Majeure</th>
+                            <th>Entreprise</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="apprenti : ${apprentis}">
+                            <td th:text="${apprenti.nom}">Nom</td>
+                            <td th:text="${apprenti.prenom}">Prénom</td>
+                            <td th:text="${apprenti.email}">email@example.com</td>
+                            <td th:text="${apprenti.telephone}">0123456789</td>
+                            <td th:text="${apprenti.majeure}">Majeure</td>
+                            <td th:text="${apprenti.entreprise != null ? apprenti.entreprise.raisonSociale : 'N/A'}">Entreprise</td>
+                            <td>
+                                <div class="table-actions">
+                                    <a th:href="@{/apprentis/{id}(id=${apprenti.apprentiId})}" class="btn btn-secondary btn-small">Détails</a>
+                                    <a th:href="@{/apprentis/{id}/modifier(id=${apprenti.apprentiId})}" class="btn btn-primary btn-small">Modifier</a>
+                                    <form th:action="@{/apprentis/{id}/supprimer(id=${apprenti.apprentiId})}" method="post" style="display: inline;">
+                                        <button type="submit" class="btn btn-danger btn-small" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet apprenti ?')">Supprimer</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="empty-state" th:if="${apprentis == null or apprentis.empty}">
+            <div class="empty-state-icon">👨‍🎓</div>
+            <p class="empty-state-message">Aucun apprenti enregistré pour le moment.</p>
+            <a th:href="@{/apprentis/nouveau}" class="btn btn-primary">Créer le premier apprenti</a>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${apprenti.apprentiId != null ? 'Modifier un apprenti' : 'Nouvel apprenti'}">Apprenti - ASTA</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <nav th:replace="~{index :: navigation}"></nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h1 th:text="${apprenti.apprentiId != null ? 'Modifier un apprenti' : 'Nouvel apprenti'}">Apprenti</h1>
+        </div>
+
+        <div class="card">
+            <form th:action="${apprenti.apprentiId != null ? '/apprentis/' + apprenti.apprentiId : '/apprentis'}" 
+                  method="post" 
+                  th:object="${apprenti}">
+                
+                <div class="form-group">
+                    <label for="nom">Nom *</label>
+                    <input type="text" id="nom" th:field="*{nom}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="prenom">Prénom *</label>
+                    <input type="text" id="prenom" th:field="*{prenom}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email *</label>
+                    <input type="email" id="email" th:field="*{email}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="telephone">Téléphone *</label>
+                    <input type="tel" id="telephone" th:field="*{telephone}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="majeure">Majeure *</label>
+                    <input type="text" id="majeure" th:field="*{majeure}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="entreprise">Entreprise</label>
+                    <select id="entreprise" th:field="*{entreprise}">
+                        <option value="">-- Sélectionner une entreprise --</option>
+                        <option th:each="entreprise : ${entreprises}" 
+                                th:value="${entreprise.entrepriseId}" 
+                                th:text="${entreprise.raisonSociale}">Entreprise</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="maitreApprentissage">Maître d'Apprentissage</label>
+                    <select id="maitreApprentissage" th:field="*{maitreApprentissage}">
+                        <option value="">-- Sélectionner un maître --</option>
+                        <option th:each="maitre : ${maitresApprentissage}" 
+                                th:value="${maitre.maitreApprentissageId}" 
+                                th:text="${maitre.prenom + ' ' + maitre.nom}">Maître</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="anneeAcademique">Année Académique</label>
+                    <select id="anneeAcademique" th:field="*{anneeAcademique}">
+                        <option value="">-- Sélectionner une année --</option>
+                        <option th:each="annee : ${anneesAcademiques}" 
+                                th:value="${annee.anneeAcademiqueId}" 
+                                th:text="${annee.anneeAcademique}">Année</option>
+                    </select>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Enregistrer</button>
+                    <a th:href="@{/apprentis}" class="btn btn-secondary">Annuler</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
