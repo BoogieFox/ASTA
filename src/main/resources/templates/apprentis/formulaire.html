@@ -1,85 +1,255 @@
 <!DOCTYPE html>
-<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${apprenti.apprentiId != null ? 'Modifier un apprenti' : 'Nouvel apprenti'}">Apprenti - ASTA</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <title>Modifier un apprenti - ASTA</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background-color: var(--card-background);
+            margin: auto;
+            padding: 0;
+            border-radius: 0.5rem;
+            box-shadow: var(--shadow-lg);
+            width: 90%;
+            max-width: 500px;
+        }
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-header h2 {
+            margin: 0;
+            font-size: 1.25rem;
+        }
+        .modal-body {
+            padding: 1.5rem;
+        }
+        .modal-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.5rem;
+        }
+        .close {
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+        .close:hover {
+            color: var(--text-primary);
+        }
+        .select-with-add {
+            display: flex;
+            gap: 0.5rem;
+            align-items: flex-end;
+        }
+        .select-with-add select {
+            flex: 1;
+        }
+    </style>
 </head>
 <body>
-    <nav th:replace="~{index :: navigation}"></nav>
+    <nav class="navbar">
+        <div class="navbar-content">
+            <a href="/" class="navbar-brand">ASTA</a>
+            <ul class="navbar-menu">
+                <li><a href="/">Accueil</a></li>
+                <li><a href="/apprentis">Apprentis</a></li>
+            </ul>
+        </div>
+    </nav>
 
     <div class="container">
         <div class="page-header">
-            <h1 th:text="${apprenti.apprentiId != null ? 'Modifier un apprenti' : 'Nouvel apprenti'}">Apprenti</h1>
+            <h1>Modifier un apprenti</h1>
         </div>
 
         <div class="card">
-            <form th:action="${apprenti.apprentiId != null ? '/apprentis/' + apprenti.apprentiId : '/apprentis'}" 
-                  method="post" 
-                  th:object="${apprenti}">
+            <form action="/apprentis/1" method="post">
                 
                 <div class="form-group">
                     <label for="nom">Nom *</label>
-                    <input type="text" id="nom" th:field="*{nom}" required>
+                    <input type="text" id="nom" name="nom" value="Dupont" required>
                 </div>
 
                 <div class="form-group">
                     <label for="prenom">Prénom *</label>
-                    <input type="text" id="prenom" th:field="*{prenom}" required>
+                    <input type="text" id="prenom" name="prenom" value="Sophie" required>
                 </div>
 
                 <div class="form-group">
                     <label for="email">Email *</label>
-                    <input type="email" id="email" th:field="*{email}" required>
+                    <input type="email" id="email" name="email" value="sophie.dupont@example.com" required>
                 </div>
 
                 <div class="form-group">
                     <label for="telephone">Téléphone *</label>
-                    <input type="tel" id="telephone" th:field="*{telephone}" required>
+                    <input type="tel" id="telephone" name="telephone" value="06 12 34 56 78" required>
                 </div>
 
                 <div class="form-group">
                     <label for="majeure">Majeure *</label>
-                    <input type="text" id="majeure" th:field="*{majeure}" required>
+                    <input type="text" id="majeure" name="majeure" value="Cybersécurité" required>
                 </div>
 
                 <div class="form-group">
                     <label for="entreprise">Entreprise</label>
-                    <select id="entreprise" th:field="*{entreprise}">
-                        <option value="">-- Sélectionner une entreprise --</option>
-                        <option th:each="entreprise : ${entreprises}" 
-                                th:value="${entreprise.entrepriseId}" 
-                                th:text="${entreprise.raisonSociale}">Entreprise</option>
-                    </select>
+                    <div class="select-with-add">
+                        <select id="entreprise" name="entreprise">
+                            <option value="">-- Sélectionner une entreprise --</option>
+                            <option value="1" selected>TechCorp</option>
+                            <option value="2">DataSolutions</option>
+                            <option value="3">CloudInnovation</option>
+                        </select>
+                        <button type="button" class="btn btn-secondary" onclick="openModal('entrepriseModal')">+ Nouveau</button>
+                    </div>
                 </div>
 
                 <div class="form-group">
                     <label for="maitreApprentissage">Maître d'Apprentissage</label>
-                    <select id="maitreApprentissage" th:field="*{maitreApprentissage}">
-                        <option value="">-- Sélectionner un maître --</option>
-                        <option th:each="maitre : ${maitresApprentissage}" 
-                                th:value="${maitre.maitreApprentissageId}" 
-                                th:text="${maitre.prenom + ' ' + maitre.nom}">Maître</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="anneeAcademique">Année Académique</label>
-                    <select id="anneeAcademique" th:field="*{anneeAcademique}">
-                        <option value="">-- Sélectionner une année --</option>
-                        <option th:each="annee : ${anneesAcademiques}" 
-                                th:value="${annee.anneeAcademiqueId}" 
-                                th:text="${annee.anneeAcademique}">Année</option>
-                    </select>
+                    <div class="select-with-add">
+                        <select id="maitreApprentissage" name="maitreApprentissage">
+                            <option value="">-- Sélectionner un maître --</option>
+                            <option value="1" selected>Jean Durand</option>
+                            <option value="2">Marie Leclerc</option>
+                            <option value="3">Paul Bernard</option>
+                        </select>
+                        <button type="button" class="btn btn-secondary" onclick="openModal('maitreModal')">+ Nouveau</button>
+                    </div>
                 </div>
 
                 <div class="form-actions">
                     <button type="submit" class="btn btn-primary">Enregistrer</button>
-                    <a th:href="@{/apprentis}" class="btn btn-secondary">Annuler</a>
+                    <a href="/apprentis" class="btn btn-secondary">Annuler</a>
                 </div>
             </form>
         </div>
     </div>
+
+    <!-- Modal Nouvelle Entreprise -->
+    <div id="entrepriseModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Nouvelle Entreprise</h2>
+                <button class="close" onclick="closeModal('entrepriseModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="entrepriseForm">
+                    <div class="form-group">
+                        <label for="raisonSociale">Raison Sociale *</label>
+                        <input type="text" id="raisonSociale" name="raisonSociale" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="adresse">Adresse *</label>
+                        <input type="text" id="adresse" name="adresse" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="informationsLocaux">Informations sur les locaux</label>
+                        <textarea id="informationsLocaux" name="informationsLocaux"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('entrepriseModal')">Annuler</button>
+                <button type="button" class="btn btn-primary" onclick="saveEntreprise()">Enregistrer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Nouveau Maître d'Apprentissage -->
+    <div id="maitreModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Nouveau Maître d'Apprentissage</h2>
+                <button class="close" onclick="closeModal('maitreModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="maitreForm">
+                    <div class="form-group">
+                        <label for="maitreNom">Nom *</label>
+                        <input type="text" id="maitreNom" name="nom" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="maitrePrenom">Prénom *</label>
+                        <input type="text" id="maitrePrenom" name="prenom" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="maitreEmail">Email *</label>
+                        <input type="email" id="maitreEmail" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="maitreTelephone">Téléphone *</label>
+                        <input type="tel" id="maitreTelephone" name="telephone" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="poste">Poste *</label>
+                        <input type="text" id="poste" name="poste" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="remarques">Remarques</label>
+                        <textarea id="remarques" name="remarques"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('maitreModal')">Annuler</button>
+                <button type="button" class="btn btn-primary" onclick="saveMaitre()">Enregistrer</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        function saveEntreprise() {
+            // Ici vous ajouteriez la logique pour enregistrer l'entreprise
+            alert('Entreprise enregistrée (fonctionnalité à implémenter)');
+            closeModal('entrepriseModal');
+        }
+
+        function saveMaitre() {
+            // Ici vous ajouteriez la logique pour enregistrer le maître
+            alert('Maître d\'apprentissage enregistré (fonctionnalité à implémenter)');
+            closeModal('maitreModal');
+        }
+
+        // Fermer modal si clic en dehors
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.classList.remove('active');
+            }
+        }
+    </script>
 </body>
 </html>
