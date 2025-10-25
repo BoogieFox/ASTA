@@ -6,11 +6,12 @@ import jakarta.validation.constraints.Size;
 public class CreerEntrepriseDto {
 
     @NotBlank(message = "La raison sociale est obligatoire")
-    @Size(max = 100, message = "La raison sociale ne doit pas dépasser 100 caractères")
+    @Size(max = 100, min = 2, message = "La raison sociale doit contenir entre 2 et 100 caractères")
+    
     private String raisonSociale;
 
     @NotBlank(message = "L'adresse est obligatoire")
-    @Size(max = 255, min = 10, message = "L'adresse doit contenir entre 10 et 255 caractères")
+    @Size(max = 255, min = 5, message = "L'adresse doit contenir entre 5 et 255 caractères")
     private String adresse;
 
     private String informationsLocaux;

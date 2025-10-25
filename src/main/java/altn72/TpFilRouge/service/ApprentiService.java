@@ -10,8 +10,6 @@ import altn72.TpFilRouge.modele.repository.ApprentiRepository;
 import altn72.TpFilRouge.modele.repository.EntrepriseRepository;
 import altn72.TpFilRouge.modele.repository.MaitreApprentissageRepository;
 import jakarta.transaction.Transactional;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,16 +20,13 @@ public class ApprentiService {
     private final ApprentiRepository apprentiRepository;
     private final EntrepriseRepository entrepriseRepository;
     private final MaitreApprentissageRepository maitreApprentissageRepository;
-    private final ModelMapper modelMapper;
 
     public ApprentiService(ApprentiRepository apprentiRepository, 
                           EntrepriseRepository entrepriseRepository,
-                          MaitreApprentissageRepository maitreApprentissageRepository,
-                          ModelMapper modelMapper) {
+                          MaitreApprentissageRepository maitreApprentissageRepository) {
         this.apprentiRepository = apprentiRepository;
         this.entrepriseRepository = entrepriseRepository;
         this.maitreApprentissageRepository = maitreApprentissageRepository;
-        this.modelMapper = modelMapper;
     }
 
     public List<Apprenti> getApprentis() {
@@ -49,16 +44,22 @@ public class ApprentiService {
             throw new ApprentiDejaExistantException(dto.getEmail());
         }
 
-        Apprenti apprenti = modelMapper.map(dto, Apprenti.class);
+        // Créer un nouvel apprenti et mapper uniquement les propriétés simples
+        Apprenti apprenti = new Apprenti();
+        apprenti.setNom(dto.getNom());
+        apprenti.setPrenom(dto.getPrenom());
+        apprenti.setEmail(dto.getEmail());
+        apprenti.setTelephone(dto.getTelephone());
+        apprenti.setMajeure(dto.getMajeure());
 
-        // Associer l'entreprise
+        // Associer l'entreprise existante si elle est spécifiée
         if (dto.getEntrepriseId() != null) {
             Entreprise entreprise = entrepriseRepository.findById(dto.getEntrepriseId())
                     .orElseThrow(() -> new RessourceIntrouvableException("Entreprise", dto.getEntrepriseId()));
             apprenti.setEntreprise(entreprise);
         }
 
-        // Associer le MA
+        // Associer le MA existant si il est spécifié
         if (dto.getMaitreApprentissageId() != null) {
             MaitreApprentissage maitreApprentissage = maitreApprentissageRepository.findById(dto.getMaitreApprentissageId())
                     .orElseThrow(() -> new RessourceIntrouvableException("Maître d'apprentissage", dto.getMaitreApprentissageId()));

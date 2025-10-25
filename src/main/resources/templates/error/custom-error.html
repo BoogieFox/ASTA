@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${errorTitle} + ' - ASTA'">Erreur - ASTA</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .error-container {
+            max-width: 600px;
+            margin: 4rem auto;
+            text-align: center;
+        }
+        .error-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+        .error-code {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+        .error-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+        .error-message {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+        .error-details {
+            background-color: var(--card-background);
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-top: 2rem;
+            text-align: left;
+        }
+        .error-details-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        .error-details-content {
+            font-family: monospace;
+            font-size: 0.875rem;
+            color: #dc3545;
+            word-break: break-word;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-content">
+            <a href="/" class="navbar-brand">ASTA</a>
+            <ul class="navbar-menu">
+                <li><a href="/">Accueil</a></li>
+                <li><a href="/apprentis">Apprentis</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="error-container">
+            <div class="error-icon">⚠️</div>
+            <div class="error-code" th:text="${errorCode}">500</div>
+            <h1 class="error-title" th:text="${errorTitle}">Une erreur s'est produite</h1>
+            <p class="error-message" th:text="${errorMessage}">Une erreur inattendue s'est produite.</p>
+            
+            <div class="form-actions">
+                <a href="javascript:history.back()" class="btn btn-secondary">Retour</a>
+                <a href="/apprentis" class="btn btn-primary">Retour à la liste</a>
+            </div>
+
+            <!-- Détails techniques (seulement si présents) -->
+            <div th:if="${errorDetails}" class="error-details">
+                <div class="error-details-title">Détails techniques :</div>
+                <div class="error-details-content" th:text="${errorDetails}"></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

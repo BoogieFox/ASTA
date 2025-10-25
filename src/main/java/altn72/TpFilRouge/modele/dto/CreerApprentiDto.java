@@ -5,7 +5,11 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
-public class CreerApprentiDto {
+import java.io.Serializable;
+
+public class CreerApprentiDto implements Serializable {
+    
+    private static final long serialVersionUID = 1L;
 
     @NotBlank(message = "Le nom est obligatoire")
     @Size(max = 100, message = "Le nom ne doit pas dépasser 100 caractères")

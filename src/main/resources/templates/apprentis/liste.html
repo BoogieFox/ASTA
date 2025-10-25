@@ -1,11 +1,18 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Apprentis - ASTA</title>
     <link rel="stylesheet" href="/css/style.css">
     <style>
+        .empty-message {
+            color: #dc3545;
+            font-size: 1.1rem;
+            text-align: center;
+            padding: 2rem;
+            font-weight: 500;
+        }
         .tabs {
             display: flex;
             gap: 0.5rem;
@@ -80,7 +87,13 @@
         <!-- Tab En cours -->
         <div id="encours-content" class="tab-content active">
             <div class="card">
-                <div class="table-container">
+                <!-- Message si la liste est vide -->
+                <div th:if="${#lists.isEmpty(apprentis)}" class="empty-message">
+                    La liste est vide. Ajoutez au moins un apprenti
+                </div>
+                
+                <!-- Table si la liste n'est pas vide -->
+                <div th:if="${!#lists.isEmpty(apprentis)}" class="table-container">
                     <table>
                         <thead>
                             <tr>
@@ -90,38 +103,21 @@
                                 <th>Téléphone</th>
                                 <th>Majeure</th>
                                 <th>Entreprise</th>
-                                <th>Statut</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>Dupont</td>
-                                <td>Sophie</td>
-                                <td>sophie.dupont@example.com</td>
-                                <td>06 12 34 56 78</td>
-                                <td>Cybersécurité</td>
-                                <td>TechCorp</td>
-                                <td><span class="status-badge status-active">En cours</span></td>
+                            <tr th:each="apprenti : ${apprentis}">
+                                <td th:text="${apprenti.nom}">Dupont</td>
+                                <td th:text="${apprenti.prenom}">Sophie</td>
+                                <td th:text="${apprenti.email}">sophie.dupont@example.com</td>
+                                <td th:text="${apprenti.telephone}">06 12 34 56 78</td>
+                                <td th:text="${apprenti.majeure}">Cybersécurité</td>
+                                <td th:text="${apprenti.entreprise != null ? apprenti.entreprise.raisonSociale : 'N/A'}">TechCorp</td>
                                 <td>
                                     <div class="table-actions">
-                                        <a href="/apprentis/1/dossier" class="btn btn-secondary btn-small">Dossier</a>
-                                        <a href="/apprentis/1/modifier" class="btn btn-primary btn-small">Modifier</a>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Martin</td>
-                                <td>Lucas</td>
-                                <td>lucas.martin@example.com</td>
-                                <td>06 98 76 54 32</td>
-                                <td>Data Science</td>
-                                <td>DataSolutions</td>
-                                <td><span class="status-badge status-active">En cours</span></td>
-                                <td>
-                                    <div class="table-actions">
-                                        <a href="/apprentis/2/dossier" class="btn btn-secondary btn-small">Dossier</a>
-                                        <a href="/apprentis/2/modifier" class="btn btn-primary btn-small">Modifier</a>
+                                        <a th:href="@{/apprentis/{id}/dossier(id=${apprenti.apprentiId})}" class="btn btn-secondary btn-small">Dossier</a>
+                                        <a th:href="@{/apprentis/{id}/modifier(id=${apprenti.apprentiId})}" class="btn btn-primary btn-small">Modifier</a>
                                     </div>
                                 </td>
                             </tr>

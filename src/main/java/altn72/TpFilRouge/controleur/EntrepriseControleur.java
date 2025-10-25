@@ -1,18 +1,20 @@
 package altn72.TpFilRouge.controleur;
 
+import altn72.TpFilRouge.exception.EntrepriseDejaExistanteException;
 import altn72.TpFilRouge.modele.Entreprise;
+import altn72.TpFilRouge.modele.dto.CreerApprentiDto;
 import altn72.TpFilRouge.modele.dto.CreerEntrepriseDto;
 import altn72.TpFilRouge.service.EntrepriseService;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
-
-@RestController
+@Controller
 @RequestMapping("/entreprises")
 public class EntrepriseControleur {
 
@@ -24,11 +26,64 @@ public class EntrepriseControleur {
         this.entrepriseService = entrepriseService;
     }
 
+    // ========== Endpoints REST (commentés car on utilise Thymeleaf) ==========
+    /*
     @PostMapping("/nouveau")
     public ResponseEntity<Entreprise> creerEntreprise(@Valid @RequestBody CreerEntrepriseDto dto) {
         Entreprise entreprise = modelMapper.map(dto, Entreprise.class);
         Entreprise created = entrepriseService.ajouterEntreprise(entreprise);
         URI location = URI.create("/api/entreprises/" + created.getEntrepriseId());
         return ResponseEntity.created(location).body(created);
+    }
+    */
+
+    // ========== Pages Thymeleaf ==========
+
+    // Formulaire de création d'une nouvelle entreprise
+    @GetMapping("/nouveau")
+    public String afficherFormulaireCreation(HttpSession session, Model model) {
+        // Récupérer les données d'apprenti depuis la session
+        CreerApprentiDto apprentiData = (CreerApprentiDto) session.getAttribute("apprentiData");
+        if (apprentiData == null) {
+            apprentiData = new CreerApprentiDto();
+        }
+        
+        model.addAttribute("entreprise", new CreerEntrepriseDto());
+        model.addAttribute("apprentiData", apprentiData);
+        return "entreprises/formulaire";
+    }
+
+    // Endpoint Thymeleaf pour créer une entreprise
+    @PostMapping("/nouveau")
+    public String creerEntreprise(@Valid @ModelAttribute("entreprise") CreerEntrepriseDto dto,
+                                  BindingResult bindingResult,
+                                  HttpSession session,
+                                  Model model) {
+        // Récupérer les données d'apprenti depuis la session
+        CreerApprentiDto apprentiData = (CreerApprentiDto) session.getAttribute("apprentiData");
+        if (apprentiData == null) {
+            apprentiData = new CreerApprentiDto();
+        }
+        
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("apprentiData", apprentiData);
+            return "entreprises/formulaire";
+        }
+
+        try {
+            Entreprise entreprise = modelMapper.map(dto, Entreprise.class);
+            entrepriseService.ajouterEntreprise(entreprise);
+            
+            // Ne pas nettoyer la session ici - elle sera nettoyée par ApprentiControleur
+            // après avoir récupéré les données
+            // session.removeAttribute("apprentiData"); // ← SUPPRIMÉ
+            
+            // Rediriger vers le formulaire d'apprenti avec message de succès
+            return "redirect:/apprentis/nouveau?success=entreprise-created";
+        } catch (EntrepriseDejaExistanteException e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            model.addAttribute("apprentiData", apprentiData);
+            return "entreprises/formulaire";
+        }
     }
 }

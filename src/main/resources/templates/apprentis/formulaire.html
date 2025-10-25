@@ -6,6 +6,21 @@
     <title th:text="${isCreation ? 'Créer un apprenti - ASTA' : 'Modifier un apprenti - ASTA'}">Apprenti - ASTA</title>
     <link rel="stylesheet" href="/css/style.css">
     <style>
+        .error-message {
+            color: #dc3545;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            display: block;
+        }
+        .alert-success {
+            background-color: #d1f2df;
+            border: 1px solid #b0e2c0;
+            color: #0f5132;
+            padding: 1rem;
+            border-radius: 0.375rem;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
         .modal {
             display: none;
             position: fixed;
@@ -89,53 +104,67 @@
             <h1 th:text="${isCreation ? 'Créer un apprenti' : 'Modifier un apprenti'}">Apprenti</h1>
         </div>
 
+        <!-- Message de succès (retour du formulaire d'entreprise) -->
+        <div th:if="${successMessage}" class="alert-success" th:text="${successMessage}">
+            Message de succès
+        </div>
+
         <div class="card">
-            <form action="/apprentis/1" method="post">
+            <form th:action="@{/apprentis/nouveau}" th:object="${apprenti}" method="post">
                 
                 <div class="form-group">
                     <label for="nom">Nom *</label>
-                    <input type="text" id="nom" name="nom" value="Dupont" required>
+                    <input type="text" id="nom" th:field="*{nom}" required>
+                    <span th:if="${#fields.hasErrors('nom')}" th:errors="*{nom}" class="error-message"></span>
                 </div>
 
                 <div class="form-group">
                     <label for="prenom">Prénom *</label>
-                    <input type="text" id="prenom" name="prenom" value="Sophie" required>
+                    <input type="text" id="prenom" th:field="*{prenom}" required>
+                    <span th:if="${#fields.hasErrors('prenom')}" th:errors="*{prenom}" class="error-message"></span>
                 </div>
 
                 <div class="form-group">
                     <label for="email">Email *</label>
-                    <input type="email" id="email" name="email" value="sophie.dupont@example.com" required>
+                    <input type="email" id="email" th:field="*{email}" required>
+                    <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="error-message"></span>
                 </div>
 
                 <div class="form-group">
                     <label for="telephone">Téléphone *</label>
-                    <input type="tel" id="telephone" name="telephone" value="06 12 34 56 78" required>
+                    <input type="tel" id="telephone" th:field="*{telephone}" required>
+                    <span th:if="${#fields.hasErrors('telephone')}" th:errors="*{telephone}" class="error-message"></span>
                 </div>
 
                 <div class="form-group">
                     <label for="majeure">Majeure *</label>
-                    <input type="text" id="majeure" name="majeure" value="Cybersécurité" required>
+                    <input type="text" id="majeure" th:field="*{majeure}" required>
+                    <span th:if="${#fields.hasErrors('majeure')}" th:errors="*{majeure}" class="error-message"></span>
                 </div>
 
                 <div class="form-group">
-                    <label for="entreprise">Entreprise</label>
+                    <label for="entrepriseId">Entreprise</label>
                     <div class="select-with-add">
-                        <select id="entreprise" name="entreprise">
+                        <select id="entrepriseId" th:field="*{entrepriseId}">
                             <option value="">-- Sélectionner une entreprise --</option>
-                            <option value="1" selected>TechCorp</option>
-                            <option value="2">DataSolutions</option>
-                            <option value="3">CloudInnovation</option>
+                            <option th:each="entreprise : ${entreprises}" 
+                                    th:value="${entreprise.entrepriseId}" 
+                                    th:text="${entreprise.raisonSociale}">
+                                Nom entreprise
+                            </option>
                         </select>
-                        <button type="button" class="btn btn-secondary" onclick="openModal('entrepriseModal')">+ Nouveau</button>
+                        <a href="/entreprises/nouveau" 
+                           class="btn btn-secondary"
+                           onclick="saveApprenticeData(event)">+ Nouvelle Entreprise</a>
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label for="maitreApprentissage">Maître d'Apprentissage</label>
+                    <label for="maitreApprentissageId">Maître d'Apprentissage</label>
                     <div class="select-with-add">
-                        <select id="maitreApprentissage" name="maitreApprentissage">
+                        <select id="maitreApprentissageId" th:field="*{maitreApprentissageId}">
                             <option value="">-- Sélectionner un maître --</option>
-                            <option value="1" selected>Jean Durand</option>
+                            <option value="1">Jean Durand</option>
                             <option value="2">Marie Leclerc</option>
                             <option value="3">Paul Bernard</option>
                         </select>
@@ -148,36 +177,6 @@
                     <a href="/apprentis" class="btn btn-secondary">Annuler</a>
                 </div>
             </form>
-        </div>
-    </div>
-
-    <!-- Modal Nouvelle Entreprise -->
-    <div id="entrepriseModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Nouvelle Entreprise</h2>
-                <button class="close" onclick="closeModal('entrepriseModal')">&times;</button>
-            </div>
-            <div class="modal-body">
-                <form id="entrepriseForm">
-                    <div class="form-group">
-                        <label for="raisonSociale">Raison Sociale *</label>
-                        <input type="text" id="raisonSociale" name="raisonSociale" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="adresse">Adresse *</label>
-                        <input type="text" id="adresse" name="adresse" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="informationsLocaux">Informations sur les locaux</label>
-                        <textarea id="informationsLocaux" name="informationsLocaux"></textarea>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" onclick="closeModal('entrepriseModal')">Annuler</button>
-                <button type="button" class="btn btn-primary" onclick="saveEntreprise()">Enregistrer</button>
-            </div>
         </div>
     </div>
 
@@ -224,18 +223,42 @@
     </div>
 
     <script>
+        function saveApprenticeData(event) {
+            event.preventDefault();
+            
+            // Récupérer les valeurs du formulaire
+            const nom = document.getElementById('nom').value;
+            const prenom = document.getElementById('prenom').value;
+            const email = document.getElementById('email').value;
+            const telephone = document.getElementById('telephone').value;
+            const majeure = document.getElementById('majeure').value;
+            const entrepriseId = document.getElementById('entrepriseId').value;
+            const maitreApprentissageId = document.getElementById('maitreApprentissageId').value;
+            
+            // Créer un formulaire temporaire pour envoyer les données
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/apprentis/sauvegarder-session';
+            
+            const fields = {nom, prenom, email, telephone, majeure, entrepriseId, maitreApprentissageId};
+            for (const [key, value] of Object.entries(fields)) {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = key;
+                input.value = value || '';
+                form.appendChild(input);
+            }
+            
+            document.body.appendChild(form);
+            form.submit();
+        }
+        
         function openModal(modalId) {
             document.getElementById(modalId).classList.add('active');
         }
 
         function closeModal(modalId) {
             document.getElementById(modalId).classList.remove('active');
-        }
-
-        function saveEntreprise() {
-            // Ici vous ajouteriez la logique pour enregistrer l'entreprise
-            alert('Entreprise enregistrée (fonctionnalité à implémenter)');
-            closeModal('entrepriseModal');
         }
 
         function saveMaitre() {

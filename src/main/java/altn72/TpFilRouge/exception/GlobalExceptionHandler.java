@@ -1,57 +1,59 @@
 package altn72.TpFilRouge.exception;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-
-import java.util.HashMap;
-import java.util.Map;
-
-
+/**
+ * Gestionnaire global des exceptions pour les contrôleurs Thymeleaf.
+ * Utilise @ControllerAdvice pour intercepter les exceptions et les gérer de manière centralisée.
+ */
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Object> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        Map<String, String> errors = new HashMap<>();
-        ex.getBindingResult().getFieldErrors().forEach(error ->
-                errors.put(error.getField(), error.getDefaultMessage()));
-
-        Map<String, Object> body = new HashMap<>();
-        body.put("status", HttpStatus.BAD_REQUEST.value());
-        body.put("message", "Erreur de validation");
-        body.put("errors", errors);
-
-        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(EntrepriseDejaExistanteException.class)
-    public ResponseEntity<Object> handleEntrepriseDejaExistanteException(EntrepriseDejaExistanteException ex) {
-        Map<String, Object> body = new HashMap<>();
-        body.put("status", HttpStatus.CONFLICT.value());
-        body.put("message", ex.getMessage());
-
-        return new ResponseEntity<>(body, HttpStatus.CONFLICT);
-    }
-
+    /**
+     * Gère l'exception quand un apprenti avec le même email existe déjà.
+     * Retourne vers une page d'erreur générique avec le message d'erreur.
+     */
     @ExceptionHandler(ApprentiDejaExistantException.class)
-    public ResponseEntity<Object> handleApprentiDejaExistantException(ApprentiDejaExistantException ex) {
-        Map<String, Object> body = new HashMap<>();
-        body.put("status", HttpStatus.CONFLICT.value());
-        body.put("message", ex.getMessage());
-
-        return new ResponseEntity<>(body, HttpStatus.CONFLICT);
+    public String handleApprentiDejaExistantException(ApprentiDejaExistantException ex, Model model) {
+        model.addAttribute("errorTitle", "Conflit de données");
+        model.addAttribute("errorMessage", ex.getMessage());
+        model.addAttribute("errorCode", "409");
+        return "error/custom-error";
     }
 
-    @ExceptionHandler(RessourceIntrouvableException.class)
-    public ResponseEntity<Object> handleRessourceIntrouvableException(RessourceIntrouvableException ex) {
-        Map<String, Object> body = new HashMap<>();
-        body.put("status", HttpStatus.NOT_FOUND.value());
-        body.put("message", ex.getMessage());
+    /**
+     * Gère l'exception quand une entreprise avec la même raison sociale existe déjà.
+     */
+    @ExceptionHandler(EntrepriseDejaExistanteException.class)
+    public String handleEntrepriseDejaExistanteException(EntrepriseDejaExistanteException ex, Model model) {
+        model.addAttribute("errorTitle", "Conflit de données");
+        model.addAttribute("errorMessage", ex.getMessage());
+        model.addAttribute("errorCode", "409");
+        return "error/custom-error";
+    }
 
-        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+    /**
+     * Gère l'exception quand une ressource demandée n'existe pas.
+     */
+    @ExceptionHandler(RessourceIntrouvableException.class)
+    public String handleRessourceIntrouvableException(RessourceIntrouvableException ex, Model model) {
+        model.addAttribute("errorTitle", "Ressource introuvable");
+        model.addAttribute("errorMessage", ex.getMessage());
+        model.addAttribute("errorCode", "404");
+        return "error/custom-error";
+    }
+
+    /**
+     * Gère toutes les autres exceptions non prévues.
+     */
+    @ExceptionHandler(Exception.class)
+    public String handleGenericException(Exception ex, Model model) {
+        model.addAttribute("errorTitle", "Erreur interne");
+        model.addAttribute("errorMessage", "Une erreur inattendue s'est produite. Veuillez réessayer plus tard.");
+        model.addAttribute("errorCode", "500");
+        model.addAttribute("errorDetails", ex.getMessage());
+        return "error/custom-error";
     }
 }
