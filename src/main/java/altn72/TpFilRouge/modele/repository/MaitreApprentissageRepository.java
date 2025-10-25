@@ -11,3 +11,4 @@ import java.util.Optional;
 public interface MaitreApprentissageRepository extends JpaRepository<MaitreApprentissage, Integer> {
 
 }
+

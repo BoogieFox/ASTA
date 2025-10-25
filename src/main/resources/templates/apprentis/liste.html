@@ -116,8 +116,7 @@
                                 <td th:text="${apprenti.entreprise != null ? apprenti.entreprise.raisonSociale : 'N/A'}">TechCorp</td>
                                 <td>
                                     <div class="table-actions">
-                                        <a th:href="@{/apprentis/{id}/dossier(id=${apprenti.apprentiId})}" class="btn btn-secondary btn-small">Dossier</a>
-                                        <a th:href="@{/apprentis/{id}/modifier(id=${apprenti.apprentiId})}" class="btn btn-primary btn-small">Modifier</a>
+                                        <a th:href="@{/apprentis/{id}/gerer(id=${apprenti.apprentiId})}" class="btn btn-primary btn-small">⚙️ Gérer</a>
                                     </div>
                                 </td>
                             </tr>

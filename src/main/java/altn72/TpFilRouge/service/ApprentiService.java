@@ -6,6 +6,7 @@ import altn72.TpFilRouge.modele.Apprenti;
 import altn72.TpFilRouge.modele.Entreprise;
 import altn72.TpFilRouge.modele.MaitreApprentissage;
 import altn72.TpFilRouge.modele.dto.CreerApprentiDto;
+import altn72.TpFilRouge.modele.dto.ModifierApprentiDto;
 import altn72.TpFilRouge.modele.repository.ApprentiRepository;
 import altn72.TpFilRouge.modele.repository.EntrepriseRepository;
 import altn72.TpFilRouge.modele.repository.MaitreApprentissageRepository;
@@ -65,6 +66,37 @@ public class ApprentiService {
                     .orElseThrow(() -> new RessourceIntrouvableException("Maître d'apprentissage", dto.getMaitreApprentissageId()));
             apprenti.setMaitreApprentissage(maitreApprentissage);
         }
+
+        return apprentiRepository.save(apprenti);
+    }
+
+    /**
+     * Modifie les informations personnelles d'un apprenti existant.
+     * Vérifie que l'apprenti existe et que l'email n'est pas déjà utilisé par un autre apprenti.
+     * 
+     * @param apprentiId l'ID de l'apprenti à modifier
+     * @param dto les nouvelles informations de l'apprenti
+     * @return l'apprenti mis à jour
+     * @throws RessourceIntrouvableException si l'apprenti n'existe pas
+     * @throws ApprentiDejaExistantException si l'email est déjà utilisé par un autre apprenti
+     */
+    @Transactional
+    public Apprenti modifierApprenti(Integer apprentiId, ModifierApprentiDto dto) {
+        // Vérifier que l'apprenti existe
+        Apprenti apprenti = apprentiRepository.findById(apprentiId)
+                .orElseThrow(() -> new RessourceIntrouvableException("Apprenti", apprentiId));
+
+        // Vérifier que l'email n'est pas déjà utilisé par un autre apprenti
+        if (apprentiRepository.existsByEmailAndApprentiIdNot(dto.getEmail(), apprentiId)) {
+            throw new ApprentiDejaExistantException(dto.getEmail());
+        }
+
+        // Mettre à jour les informations personnelles
+        apprenti.setNom(dto.getNom());
+        apprenti.setPrenom(dto.getPrenom());
+        apprenti.setEmail(dto.getEmail());
+        apprenti.setTelephone(dto.getTelephone());
+        apprenti.setMajeure(dto.getMajeure());
 
         return apprentiRepository.save(apprenti);
     }

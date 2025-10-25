@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="'Gérer ' + ${apprenti.prenom} + ' ' + ${apprenti.nom} + ' - ASTA'">Gérer l'apprenti - ASTA</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .section-card {
+            margin-bottom: 1.5rem;
+        }
+        
+        .card-header-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            background-color: var(--background);
+            border-bottom: 1px solid var(--border-color);
+            border-radius: 0.5rem 0.5rem 0 0;
+        }
+        
+        .card-header-actions h2 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+        }
+        
+        .error-message {
+            display: block;
+            color: #dc2626;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            font-weight: 500;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+        
+        .tab {
+            padding: 0.75rem 1.5rem;
+            background: none;
+            border: none;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            color: var(--text-secondary);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .tab:hover {
+            color: var(--primary-color);
+        }
+        
+        .tab.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .current-badge {
+            display: inline-block;
+            padding: 0.125rem 0.5rem;
+            border-radius: 9999px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            background-color: #dcfce7;
+            color: #166534;
+        }
+        
+        .info-section {
+            margin-bottom: 1.5rem;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .item-card {
+            background-color: var(--background);
+            padding: 1rem;
+            border-radius: 0.375rem;
+            margin-bottom: 1rem;
+            border-left: 3px solid var(--primary-color);
+        }
+        
+        .item-empty {
+            background-color: var(--background);
+            padding: 2rem;
+            border-radius: 0.375rem;
+            text-align: center;
+            color: var(--text-secondary);
+            border: 2px dashed var(--border-color);
+        }
+        
+        .item-field {
+            display: flex;
+            margin-bottom: 0.5rem;
+        }
+        
+        .item-field:last-child {
+            margin-bottom: 0;
+        }
+        
+        .field-label {
+            font-weight: 600;
+            width: 150px;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+        
+        .field-value {
+            flex: 1;
+            color: var(--text-primary);
+        }
+        
+        .alert-success {
+            background-color: #d1f2df;
+            border: 1px solid #b0e2c0;
+            color: #0f5132;
+            padding: 1rem;
+            border-radius: 0.375rem;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-content">
+            <a href="/" class="navbar-brand">ASTA</a>
+            <ul class="navbar-menu">
+                <li><a href="/">Accueil</a></li>
+                <li><a href="/apprentis">Apprentis</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <div class="page-header-actions">
+                <h1 th:text="'⚙️ Gérer - ' + ${apprenti.prenom} + ' ' + ${apprenti.nom}">⚙️ Gérer - Apprenti</h1>
+                <div>
+                    <a href="/apprentis" class="btn btn-secondary">Retour à la liste</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Message de succès -->
+        <div id="successMessage" class="alert-success hidden">
+            ✅ Les informations ont été sauvegardées avec succès !
+        </div>
+        
+        <!-- Message de succès depuis le FlashAttribute -->
+        <div th:if="${successMessage}" class="alert-success">
+            <span th:text="${successMessage}"></span>
+        </div>
+
+        <!-- Section Informations Personnelles -->
+        <div class="card section-card">
+            <div class="card-header-actions">
+                <h2>📋 Informations personnelles</h2>
+            </div>
+            <div class="card-body">
+                <form id="form-info-personnelles" th:action="@{/apprentis/{id}/informations(id=${apprenti.apprentiId})}" method="post" th:object="${modifierApprentiDto}">
+                    <!-- Support de PATCH pour Thymeleaf -->
+                    <input type="hidden" name="_method" value="PATCH"/>
+                    
+                    <div class="form-group">
+                        <label for="nom">Nom *</label>
+                        <input type="text" id="nom" th:field="*{nom}" required>
+                        <span class="error-message" th:if="${#fields.hasErrors('nom')}" th:errors="*{nom}"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="prenom">Prénom *</label>
+                        <input type="text" id="prenom" th:field="*{prenom}" required>
+                        <span class="error-message" th:if="${#fields.hasErrors('prenom')}" th:errors="*{prenom}"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email *</label>
+                        <input type="email" id="email" th:field="*{email}" required>
+                        <span class="error-message" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="telephone">Téléphone *</label>
+                        <input type="tel" id="telephone" th:field="*{telephone}" required>
+                        <span class="error-message" th:if="${#fields.hasErrors('telephone')}" th:errors="*{telephone}"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="majeure">Majeure *</label>
+                        <input type="text" id="majeure" th:field="*{majeure}" required>
+                        <span class="error-message" th:if="${#fields.hasErrors('majeure')}" th:errors="*{majeure}"></span>
+                    </div>
+                    <div class="action-buttons">
+                        <button type="submit" class="btn btn-primary">Modifier</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Section Entreprise -->
+        <div class="card section-card editable-section view-mode" id="section-entreprise">
+            <div class="card-header-actions">
+                <h2>🏢 Entreprise</h2>
+                <button type="button" class="btn btn-primary btn-small" onclick="toggleEdit('entreprise')">
+                    <span class="edit-text">Modifier</span>
+                    <span class="save-text hidden">Enregistrer</span>
+                </button>
+            </div>
+            <div class="card-body">
+                <!-- Mode consultation -->
+                <div class="view-content">
+                    <div class="form-group" th:if="${apprenti.entreprise != null}">
+                        <label>Raison Sociale :</label>
+                        <div class="value" id="view-entreprise" th:text="${apprenti.entreprise.raisonSociale}">-</div>
+                    </div>
+                    <div class="form-group" th:if="${apprenti.entreprise != null}">
+                        <label>Adresse :</label>
+                        <div class="value" id="view-adresse" th:text="${apprenti.entreprise.adresse}">-</div>
+                    </div>
+                    <div class="form-group" th:if="${apprenti.entreprise != null && apprenti.entreprise.informationsLocaux != null}">
+                        <label>Informations sur les locaux :</label>
+                        <div class="value" id="view-locaux" th:text="${apprenti.entreprise.informationsLocaux}">-</div>
+                    </div>
+                    <div class="form-group" th:if="${apprenti.entreprise == null}">
+                        <label>Entreprise :</label>
+                        <div class="value">Aucune entreprise associée</div>
+                    </div>
+                </div>
+                
+                <!-- Mode édition -->
+                <div class="edit-content hidden">
+                    <form id="form-entreprise">
+                        <div class="form-group">
+                            <label for="entreprise">Entreprise *</label>
+                            <select id="entreprise" name="entreprise" required>
+                                <option value="">-- Sélectionner une entreprise --</option>
+                                <option th:each="entreprise : ${entreprises}" 
+                                        th:value="${entreprise.entrepriseId}" 
+                                        th:text="${entreprise.raisonSociale}"
+                                        th:selected="${apprenti.entreprise != null && entreprise.entrepriseId == apprenti.entreprise.entrepriseId}">
+                                    Entreprise
+                                </option>
+                            </select>
+                        </div>
+                        <div class="action-buttons">
+                            <button type="button" class="btn btn-secondary" onclick="cancelEdit('entreprise')">Annuler</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section Maître d'Apprentissage -->
+        <div class="card section-card editable-section view-mode" id="section-maitre">
+            <div class="card-header-actions">
+                <h2>👔 Maître d'Apprentissage</h2>
+                <button type="button" class="btn btn-primary btn-small" onclick="toggleEdit('maitre')">
+                    <span class="edit-text">Modifier</span>
+                    <span class="save-text hidden">Enregistrer</span>
+                </button>
+            </div>
+            <div class="card-body">
+                <!-- Mode consultation -->
+                <div class="view-content">
+                    <div th:if="${apprenti.maitreApprentissage != null}">
+                        <div class="form-group">
+                            <label>Nom :</label>
+                            <div class="value" id="view-maitre-nom" th:text="${apprenti.maitreApprentissage.nom + ' ' + apprenti.maitreApprentissage.prenom}">-</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Poste :</label>
+                            <div class="value" id="view-maitre-poste" th:text="${apprenti.maitreApprentissage.poste}">-</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Email :</label>
+                            <div class="value" id="view-maitre-email" th:text="${apprenti.maitreApprentissage.email}">-</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Téléphone :</label>
+                            <div class="value" id="view-maitre-telephone" th:text="${apprenti.maitreApprentissage.telephone}">-</div>
+                        </div>
+                    </div>
+                    <div class="form-group" th:if="${apprenti.maitreApprentissage == null}">
+                        <label>Maître d'Apprentissage :</label>
+                        <div class="value">Aucun maître d'apprentissage associé</div>
+                    </div>
+                </div>
+                
+                <!-- Mode édition -->
+                <div class="edit-content hidden">
+                    <form id="form-maitre">
+                        <div class="form-group">
+                            <label for="maitre">Maître d'Apprentissage *</label>
+                            <select id="maitre" name="maitre" required>
+                                <option value="">-- Sélectionner un maître --</option>
+                                <option th:each="maitre : ${maitresApprentissage}" 
+                                        th:value="${maitre.maitreApprentissageId}" 
+                                        th:text="${maitre.nom + ' ' + maitre.prenom + ' - ' + maitre.poste}"
+                                        th:selected="${apprenti.maitreApprentissage != null && maitre.maitreApprentissageId == apprenti.maitreApprentissage.maitreApprentissageId}">
+                                    Maître
+                                </option>
+                            </select>
+                        </div>
+                        <div class="action-buttons">
+                            <button type="button" class="btn btn-secondary" onclick="cancelEdit('maitre')">Annuler</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section Dossiers Annuels -->
+        <div class="card" th:if="${!#lists.isEmpty(apprenti.dossierAnnuels)}">
+            <div class="tabs">
+                <button th:each="dossier, iterStat : ${apprenti.dossierAnnuels}" 
+                        th:classappend="${iterStat.last} ? 'tab active' : 'tab'"
+                        th:onclick="'switchTab(\'' + ${dossier.anneeAcademique.anneeAcademique} + '\')'">
+                    <span th:text="${dossier.anneeAcademique.anneeAcademique}">Année</span>
+                    <span class="current-badge" th:if="${iterStat.last}">en cours</span>
+                </button>
+            </div>
+
+            <!-- Contenu des dossiers annuels -->
+            <div th:each="dossier, iterStat : ${apprenti.dossierAnnuels}" 
+                 th:id="${dossier.anneeAcademique.anneeAcademique + '-content'}" 
+                 th:classappend="${iterStat.last} ? 'tab-content active' : 'tab-content'">
+                
+                <!-- Visite -->
+                <div class="info-section">
+                    <div class="section-header">
+                        <div class="section-title">📅 Visite</div>
+                    </div>
+                    <div th:if="${dossier.visite != null}" class="item-card">
+                        <div class="item-field">
+                            <div class="field-label">Date :</div>
+                            <div class="field-value" th:text="${#temporals.format(dossier.visite.date, 'dd/MM/yyyy')}">-</div>
+                        </div>
+                        <div class="item-field" th:if="${dossier.visite.format != null}">
+                            <div class="field-label">Format :</div>
+                            <div class="field-value" th:text="${dossier.visite.format}">-</div>
+                        </div>
+                        <div class="item-field" th:if="${dossier.visite.commentaires != null}">
+                            <div class="field-label">Commentaires :</div>
+                            <div class="field-value" th:text="${dossier.visite.commentaires}">-</div>
+                        </div>
+                    </div>
+                    <div th:if="${dossier.visite == null}" class="item-empty">
+                        Aucune visite enregistrée pour cette année
+                    </div>
+                </div>
+
+                <!-- Soutenance -->
+                <div class="info-section">
+                    <div class="section-header">
+                        <div class="section-title">🎤 Soutenance</div>
+                    </div>
+                    <div th:if="${dossier.soutenance != null}" class="item-card">
+                        <div class="item-field">
+                            <div class="field-label">Date :</div>
+                            <div class="field-value" th:text="${#temporals.format(dossier.soutenance.date, 'dd/MM/yyyy')}">-</div>
+                        </div>
+                        <div class="item-field" th:if="${dossier.soutenance.noteFinale != null}">
+                            <div class="field-label">Note finale :</div>
+                            <div class="field-value" th:text="${dossier.soutenance.noteFinale + '/20'}">-</div>
+                        </div>
+                        <div class="item-field" th:if="${dossier.soutenance.commentaires != null}">
+                            <div class="field-label">Commentaires :</div>
+                            <div class="field-value" th:text="${dossier.soutenance.commentaires}">-</div>
+                        </div>
+                    </div>
+                    <div th:if="${dossier.soutenance == null}" class="item-empty">
+                        Aucune soutenance enregistrée pour cette année
+                    </div>
+                </div>
+
+                <!-- Rapport -->
+                <div class="info-section">
+                    <div class="section-header">
+                        <div class="section-title">📄 Rapport</div>
+                    </div>
+                    <div th:if="${dossier.rapport != null}" class="item-card">
+                        <div class="item-field" th:if="${dossier.rapport.sujet != null}">
+                            <div class="field-label">Sujet :</div>
+                            <div class="field-value" th:text="${dossier.rapport.sujet}">-</div>
+                        </div>
+                        <div class="item-field" th:if="${dossier.rapport.noteFinale != null}">
+                            <div class="field-label">Note finale :</div>
+                            <div class="field-value" th:text="${dossier.rapport.noteFinale + '/20'}">-</div>
+                        </div>
+                        <div class="item-field" th:if="${dossier.rapport.commentaires != null}">
+                            <div class="field-label">Commentaires :</div>
+                            <div class="field-value" th:text="${dossier.rapport.commentaires}">-</div>
+                        </div>
+                    </div>
+                    <div th:if="${dossier.rapport == null}" class="item-empty">
+                        Aucun rapport enregistré pour cette année
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Message si aucun dossier annuel -->
+        <div class="card" th:if="${#lists.isEmpty(apprenti.dossierAnnuels)}">
+            <div class="item-empty">
+                Aucun dossier annuel enregistré pour cet apprenti
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Gestion des onglets d'années
+        function switchTab(tabName) {
+            // Masquer tous les contenus d'onglets
+            const contents = document.querySelectorAll('.tab-content');
+            for (const content of contents) {
+                content.classList.remove('active');
+            }
+            // Retirer la classe active de tous les onglets
+            const tabs = document.querySelectorAll('.tab');
+            for (const tab of tabs) {
+                tab.classList.remove('active');
+            }
+            // Afficher le contenu sélectionné
+            const targetContent = document.getElementById(tabName + '-content');
+            if (targetContent) {
+                targetContent.classList.add('active');
+            }
+            // Ajouter la classe active à l'onglet cliqué
+            event.target.closest('.tab').classList.add('active');
+        }
+    </script>
+</body>
+</html>

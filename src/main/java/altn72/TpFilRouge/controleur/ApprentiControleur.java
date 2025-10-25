@@ -1,7 +1,9 @@
 package altn72.TpFilRouge.controleur;
 
+import altn72.TpFilRouge.exception.RessourceIntrouvableException;
 import altn72.TpFilRouge.modele.Apprenti;
 import altn72.TpFilRouge.modele.dto.CreerApprentiDto;
+import altn72.TpFilRouge.modele.dto.ModifierApprentiDto;
 import altn72.TpFilRouge.service.*;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -9,17 +11,22 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/apprentis")
 public class ApprentiControleur {
     private final ApprentiService apprentiService;
     private final EntrepriseService entrepriseService;
+    private final MaitreApprentissageService maitreApprentissageService;
 
 
-    public ApprentiControleur(ApprentiService apprentiService, EntrepriseService entrepriseService) {
+    public ApprentiControleur(ApprentiService apprentiService, 
+                             EntrepriseService entrepriseService,
+                             MaitreApprentissageService maitreApprentissageService) {
         this.apprentiService = apprentiService;
         this.entrepriseService = entrepriseService;
+        this.maitreApprentissageService = maitreApprentissageService;
     }
 
     // ========== Endpoints REST ==========
@@ -109,12 +116,67 @@ public class ApprentiControleur {
         return "apprentis/dossier";
     }
 
-
+    // Page pour gérer un apprenti (consultation + modification en une seule page)
+    @GetMapping("/{id}/gerer")
+    public String gererApprenti(@PathVariable Integer id, Model model) {
+        Apprenti apprenti = apprentiService.getUnApprenti(id)
+                .orElseThrow(() -> new altn72.TpFilRouge.exception.RessourceIntrouvableException("Apprenti", id));
+        
+        // Ajouter le DTO pour le binding si pas déjà présent (en cas d'erreur de validation)
+        if (!model.containsAttribute("modifierApprentiDto")) {
+            ModifierApprentiDto dto = new ModifierApprentiDto();
+            dto.setNom(apprenti.getNom());
+            dto.setPrenom(apprenti.getPrenom());
+            dto.setEmail(apprenti.getEmail());
+            dto.setTelephone(apprenti.getTelephone());
+            dto.setMajeure(apprenti.getMajeure());
+            model.addAttribute("modifierApprentiDto", dto);
+        }
+        
+        model.addAttribute("apprenti", apprenti);
+        model.addAttribute("entreprises", entrepriseService.getEntreprises());
+        model.addAttribute("maitresApprentissage", maitreApprentissageService.getMaitresApprentissage());
+        
+        return "apprentis/gerer";
+    }
 
     // Endpoint pour mettre à jour un apprenti (redirige vers la liste)
     @PostMapping("/{id}")
     public String modifierApprenti(@PathVariable Integer id, @ModelAttribute Apprenti apprenti) {
         // Pour l'instant, juste une redirection
         return "redirect:/apprentis";
+    }
+
+
+    @PatchMapping("/{id}/informations")
+    public String modifierInformationsPersonnelles(
+            @PathVariable Integer id,
+            @Valid @ModelAttribute("modifierApprentiDto") ModifierApprentiDto dto,
+            BindingResult bindingResult,
+            RedirectAttributes redirectAttributes,
+            Model model) {
+        
+        // Gérer les erreurs de validation
+        if (bindingResult.hasErrors()) {
+            // Récupérer l'apprenti pour ré-afficher la page
+            Apprenti apprenti = apprentiService.getUnApprenti(id)
+                    .orElseThrow(() -> new RessourceIntrouvableException("Apprenti", id));
+            
+            model.addAttribute("apprenti", apprenti);
+            model.addAttribute("entreprises", entrepriseService.getEntreprises());
+            model.addAttribute("maitresApprentissage", maitreApprentissageService.getMaitresApprentissage());
+            model.addAttribute("validationError", true);
+            
+            return "apprentis/gerer";
+        }
+        
+        // Les exceptions (ApprentiDejaExistantException, RessourceIntrouvableException)
+        // sont automatiquement gérées par le GlobalExceptionHandler
+        apprentiService.modifierApprenti(id, dto);
+        
+        // Message de succès
+        redirectAttributes.addFlashAttribute("successMessage", "✅ Les informations ont été modifiées avec succès !");
+        
+        return "redirect:/apprentis/" + id + "/gerer";
     }
 }
