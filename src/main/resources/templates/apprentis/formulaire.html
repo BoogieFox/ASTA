@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modifier un apprenti - ASTA</title>
+    <title th:text="${isCreation ? 'Créer un apprenti - ASTA' : 'Modifier un apprenti - ASTA'}">Apprenti - ASTA</title>
     <link rel="stylesheet" href="/css/style.css">
     <style>
         .modal {
@@ -86,7 +86,7 @@
 
     <div class="container">
         <div class="page-header">
-            <h1>Modifier un apprenti</h1>
+            <h1 th:text="${isCreation ? 'Créer un apprenti' : 'Modifier un apprenti'}">Apprenti</h1>
         </div>
 
         <div class="card">

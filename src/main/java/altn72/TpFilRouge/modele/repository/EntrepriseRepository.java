@@ -8,5 +8,9 @@ import java.util.Optional;
 
 @Repository
 public interface EntrepriseRepository extends JpaRepository<Entreprise, Integer> {
+    
+    boolean existsByRaisonSociale(String raisonSociale);
+    
+    Optional<Entreprise> findByRaisonSociale(String raisonSociale);
 
 }

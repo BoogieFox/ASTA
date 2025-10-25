@@ -1,9 +1,14 @@
 package altn72.TpFilRouge.controleur;
 
 import altn72.TpFilRouge.modele.Apprenti;
+import altn72.TpFilRouge.modele.dto.CreerApprentiDto;
 import altn72.TpFilRouge.service.*;
+import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
+import java.net.URI;
 
 @Controller
 @RequestMapping("/apprentis")
@@ -15,6 +20,18 @@ public class ApprentiControleur {
         this.apprentiService = apprentiService;
     }
 
+    // ========== Endpoints REST ==========
+    
+    @PostMapping("/nouveau")
+    @ResponseBody
+    public ResponseEntity<Apprenti> creerApprenti(@Valid @RequestBody CreerApprentiDto dto) {
+        Apprenti apprenti = apprentiService.ajouterApprenti(dto);
+        URI location = URI.create("/apprentis/" + apprenti.getApprentiId());
+        return ResponseEntity.created(location).body(apprenti);
+    }
+
+    // ========== Pages Thymeleaf ==========
+
     // Liste des apprentis avec données mockées
     @GetMapping
     public String listerApprentis() {
@@ -23,13 +40,15 @@ public class ApprentiControleur {
 
     // Formulaire de création d'un nouvel apprenti
     @GetMapping("/nouveau")
-    public String afficherFormulaireCreation() {
+    public String afficherFormulaireCreation(org.springframework.ui.Model model) {
+        model.addAttribute("isCreation", true);
         return "apprentis/formulaire";
     }
 
     // Formulaire de modification d'un apprenti (avec données mockées)
     @GetMapping("/{id}/modifier")
-    public String afficherFormulaireModification(@PathVariable Integer id) {
+    public String afficherFormulaireModification(@PathVariable Integer id, org.springframework.ui.Model model) {
+        model.addAttribute("isCreation", false);
         return "apprentis/formulaire";
     }
 
@@ -39,12 +58,7 @@ public class ApprentiControleur {
         return "apprentis/dossier";
     }
 
-    // Endpoint pour créer un apprenti (redirige vers la liste)
-    @PostMapping
-    public String creerApprenti(@ModelAttribute Apprenti apprenti) {
-        apprentiService.ajouterApprenti(apprenti);
-        return "redirect:/apprentis";
-    }
+
 
     // Endpoint pour mettre à jour un apprenti (redirige vers la liste)
     @PostMapping("/{id}")

@@ -3,6 +3,8 @@ package altn72.TpFilRouge.modele;
 import jakarta.persistence.*;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "entreprise", schema = "base_asta")
 public class Entreprise {
@@ -21,12 +23,13 @@ public class Entreprise {
     private String informationsLocaux;
 
     @OneToMany(mappedBy = "entreprise")
+    @JsonIgnore
     private List<Apprenti> apprentis;
 
     @OneToMany(mappedBy = "entreprise")
+    @JsonIgnore
     private List<MaitreApprentissage> maitresApprentissage;
 
-    // Constructors
     public Entreprise() {
     }
 

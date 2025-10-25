@@ -1,8 +1,16 @@
 package altn72.TpFilRouge.service;
 
+import altn72.TpFilRouge.exception.ApprentiDejaExistantException;
+import altn72.TpFilRouge.exception.RessourceIntrouvableException;
 import altn72.TpFilRouge.modele.Apprenti;
+import altn72.TpFilRouge.modele.Entreprise;
+import altn72.TpFilRouge.modele.MaitreApprentissage;
+import altn72.TpFilRouge.modele.dto.CreerApprentiDto;
 import altn72.TpFilRouge.modele.repository.ApprentiRepository;
+import altn72.TpFilRouge.modele.repository.EntrepriseRepository;
+import altn72.TpFilRouge.modele.repository.MaitreApprentissageRepository;
 import jakarta.transaction.Transactional;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
@@ -12,9 +20,18 @@ import java.util.Optional;
 @Service
 public class ApprentiService {
     private final ApprentiRepository apprentiRepository;
+    private final EntrepriseRepository entrepriseRepository;
+    private final MaitreApprentissageRepository maitreApprentissageRepository;
+    private final ModelMapper modelMapper;
 
-    public ApprentiService(ApprentiRepository apprentiRepository) {
+    public ApprentiService(ApprentiRepository apprentiRepository, 
+                          EntrepriseRepository entrepriseRepository,
+                          MaitreApprentissageRepository maitreApprentissageRepository,
+                          ModelMapper modelMapper) {
         this.apprentiRepository = apprentiRepository;
+        this.entrepriseRepository = entrepriseRepository;
+        this.maitreApprentissageRepository = maitreApprentissageRepository;
+        this.modelMapper = modelMapper;
     }
 
     public List<Apprenti> getApprentis() {
@@ -26,29 +43,30 @@ public class ApprentiService {
     }
 
     @Transactional
-    public void supprimerApprenti(Integer idApprenti) {
-        Optional<Apprenti> unApprenti = apprentiRepository.findById(idApprenti);
-
-        if (unApprenti.isPresent()) {
-            apprentiRepository.deleteById(idApprenti);
-        } else {
-            throw new IllegalStateException(
-                    "L'apprenti dont l'id est " + idApprenti + " n'existe pas");
+    public Apprenti ajouterApprenti(CreerApprentiDto dto) {
+        // Check si le mail est déjà utilisé
+        if (apprentiRepository.existsByEmail(dto.getEmail())) {
+            throw new ApprentiDejaExistantException(dto.getEmail());
         }
-    }
 
-    @Transactional
-    public Apprenti ajouterApprenti(Apprenti apprenti) {
+        Apprenti apprenti = modelMapper.map(dto, Apprenti.class);
+
+        // Associer l'entreprise
+        if (dto.getEntrepriseId() != null) {
+            Entreprise entreprise = entrepriseRepository.findById(dto.getEntrepriseId())
+                    .orElseThrow(() -> new RessourceIntrouvableException("Entreprise", dto.getEntrepriseId()));
+            apprenti.setEntreprise(entreprise);
+        }
+
+        // Associer le MA
+        if (dto.getMaitreApprentissageId() != null) {
+            MaitreApprentissage maitreApprentissage = maitreApprentissageRepository.findById(dto.getMaitreApprentissageId())
+                    .orElseThrow(() -> new RessourceIntrouvableException("Maître d'apprentissage", dto.getMaitreApprentissageId()));
+            apprenti.setMaitreApprentissage(maitreApprentissage);
+        }
+
         return apprentiRepository.save(apprenti);
     }
 
-    @Transactional
-    public Apprenti modifierApprenti(Integer idApprenti, Apprenti apprentiModified) {
-        Apprenti apprentiToModify = apprentiRepository.findById(idApprenti)
-                .orElseThrow(() -> new IllegalStateException("L'apprenti dont l'id est " + idApprenti + " n'existe pas"));
-
-        BeanUtils.copyProperties(apprentiModified, apprentiToModify, "apprentiId");
-        return apprentiRepository.save(apprentiToModify);
-    }
 }
 
