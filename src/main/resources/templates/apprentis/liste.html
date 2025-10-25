@@ -1,64 +1,160 @@
 <!DOCTYPE html>
-<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Apprentis - ASTA</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+        .tab {
+            padding: 0.75rem 1.5rem;
+            background: none;
+            border: none;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            color: var(--text-secondary);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .tab:hover {
+            color: var(--primary-color);
+        }
+        .tab.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        .status-active {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+        .status-archived {
+            background-color: #f1f5f9;
+            color: #475569;
+        }
+    </style>
 </head>
 <body>
-    <nav th:replace="~{index :: navigation}"></nav>
+    <nav class="navbar">
+        <div class="navbar-content">
+            <a href="/" class="navbar-brand">ASTA</a>
+            <ul class="navbar-menu">
+                <li><a href="/">Accueil</a></li>
+                <li><a href="/apprentis">Apprentis</a></li>
+            </ul>
+        </div>
+    </nav>
 
     <div class="container">
         <div class="page-header">
             <div class="page-header-actions">
                 <h1>👨‍🎓 Liste des Apprentis</h1>
-                <a th:href="@{/apprentis/nouveau}" class="btn btn-primary">+ Nouvel Apprenti</a>
+                <a href="/apprentis/nouveau" class="btn btn-primary">+ Nouvel Apprenti</a>
             </div>
         </div>
 
-        <div class="card" th:if="${apprentis != null and !apprentis.empty}">
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Nom</th>
-                            <th>Prénom</th>
-                            <th>Email</th>
-                            <th>Téléphone</th>
-                            <th>Majeure</th>
-                            <th>Entreprise</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="apprenti : ${apprentis}">
-                            <td th:text="${apprenti.nom}">Nom</td>
-                            <td th:text="${apprenti.prenom}">Prénom</td>
-                            <td th:text="${apprenti.email}">email@example.com</td>
-                            <td th:text="${apprenti.telephone}">0123456789</td>
-                            <td th:text="${apprenti.majeure}">Majeure</td>
-                            <td th:text="${apprenti.entreprise != null ? apprenti.entreprise.raisonSociale : 'N/A'}">Entreprise</td>
-                            <td>
-                                <div class="table-actions">
-                                    <a th:href="@{/apprentis/{id}(id=${apprenti.apprentiId})}" class="btn btn-secondary btn-small">Détails</a>
-                                    <a th:href="@{/apprentis/{id}/modifier(id=${apprenti.apprentiId})}" class="btn btn-primary btn-small">Modifier</a>
-                                    <form th:action="@{/apprentis/{id}/supprimer(id=${apprenti.apprentiId})}" method="post" style="display: inline;">
-                                        <button type="submit" class="btn btn-danger btn-small" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet apprenti ?')">Supprimer</button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('encours')">En cours</button>
+            <button class="tab" onclick="switchTab('archive')">Archivé</button>
+        </div>
+
+        <!-- Tab En cours -->
+        <div id="encours-content" class="tab-content active">
+            <div class="card">
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nom</th>
+                                <th>Prénom</th>
+                                <th>Email</th>
+                                <th>Téléphone</th>
+                                <th>Majeure</th>
+                                <th>Entreprise</th>
+                                <th>Statut</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Dupont</td>
+                                <td>Sophie</td>
+                                <td>sophie.dupont@example.com</td>
+                                <td>06 12 34 56 78</td>
+                                <td>Cybersécurité</td>
+                                <td>TechCorp</td>
+                                <td><span class="status-badge status-active">En cours</span></td>
+                                <td>
+                                    <div class="table-actions">
+                                        <a href="/apprentis/1/dossier" class="btn btn-secondary btn-small">Dossier</a>
+                                        <a href="/apprentis/1/modifier" class="btn btn-primary btn-small">Modifier</a>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Martin</td>
+                                <td>Lucas</td>
+                                <td>lucas.martin@example.com</td>
+                                <td>06 98 76 54 32</td>
+                                <td>Data Science</td>
+                                <td>DataSolutions</td>
+                                <td><span class="status-badge status-active">En cours</span></td>
+                                <td>
+                                    <div class="table-actions">
+                                        <a href="/apprentis/2/dossier" class="btn btn-secondary btn-small">Dossier</a>
+                                        <a href="/apprentis/2/modifier" class="btn btn-primary btn-small">Modifier</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
-        <div class="empty-state" th:if="${apprentis == null or apprentis.empty}">
-            <div class="empty-state-icon">👨‍🎓</div>
-            <p class="empty-state-message">Aucun apprenti enregistré pour le moment.</p>
-            <a th:href="@{/apprentis/nouveau}" class="btn btn-primary">Créer le premier apprenti</a>
+        <!-- Tab Archivé -->
+        <div id="archive-content" class="tab-content">
+            <div class="empty-state">
+                <div class="empty-state-icon">�</div>
+                <p class="empty-state-message">Aucun apprenti archivé pour le moment.</p>
+            </div>
         </div>
     </div>
+
+    <script>
+        function switchTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            // Show selected tab content
+            document.getElementById(tabName + '-content').classList.add('active');
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+        }
+    </script>
 </body>
 </html>
