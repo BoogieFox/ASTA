@@ -70,23 +70,30 @@ public class ApprentiControleur {
         model.addAttribute("apprenti", apprenti);
         model.addAttribute("isCreation", true);
         model.addAttribute("entreprises", entrepriseService.getEntreprises());
-        
+        model.addAttribute("maitresApprentissage", maitreApprentissageService.getMaitresApprentissage());
+
         // Afficher un message de succès si une entreprise vient d'être créée
         if ("entreprise-created".equals(success)) {
             model.addAttribute("successMessage", "✅ Entreprise créée avec succès ! Vous pouvez maintenant la sélectionner dans la liste.");
         }
         
+        // Afficher un message de succès si un maître d'apprentissage vient d'être créé
+        if ("maitre-created".equals(success)) {
+            model.addAttribute("successMessage", "✅ Maître d'apprentissage créé avec succès ! Vous pouvez maintenant le sélectionner dans la liste.");
+        }
+
         return "apprentis/formulaire";
     }
 
     // Endpoint Thymeleaf pour créer un apprenti
     @PostMapping("/nouveau")
-    public String creerApprenti(@Valid @ModelAttribute("apprenti") CreerApprentiDto dto, 
+    public String creerApprenti(@Valid @ModelAttribute("apprenti") CreerApprentiDto dto,
                                 BindingResult bindingResult,
                                 Model model) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("isCreation", true);
             model.addAttribute("entreprises", entrepriseService.getEntreprises());
+            model.addAttribute("maitresApprentissage", maitreApprentissageService.getMaitresApprentissage());
             return "apprentis/formulaire";
         }
         
@@ -101,6 +108,13 @@ public class ApprentiControleur {
     public String sauvegarderEnSession(@ModelAttribute CreerApprentiDto dto, HttpSession session) {
         session.setAttribute("apprentiData", dto);
         return "redirect:/entreprises/nouveau";
+    }
+
+    // Endpoint pour sauvegarder les données en session avant d'aller au formulaire de maître d'apprentissage
+    @PostMapping("/sauvegarder-session-maitre")
+    public String sauvegarderEnSessionMaitre(@ModelAttribute CreerApprentiDto dto, HttpSession session) {
+        session.setAttribute("apprentiData", dto);
+        return "redirect:/maitre-apprentissage/nouveau";
     }
 
     // Formulaire de modification d'un apprenti (avec données mockées)
