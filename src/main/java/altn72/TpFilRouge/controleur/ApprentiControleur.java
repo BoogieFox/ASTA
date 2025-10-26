@@ -19,14 +19,17 @@ public class ApprentiControleur {
     private final ApprentiService apprentiService;
     private final EntrepriseService entrepriseService;
     private final MaitreApprentissageService maitreApprentissageService;
+    private final DossierAnnuelService dossierAnnuelService;
 
 
     public ApprentiControleur(ApprentiService apprentiService, 
                              EntrepriseService entrepriseService,
-                             MaitreApprentissageService maitreApprentissageService) {
+                             MaitreApprentissageService maitreApprentissageService,
+                             DossierAnnuelService dossierAnnuelService) {
         this.apprentiService = apprentiService;
         this.entrepriseService = entrepriseService;
         this.maitreApprentissageService = maitreApprentissageService;
+        this.dossierAnnuelService = dossierAnnuelService;
     }
 
     // ========== Endpoints REST ==========
@@ -147,6 +150,7 @@ public class ApprentiControleur {
             model.addAttribute("modifierApprentiDto", dto);
         }
         
+        model.addAttribute("dossiersAnnuels", dossierAnnuelService.getDossiersParApprenti(id));
         model.addAttribute("apprenti", apprenti);
         model.addAttribute("entreprises", entrepriseService.getEntreprises());
         model.addAttribute("maitresApprentissage", maitreApprentissageService.getMaitresApprentissage());
