@@ -3,8 +3,10 @@ package altn72.TpFilRouge.service;
 import altn72.TpFilRouge.exception.ApprentiDejaExistantException;
 import altn72.TpFilRouge.exception.RessourceIntrouvableException;
 import altn72.TpFilRouge.modele.Apprenti;
+import altn72.TpFilRouge.modele.DossierAnnuel;
 import altn72.TpFilRouge.modele.Entreprise;
 import altn72.TpFilRouge.modele.MaitreApprentissage;
+import altn72.TpFilRouge.modele.Promotion;
 import altn72.TpFilRouge.modele.dto.CreerApprentiDto;
 import altn72.TpFilRouge.modele.dto.ModifierApprentiDto;
 import altn72.TpFilRouge.modele.repository.ApprentiRepository;
@@ -52,6 +54,10 @@ public class ApprentiService {
         apprenti.setEmail(dto.getEmail());
         apprenti.setTelephone(dto.getTelephone());
         apprenti.setMajeure(dto.getMajeure());
+        apprenti.setPromotion(Promotion.L1);
+
+        DossierAnnuel dossierInitial = new DossierAnnuel(apprenti, Promotion.L1);
+        apprenti.ajouterDossierAnnuel(dossierInitial);
 
         // Associer l'entreprise existante si elle est spécifiée
         if (dto.getEntrepriseId() != null) {

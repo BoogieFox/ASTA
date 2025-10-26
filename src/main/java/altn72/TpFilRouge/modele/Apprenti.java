@@ -31,7 +31,7 @@ public class Apprenti {
     @Column(name = "promotion", nullable = false)
     private Promotion promotion = Promotion.L1;
 
-    @OneToMany(mappedBy = "apprenti", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "apprenti", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DossierAnnuel> dossierAnnuels = new ArrayList<>();
 
     @ManyToOne
@@ -59,6 +59,7 @@ public class Apprenti {
         this.telephone = telephone;
         this.majeure = majeure;
         this.promotion = Promotion.L1; // Par défaut en L1
+        this.dossierAnnuels = new ArrayList<>();
     }
 
     // Getters and Setters
@@ -148,5 +149,10 @@ public class Apprenti {
 
     public void setPromotion(Promotion promotion) {
         this.promotion = promotion;
+    }
+
+    public void ajouterDossierAnnuel(DossierAnnuel dossierAnnuel) {
+        dossierAnnuel.setApprenti(this);
+        this.dossierAnnuels.add(dossierAnnuel);
     }
 }
