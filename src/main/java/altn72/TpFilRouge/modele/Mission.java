@@ -23,19 +23,14 @@ public class Mission {
     @JoinColumn(name = "apprenti_id", nullable = false, unique = true)
     private Apprenti apprenti;
 
-    @ManyToOne
-    @JoinColumn(name = "annee_academique_id", nullable = false)
-    private AnneeAcademique anneeAcademique;
-
     // Constructors
     public Mission() {
     }
 
-    public Mission(String motsCles, String metierCible, Apprenti apprenti, AnneeAcademique anneeAcademique) {
+    public Mission(String motsCles, String metierCible, Apprenti apprenti) {
         this.motsCles = motsCles;
         this.metierCible = metierCible;
         this.apprenti = apprenti;
-        this.anneeAcademique = anneeAcademique;
     }
 
     // Getters and Setters
@@ -79,11 +74,4 @@ public class Mission {
         this.apprenti = apprenti;
     }
 
-    public AnneeAcademique getAnneeAcademique() {
-        return anneeAcademique;
-    }
-
-    public void setAnneeAcademique(AnneeAcademique anneeAcademique) {
-        this.anneeAcademique = anneeAcademique;
-    }
 }

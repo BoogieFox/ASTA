@@ -3,7 +3,11 @@ package altn72.TpFilRouge.modele;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "dossier_annuel", schema = "base_asta")
+@Table(
+    name = "dossier_annuel",
+    schema = "base_asta",
+    uniqueConstraints = @UniqueConstraint(name = "uk_dossier_apprenti_promotion", columnNames = {"apprenti_id", "promotion"})
+)
 public class DossierAnnuel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -14,9 +18,9 @@ public class DossierAnnuel {
     @JoinColumn(name = "apprenti_id", nullable = false)
     private Apprenti apprenti;
 
-    @ManyToOne
-    @JoinColumn(name = "annee_academique_id", nullable = false)
-    private AnneeAcademique anneeAcademique;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "promotion", nullable = false)
+    private Promotion promotion;
 
     @OneToOne(mappedBy = "dossierAnnuel", cascade = CascadeType.ALL, orphanRemoval = true)
     private Rapport rapport;
@@ -27,13 +31,12 @@ public class DossierAnnuel {
     @OneToOne(mappedBy = "dossierAnnuel", cascade = CascadeType.ALL, orphanRemoval = true)
     private Soutenance soutenance;
 
-    // Constructors
     public DossierAnnuel() {
     }
 
-    public DossierAnnuel(Apprenti apprenti, AnneeAcademique anneeAcademique) {
+    public DossierAnnuel(Apprenti apprenti, Promotion promotion) {
         this.apprenti = apprenti;
-        this.anneeAcademique = anneeAcademique;
+        this.promotion = promotion;
     }
 
     // Getters and Setters
@@ -51,14 +54,6 @@ public class DossierAnnuel {
 
     public void setApprenti(Apprenti apprenti) {
         this.apprenti = apprenti;
-    }
-
-    public AnneeAcademique getAnneeAcademique() {
-        return anneeAcademique;
-    }
-
-    public void setAnneeAcademique(AnneeAcademique anneeAcademique) {
-        this.anneeAcademique = anneeAcademique;
     }
 
     public Rapport getRapport() {
@@ -83,5 +78,13 @@ public class DossierAnnuel {
 
     public void setSoutenance(Soutenance soutenance) {
         this.soutenance = soutenance;
+    }
+    
+    public Promotion getPromotion() {
+        return promotion;
+    }
+    
+    public void setPromotion(Promotion promotion) {
+        this.promotion = promotion;
     }
 }

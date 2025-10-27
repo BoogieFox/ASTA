@@ -3,8 +3,10 @@ package altn72.TpFilRouge.service;
 import altn72.TpFilRouge.exception.ApprentiDejaExistantException;
 import altn72.TpFilRouge.exception.RessourceIntrouvableException;
 import altn72.TpFilRouge.modele.Apprenti;
+import altn72.TpFilRouge.modele.DossierAnnuel;
 import altn72.TpFilRouge.modele.Entreprise;
 import altn72.TpFilRouge.modele.MaitreApprentissage;
+import altn72.TpFilRouge.modele.Promotion;
 import altn72.TpFilRouge.modele.dto.CreerApprentiDto;
 import altn72.TpFilRouge.modele.dto.ModifierApprentiDto;
 import altn72.TpFilRouge.modele.repository.ApprentiRepository;
@@ -21,13 +23,16 @@ public class ApprentiService {
     private final ApprentiRepository apprentiRepository;
     private final EntrepriseRepository entrepriseRepository;
     private final MaitreApprentissageRepository maitreApprentissageRepository;
+    private final DossierAnnuelService dossierAnnuelService;
 
     public ApprentiService(ApprentiRepository apprentiRepository, 
                           EntrepriseRepository entrepriseRepository,
-                          MaitreApprentissageRepository maitreApprentissageRepository) {
+                          MaitreApprentissageRepository maitreApprentissageRepository,
+                          DossierAnnuelService dossierAnnuelService) {
         this.apprentiRepository = apprentiRepository;
         this.entrepriseRepository = entrepriseRepository;
         this.maitreApprentissageRepository = maitreApprentissageRepository;
+        this.dossierAnnuelService = dossierAnnuelService;
     }
 
     public List<Apprenti> getApprentis() {
@@ -52,6 +57,10 @@ public class ApprentiService {
         apprenti.setEmail(dto.getEmail());
         apprenti.setTelephone(dto.getTelephone());
         apprenti.setMajeure(dto.getMajeure());
+        apprenti.setPromotion(Promotion.L1);
+
+        DossierAnnuel dossierInitial = new DossierAnnuel(apprenti, Promotion.L1);
+        apprenti.ajouterDossierAnnuel(dossierInitial);
 
         // Associer l'entreprise existante si elle est spécifiée
         if (dto.getEntrepriseId() != null) {
@@ -99,6 +108,41 @@ public class ApprentiService {
         apprenti.setMajeure(dto.getMajeure());
 
         return apprentiRepository.save(apprenti);
+    }
+
+    /**
+     * Fait passer tous les apprentis à la promotion suivante et crée automatiquement
+     * un nouveau dossier annuel pour chaque apprenti qui change de promotion.
+     * 
+     * @return le nombre d'apprentis qui ont changé de promotion
+     */
+    @Transactional
+    public int commencerNouvelleAnnee() {
+        List<Apprenti> tousLesApprentis = apprentiRepository.findAll();
+        int apprentisModifies = 0;
+
+        for (Apprenti apprenti : tousLesApprentis) {
+            Promotion anciennePromotion = apprenti.getPromotion();
+            Promotion nouvellePromotion = anciennePromotion.getPromotionSuivante();
+
+            // Ne pas modifier les apprentis déjà archivés
+            if (anciennePromotion != nouvellePromotion) {
+                apprenti.setPromotion(nouvellePromotion);
+                apprentiRepository.save(apprenti);
+
+                // Créer automatiquement un nouveau dossier pour la nouvelle promotion
+                try {
+                    dossierAnnuelService.creerDossierCourant(apprenti.getApprentiId());
+                    apprentisModifies++;
+                } catch (IllegalStateException e) {
+                    // Si un dossier existe déjà, on continue sans erreur
+                    // Cela peut arriver si la méthode est appelée plusieurs fois
+                    apprentisModifies++;
+                }
+            }
+        }
+
+        return apprentisModifies;
     }
 
 }
