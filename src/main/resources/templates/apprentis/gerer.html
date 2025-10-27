@@ -343,15 +343,8 @@
                     📁 Dossier annuel
                     <span th:text="'- ' + ${apprenti.promotion.label}">- Promotion</span>
                 </h2>
-                <form th:if="${peutCreerDossierCourant}" th:action="@{/dossiers/apprenti/{apprentiId}/courant(apprentiId=${apprenti.apprentiId})}" method="post">
-                    <button type="submit" class="btn btn-primary btn-small">Créer le dossier</button>
-                </form>
             </div>
             <div class="card-body">
-                <div th:if="${dossierCourant == null}" class="item-empty">
-                    Aucun dossier annuel n'est disponible pour cette promotion. Créez-le pour saisir les informations de suivi.
-                </div>
-
                 <div th:if="${dossierCourant != null}">
                     <div class="info-section">
                         <div class="section-header">

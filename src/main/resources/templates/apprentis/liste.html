@@ -84,6 +84,15 @@
             <button class="tab" onclick="switchTab('archive')">Archivé</button>
         </div>
 
+        <!-- Messages de succès/erreur -->
+        <div th:if="${successMessage}" class="alert-success" style="background-color: #d1f2df; border: 1px solid #b0e2c0; color: #0f5132; padding: 1rem; border-radius: 0.375rem; margin-bottom: 1.5rem; font-weight: 500;">
+            <span th:text="${successMessage}"></span>
+        </div>
+
+        <div th:if="${errorMessage}" class="alert-error" style="background-color: #fee2e2; border: 1px solid #fca5a5; color: #991b1b; padding: 1rem; border-radius: 0.375rem; margin-bottom: 1.5rem; font-weight: 500;">
+            <span th:text="${errorMessage}"></span>
+        </div>
+
         <!-- Tab En cours -->
         <div id="encours-content" class="tab-content active">
             <div class="card">
@@ -131,9 +140,19 @@
         <!-- Tab Archivé -->
         <div id="archive-content" class="tab-content">
             <div class="empty-state">
-                <div class="empty-state-icon">�</div>
+                <div class="empty-state-icon">📁</div>
                 <p class="empty-state-message">Aucun apprenti archivé pour le moment.</p>
             </div>
+        </div>
+
+        <!-- Bouton Commencer une nouvelle année -->
+        <div style="margin-top: 2rem; text-align: center;">
+            <form th:action="@{/apprentis/commencer-nouvelle-annee}" method="post" style="display: inline;">
+                <button type="submit" class="btn btn-danger" 
+                        onclick="return confirm('⚠️ Êtes-vous sûr de vouloir commencer une nouvelle année ? Cette action fera passer tous les apprentis à la promotion suivante et ne peut pas être annulée.')">
+                    🎓 Commencer une nouvelle année
+                </button>
+            </form>
         </div>
     </div>
 

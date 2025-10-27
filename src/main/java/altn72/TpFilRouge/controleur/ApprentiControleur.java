@@ -28,7 +28,6 @@ public class ApprentiControleur {
     private static final String ATTR_VALIDATION_ERROR = "validationError";
     private static final String ATTR_MODIFIER_DTO = "modifierApprentiDto";
     private static final String ATTR_DOSSIER_COURANT = "dossierCourant";
-    private static final String ATTR_PEUT_CREER_DOSSIER = "peutCreerDossierCourant";
     private static final String SESSION_APPRENTI_DATA = "apprentiData";
     private static final String VIEW_LISTE = "apprentis/liste";
     private static final String VIEW_FORMULAIRE = "apprentis/formulaire";
@@ -160,7 +159,6 @@ public class ApprentiControleur {
 
     Optional<DossierAnnuel> dossierCourant = dossierAnnuelService.getDossierCourant(id);
         model.addAttribute(ATTR_DOSSIER_COURANT, dossierCourant.orElse(null));
-        model.addAttribute(ATTR_PEUT_CREER_DOSSIER, dossierCourant.isEmpty());
         model.addAttribute(ATTR_APPRENTI, apprenti);
         model.addAttribute(ATTR_ENTREPRISES, entrepriseService.getEntreprises());
         model.addAttribute(ATTR_MAITRES, maitreApprentissageService.getMaitresApprentissage());
@@ -206,5 +204,20 @@ public class ApprentiControleur {
         redirectAttributes.addFlashAttribute(ATTR_SUCCESS, "✅ Les informations ont été modifiées avec succès !");
 
         return REDIRECT_GERER_PREFIX + id + GERER_SUFFIX;
+    }
+
+    // Endpoint pour commencer une nouvelle année
+    @PostMapping("/commencer-nouvelle-annee")
+    public String commencerNouvelleAnnee(RedirectAttributes redirectAttributes) {
+        try {
+            int apprentisModifies = apprentiService.commencerNouvelleAnnee();
+            redirectAttributes.addFlashAttribute("successMessage", 
+                "✅ Nouvelle année commencée ! " + apprentisModifies + " apprentis ont été passés à la promotion suivante.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", 
+                "❌ Erreur lors du passage de promotion : " + e.getMessage());
+        }
+        
+        return REDIRECT_APPRENTIS;
     }
 }

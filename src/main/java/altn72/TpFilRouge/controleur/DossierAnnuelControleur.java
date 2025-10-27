@@ -38,18 +38,6 @@ public class DossierAnnuelControleur {
         this.dossierAnnuelService = dossierAnnuelService;
     }
 
-    @PostMapping("/apprenti/{apprentiId}/courant")
-    public String creerDossierCourant(@PathVariable Integer apprentiId,
-                                      RedirectAttributes redirectAttributes) {
-        try {
-            dossierAnnuelService.creerDossierCourant(apprentiId);
-            redirectAttributes.addFlashAttribute(ATTR_SUCCESS, "✅ Dossier annuel créé pour la promotion en cours !");
-        } catch (RuntimeException e) {
-            redirectAttributes.addFlashAttribute(ATTR_ERROR, "❌ " + e.getMessage());
-        }
-
-        return redirectToGerer(apprentiId);
-    }
 
     // ========== RAPPORTS ==========
 
