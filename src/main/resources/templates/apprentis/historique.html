@@ -181,6 +181,11 @@
             <a href="/apprentis" class="navbar-brand">ASTA</a>
             <ul class="navbar-menu">
                 <li><a href="/apprentis">Accueil</a></li>
+                <li>
+                    <form th:action="@{/logout}" method="post" style="display: inline;">
+                        <button type="submit" class="btn btn-secondary btn-small">Déconnexion</button>
+                    </form>
+                </li>
             </ul>
         </div>
     </nav>
