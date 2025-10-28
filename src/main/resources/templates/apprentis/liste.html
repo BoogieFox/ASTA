@@ -70,6 +70,64 @@
             color: var(--text-secondary);
             font-size: 1.1rem;
         }
+        .search-container {
+            margin-bottom: 1.5rem;
+        }
+        .search-box {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            width: 100%;
+            max-width: 700px;
+        }
+        .search-input {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 0.5rem;
+            font-size: 0.95rem;
+            transition: border-color 0.2s;
+            box-sizing: border-box;
+        }
+        .search-input::placeholder {
+            color: #9ca3af;
+            font-size: 0.9rem;
+        }
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+        .search-icon {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            flex-shrink: 0;
+        }
+        .search-help {
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-left: 2.25rem;
+        }
+        .no-results {
+            text-align: center;
+            padding: 3rem 1.5rem;
+            color: var(--text-secondary);
+            background-color: #f9fafb;
+            border-radius: 0.5rem;
+            margin: 1rem 0;
+        }
+        .no-results-icon {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+        .no-results p {
+            margin: 0.5rem 0;
+        }
+        .no-results strong {
+            color: var(--text-primary);
+            font-size: 1.1rem;
+        }
     </style>
 </head>
 <body>
@@ -105,6 +163,21 @@
             <span th:text="${errorMessage}"></span>
         </div>
 
+        <!-- Barre de recherche -->
+        <div class="search-container">
+            <div class="search-box">
+                <span class="search-icon">🔍</span>
+                <input type="text"
+                       id="searchInput"
+                       class="search-input"
+                       placeholder="Rechercher un apprenti (nom, entreprise, mission)..."
+                       onkeyup="filterApprentis()">
+            </div>
+            <div class="search-help">
+                💡 Recherchez par nom, prénom, entreprise ou mots-clés de mission
+            </div>
+        </div>
+
         <!-- Tab En cours -->
         <div id="encours-content" class="tab-content active">
             <div class="card">
@@ -112,7 +185,7 @@
                 <div th:if="${#lists.isEmpty(apprentisActifs)}" class="empty-message">
                     La liste est vide. Ajoutez au moins un apprenti
                 </div>
-                
+
                 <!-- Table si la liste n'est pas vide -->
                 <div th:if="${!#lists.isEmpty(apprentisActifs)}" class="table-container">
                     <table>
@@ -128,8 +201,13 @@
                                 <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr th:each="apprenti : ${apprentisActifs}">
+                        <tbody id="tbody-encours">
+                            <tr th:each="apprenti : ${apprentisActifs}"
+                                class="apprenti-row"
+                                th:attr="data-nom=${apprenti.nom},
+                                         data-prenom=${apprenti.prenom},
+                                         data-entreprise=${apprenti.entreprise != null ? apprenti.entreprise.raisonSociale : ''},
+                                         data-mission=${apprenti.mission != null ? apprenti.mission.motsCles : ''}">
                                 <td th:text="${apprenti.nom}">Dupont</td>
                                 <td th:text="${apprenti.prenom}">Sophie</td>
                                 <td th:text="${apprenti.email}">sophie.dupont@example.com</td>
@@ -148,6 +226,14 @@
                         </tbody>
                     </table>
                 </div>
+
+                <!-- Message aucun résultat de recherche -->
+                <div id="no-results-encours" class="no-results" style="display: none;">
+                    <div class="no-results-icon">🔍</div>
+                    <p><strong>Aucun résultat trouvé</strong></p>
+                    <p>Essayez avec d'autres mots-clés</p>
+                </div>
+
             </div>
         </div>
 
@@ -158,6 +244,13 @@
                 <div th:if="${#lists.isEmpty(apprentisArchives)}" class="empty-state">
                     <div class="empty-state-icon">📁</div>
                     <p class="empty-state-message">Aucun apprenti archivé pour le moment.</p>
+                </div>
+
+                <!-- Message aucun résultat de recherche -->
+                <div id="no-results-archive" class="no-results" style="display: none;">
+                    <div class="no-results-icon">🔍</div>
+                    <p><strong>Aucun résultat trouvé</strong></p>
+                    <p>Essayez avec d'autres mots-clés</p>
                 </div>
 
                 <!-- Table si la liste n'est pas vide -->
@@ -175,8 +268,13 @@
                                 <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr th:each="apprenti : ${apprentisArchives}">
+                        <tbody id="tbody-archive">
+                            <tr th:each="apprenti : ${apprentisArchives}"
+                                class="apprenti-row"
+                                th:attr="data-nom=${apprenti.nom},
+                                         data-prenom=${apprenti.prenom},
+                                         data-entreprise=${apprenti.entreprise != null ? apprenti.entreprise.raisonSociale : ''},
+                                         data-mission=${apprenti.mission != null ? apprenti.mission.motsCles : ''}">
                                 <td th:text="${apprenti.nom}">Dupont</td>
                                 <td th:text="${apprenti.prenom}">Sophie</td>
                                 <td th:text="${apprenti.email}">sophie.dupont@example.com</td>
@@ -199,7 +297,7 @@
         </div>
 
         <!-- Bouton Commencer une nouvelle année -->
-        <div style="margin-top: 2rem; text-align: center;">
+        <div style="margin: 2rem auto; text-align: center;">
             <form th:action="@{/apprentis/commencer-nouvelle-annee}" method="post" style="display: inline;">
                 <button type="submit" class="btn btn-danger" 
                         onclick="return confirm('⚠️ Êtes-vous sûr de vouloir commencer une nouvelle année ? Cette action fera passer tous les apprentis à la promotion suivante et ne peut pas être annulée.')">
@@ -225,7 +323,72 @@
             document.getElementById(tabName + '-content').classList.add('active');
             // Add active class to clicked tab
             event.target.classList.add('active');
+
+            // Réappliquer le filtre de recherche sur le nouvel onglet
+            filterApprentis();
         }
+
+        function filterApprentis() {
+            const searchInput = document.getElementById('searchInput');
+            const filter = searchInput.value.toLowerCase().trim();
+
+            // Déterminer quel onglet est actif
+            const activeTab = document.querySelector('.tab-content.active');
+            const isEnCours = activeTab.id === 'encours-content';
+
+            const tbody = isEnCours ? document.getElementById('tbody-encours') : document.getElementById('tbody-archive');
+            const noResultsDiv = isEnCours ? document.getElementById('no-results-encours') : document.getElementById('no-results-archive');
+
+            if (!tbody) return; // Si pas de tableau (liste vide), ne rien faire
+
+            const rows = tbody.getElementsByClassName('apprenti-row');
+            let visibleCount = 0;
+
+            // Parcourir toutes les lignes
+            for (let i = 0; i < rows.length; i++) {
+                const row = rows[i];
+                const nom = (row.getAttribute('data-nom') || '').toLowerCase();
+                const prenom = (row.getAttribute('data-prenom') || '').toLowerCase();
+                const entreprise = (row.getAttribute('data-entreprise') || '').toLowerCase();
+                const mission = (row.getAttribute('data-mission') || '').toLowerCase();
+
+                // Chercher dans tous les champs
+                const nomComplet = nom + ' ' + prenom;
+                const prenomNom = prenom + ' ' + nom;
+
+                const matchFound = filter === '' ||
+                                   nom.includes(filter) ||
+                                   prenom.includes(filter) ||
+                                   nomComplet.includes(filter) ||
+                                   prenomNom.includes(filter) ||
+                                   entreprise.includes(filter) ||
+                                   mission.includes(filter);
+
+                if (matchFound) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            }
+
+            // Afficher/masquer le message "aucun résultat"
+            if (visibleCount === 0 && filter !== '') {
+                noResultsDiv.style.display = 'block';
+            } else {
+                noResultsDiv.style.display = 'none';
+            }
+        }
+
+        // Réinitialiser le filtre quand on change d'onglet
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // Le filtre reste actif même en changeant d'onglet
+                });
+            });
+        });
     </script>
 </body>
 </html>
