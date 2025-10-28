@@ -56,10 +56,9 @@
 <body>
     <nav class="navbar">
         <div class="navbar-content">
-            <a href="/" class="navbar-brand">ASTA</a>
+            <a href="/apprentis" class="navbar-brand">ASTA</a>
             <ul class="navbar-menu">
-                <li><a href="/">Accueil</a></li>
-                <li><a href="/apprentis">Apprentis</a></li>
+                <li><a href="/apprentis">Accueil</a></li>
             </ul>
         </div>
     </nav>
@@ -73,7 +72,7 @@
             
             <div class="form-actions">
                 <a href="javascript:history.back()" class="btn btn-secondary">Retour</a>
-                <a href="/apprentis" class="btn btn-primary">Retour à la liste</a>
+                <a th:href="${homeUrl ?: '/apprentis'}" class="btn btn-primary" th:text="${suggestedAction ?: 'Retour à la liste'}">Retour à la liste</a>
             </div>
 
             <!-- Détails techniques (seulement si présents) -->

@@ -3,6 +3,7 @@ package altn72.TpFilRouge.exception;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 /**
  * Gestionnaire global des exceptions pour les contrôleurs Thymeleaf.
@@ -42,6 +43,20 @@ public class GlobalExceptionHandler {
         model.addAttribute("errorTitle", "Ressource introuvable");
         model.addAttribute("errorMessage", ex.getMessage());
         model.addAttribute("errorCode", "404");
+        return "error/custom-error";
+    }
+
+    /**
+     * Gère l'exception quand une page ou ressource statique n'est pas trouvée.
+     * Redirige vers la page d'accueil des apprentis.
+     */
+    @ExceptionHandler(NoResourceFoundException.class)
+    public String handleNoResourceFoundException(NoResourceFoundException ex, Model model) {
+        model.addAttribute("errorTitle", "Page introuvable");
+        model.addAttribute("errorMessage", "La page que vous recherchez n'existe pas ou a été déplacée.");
+        model.addAttribute("errorCode", "404");
+        model.addAttribute("suggestedAction", "Retourner à l'accueil");
+        model.addAttribute("homeUrl", "/apprentis");
         return "error/custom-error";
     }
 

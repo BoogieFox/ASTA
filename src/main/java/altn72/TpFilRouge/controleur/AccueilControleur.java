@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class AccueilControleur {
 
-    @GetMapping({"/", "/accueil"})
+    @GetMapping("/")
     public String accueil() {
-        return "index";
+        return "redirect:/apprentis";
     }
 }
