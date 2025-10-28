@@ -1,9 +1,9 @@
 package altn72.TpFilRouge.service;
 
+import altn72.TpFilRouge.exception.MaitreApprentissageDejaExistantException;
 import altn72.TpFilRouge.modele.MaitreApprentissage;
 import altn72.TpFilRouge.modele.repository.MaitreApprentissageRepository;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,9 +21,15 @@ public class MaitreApprentissageService {
         return maitreApprentissageRepository.findAll();
     }
 
+    public Optional<MaitreApprentissage> getUnMaitreApprentissage(Integer id) {
+        return maitreApprentissageRepository.findById(id);
+    }
 
     @Transactional
     public MaitreApprentissage ajouterMaitreApprentissage(MaitreApprentissage maitreApprentissage) {
+        if (maitreApprentissageRepository.existsByEmail(maitreApprentissage.getEmail())) {
+            throw new MaitreApprentissageDejaExistantException(maitreApprentissage.getEmail());
+        }
         return maitreApprentissageRepository.save(maitreApprentissage);
     }
 

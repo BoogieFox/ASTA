@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Créer un maître d'apprentissage - ASTA</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .error-message {
+            color: #dc3545;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            display: block;
+        }
+        .alert-error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c2c7;
+            color: #842029;
+            padding: 1rem;
+            border-radius: 0.375rem;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
+        .alert-info {
+            background-color: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+            padding: 1rem;
+            border-radius: 0.375rem;
+            margin-bottom: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-content">
+            <a href="/" class="navbar-brand">ASTA</a>
+            <ul class="navbar-menu">
+                <li><a href="/">Accueil</a></li>
+                <li><a href="/apprentis">Apprentis</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h1>➕ Créer un nouveau maître d'apprentissage</h1>
+        </div>
+
+        <!-- Message d'information -->
+        <div class="alert-info">
+            <strong>ℹ️ Information :</strong> Après avoir créé le maître d'apprentissage, vous retournerez automatiquement au formulaire d'apprenti avec vos données conservées.
+        </div>
+
+        <!-- Message d'erreur global (seulement pour les exceptions métier) -->
+        <div th:if="${errorMessage}" class="alert-error" th:text="${errorMessage}">
+            Message d'erreur
+        </div>
+
+        <div class="card">
+            <form th:action="@{/maitre-apprentissage/nouveau}" th:object="${maitreApprentissage}" method="post">
+                <!-- Champ caché pour transmettre l'URL de retour -->
+                <input type="hidden" name="returnTo" th:value="${returnTo}">
+
+                <div class="form-group">
+                    <label for="nom">Nom *</label>
+                    <input type="text" id="nom" th:field="*{nom}" required>
+                    <span th:if="${#fields.hasErrors('nom')}" th:errors="*{nom}" class="error-message"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="prenom">Prénom *</label>
+                    <input type="text" id="prenom" th:field="*{prenom}" required>
+                    <span th:if="${#fields.hasErrors('prenom')}" th:errors="*{prenom}" class="error-message"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email *</label>
+                    <input type="email" id="email" th:field="*{email}" required>
+                    <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="error-message"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="telephone">Téléphone *</label>
+                    <input type="tel" id="telephone" th:field="*{telephone}" required
+                           placeholder="0123456789" pattern="[0-9]{10,15}">
+                    <span th:if="${#fields.hasErrors('telephone')}" th:errors="*{telephone}" class="error-message"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="poste">Poste *</label>
+                    <input type="text" id="poste" th:field="*{poste}" required
+                           placeholder="Ex: Responsable technique, Chef de projet, etc.">
+                    <span th:if="${#fields.hasErrors('poste')}" th:errors="*{poste}" class="error-message"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="remarques">Remarques</label>
+                    <textarea id="remarques" th:field="*{remarques}" rows="4"
+                              placeholder="Informations complémentaires sur le maître d'apprentissage (optionnel)"></textarea>
+                    <span th:if="${#fields.hasErrors('remarques')}" th:errors="*{remarques}" class="error-message"></span>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">💾 Enregistrer et retourner</button>
+                    <a th:href="${returnTo != null && !#strings.isEmpty(returnTo)} ? '/' + ${returnTo} : '/apprentis/nouveau'"
+                       class="btn btn-secondary">❌ Annuler</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

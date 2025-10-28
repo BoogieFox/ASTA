@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Créer une entreprise - ASTA</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .error-message {
+            color: #dc3545;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            display: block;
+        }
+        .alert-error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c2c7;
+            color: #842029;
+            padding: 1rem;
+            border-radius: 0.375rem;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
+        .alert-info {
+            background-color: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+            padding: 1rem;
+            border-radius: 0.375rem;
+            margin-bottom: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-content">
+            <a href="/" class="navbar-brand">ASTA</a>
+            <ul class="navbar-menu">
+                <li><a href="/">Accueil</a></li>
+                <li><a href="/apprentis">Apprentis</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h1>➕ Créer une nouvelle entreprise</h1>
+        </div>
+
+        <!-- Message d'information -->
+        <div class="alert-info">
+            <strong>ℹ️ Information :</strong> Après avoir créé l'entreprise, vous retournerez automatiquement au formulaire d'apprenti avec vos données conservées.
+        </div>
+
+        <!-- Message d'erreur global (seulement pour les exceptions métier) -->
+        <div th:if="${errorMessage}" class="alert-error" th:text="${errorMessage}">
+            Message d'erreur
+        </div>
+
+        <div class="card">
+            <form th:action="@{/entreprises/nouveau}" th:object="${entreprise}" method="post">
+                <!-- Champ caché pour transmettre l'URL de retour -->
+                <input type="hidden" name="returnTo" th:value="${returnTo}">
+
+                <div class="form-group">
+                    <label for="raisonSociale">Raison Sociale *</label>
+                    <input type="text" id="raisonSociale" th:field="*{raisonSociale}" required>
+                    <span th:if="${#fields.hasErrors('raisonSociale')}" th:errors="*{raisonSociale}" class="error-message"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="adresse">Adresse *</label>
+                    <input type="text" id="adresse" th:field="*{adresse}" required>
+                    <span th:if="${#fields.hasErrors('adresse')}" th:errors="*{adresse}" class="error-message"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="informationsLocaux">Informations sur les locaux</label>
+                    <textarea id="informationsLocaux" th:field="*{informationsLocaux}" rows="4" 
+                              placeholder="Décrivez les locaux de l'entreprise (optionnel)"></textarea>
+                    <span th:if="${#fields.hasErrors('informationsLocaux')}" th:errors="*{informationsLocaux}" class="error-message"></span>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">💾 Enregistrer et retourner</button>
+                    <a th:href="${returnTo != null && !#strings.isEmpty(returnTo)} ? '/' + ${returnTo} : '/apprentis/nouveau'"
+                       class="btn btn-secondary">❌ Annuler</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

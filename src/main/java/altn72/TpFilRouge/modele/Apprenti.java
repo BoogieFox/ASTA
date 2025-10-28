@@ -27,7 +27,11 @@ public class Apprenti {
     @Column(name = "majeure", nullable = false, length = 100)
     private String majeure;
 
-    @OneToMany(mappedBy = "apprenti", cascade = CascadeType.ALL)
+    @Enumerated(EnumType.STRING)
+    @Column(name = "promotion", nullable = false)
+    private Promotion promotion = Promotion.L1;
+
+    @OneToMany(mappedBy = "apprenti", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DossierAnnuel> dossierAnnuels = new ArrayList<>();
 
     @ManyToOne
@@ -59,6 +63,8 @@ public class Apprenti {
         this.email = email;
         this.telephone = telephone;
         this.majeure = majeure;
+        this.promotion = Promotion.L1; // Par défaut en L1
+        this.dossierAnnuels = new ArrayList<>();
     }
 
     // Getters and Setters
@@ -110,6 +116,13 @@ public class Apprenti {
         this.majeure = majeure;
     }
 
+    public List<DossierAnnuel> getDossierAnnuels() {
+        return dossierAnnuels;
+    }
+
+    public void setDossierAnnuels(List<DossierAnnuel> dossierAnnuels) {
+        this.dossierAnnuels = dossierAnnuels;
+    }
 
     public Entreprise getEntreprise() {
         return entreprise;
@@ -135,6 +148,16 @@ public class Apprenti {
         this.mission = mission;
     }
 
+    public Promotion getPromotion() {
+        return promotion;
+    }
 
+    public void setPromotion(Promotion promotion) {
+        this.promotion = promotion;
+    }
 
+    public void ajouterDossierAnnuel(DossierAnnuel dossierAnnuel) {
+        dossierAnnuel.setApprenti(this);
+        this.dossierAnnuels.add(dossierAnnuel);
+    }
 }
