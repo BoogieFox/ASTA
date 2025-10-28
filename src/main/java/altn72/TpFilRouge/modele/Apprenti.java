@@ -38,6 +38,11 @@ public class Apprenti {
     @JoinColumn(name = "maitre_apprentissage_id")
     private MaitreApprentissage maitreApprentissage;
 
+
+    @ManyToOne
+    @JoinColumn(name = "tuteur_id")
+    private Tuteur tuteur;
+
     // Relation bidirectionnelle OneToOne avec Mission
     @OneToOne(mappedBy = "apprenti", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Mission mission;
