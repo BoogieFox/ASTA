@@ -54,10 +54,18 @@ public class VisiteService {
 
     @Transactional
     public void supprimerVisite(Integer visiteId) {
-        if (!visiteRepository.existsById(visiteId)) {
-            throw new RessourceIntrouvableException("Visite", visiteId);
+        Visite visite = visiteRepository.findById(visiteId)
+                .orElseThrow(() -> new RessourceIntrouvableException("Visite", visiteId));
+
+        // Casser la relation bidirectionnelle avec le DossierAnnuel
+        DossierAnnuel dossierAnnuel = visite.getDossierAnnuel();
+        if (dossierAnnuel != null) {
+            dossierAnnuel.setVisite(null);
+            dossierAnnuelRepository.save(dossierAnnuel);
         }
-        visiteRepository.deleteById(visiteId);
+
+        // Supprimer la visite
+        visiteRepository.delete(visite);
     }
 }
 

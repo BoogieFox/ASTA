@@ -14,12 +14,12 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.List;
 import java.util.Optional;
 
 @Controller
 @RequestMapping("/apprentis")
 public class ApprentiControleur {
-    private static final String ATTR_APPRENTIS = "apprentis";
     private static final String ATTR_APPRENTI = "apprenti";
     private static final String ATTR_IS_CREATION = "isCreation";
     private static final String ATTR_ENTREPRISES = "entreprises";
@@ -57,7 +57,8 @@ public class ApprentiControleur {
     // Liste des apprentis
     @GetMapping
     public String listerApprentis(org.springframework.ui.Model model) {
-        model.addAttribute(ATTR_APPRENTIS, apprentiService.getApprentis());
+        model.addAttribute("apprentisActifs", apprentiService.getApprentisActifs());
+        model.addAttribute("apprentisArchives", apprentiService.getApprentisArchives());
         return VIEW_LISTE;
     }
 
@@ -142,7 +143,9 @@ public class ApprentiControleur {
 
     // Page pour gérer un apprenti (consultation + modification en une seule page)
     @GetMapping("/{id}/gerer")
-    public String gererApprenti(@PathVariable Integer id, Model model) {
+    public String gererApprenti(@PathVariable Integer id,
+                               @RequestParam(required = false) String success,
+                               Model model) {
     Apprenti apprenti = apprentiService.getUnApprenti(id)
         .orElseThrow(() -> new RessourceIntrouvableException("Apprenti", id));
         
@@ -162,6 +165,13 @@ public class ApprentiControleur {
         model.addAttribute(ATTR_APPRENTI, apprenti);
         model.addAttribute(ATTR_ENTREPRISES, entrepriseService.getEntreprises());
         model.addAttribute(ATTR_MAITRES, maitreApprentissageService.getMaitresApprentissage());
+
+        // Gérer les messages de succès
+        if ("entreprise-created".equals(success)) {
+            model.addAttribute(ATTR_SUCCESS, "✅ Entreprise créée avec succès ! Vous pouvez maintenant la sélectionner dans la liste.");
+        } else if ("maitre-created".equals(success)) {
+            model.addAttribute(ATTR_SUCCESS, "✅ Maître d'apprentissage créé avec succès ! Vous pouvez maintenant le sélectionner dans la liste.");
+        }
 
         return VIEW_GERER;
     }
@@ -204,6 +214,73 @@ public class ApprentiControleur {
         redirectAttributes.addFlashAttribute(ATTR_SUCCESS, "✅ Les informations ont été modifiées avec succès !");
 
         return REDIRECT_GERER_PREFIX + id + GERER_SUFFIX;
+    }
+
+    // Endpoint pour modifier l'entreprise d'un apprenti
+    @PatchMapping("/{id}/entreprise")
+    public String modifierEntreprise(
+            @PathVariable Integer id,
+            @RequestParam(required = false) Integer entrepriseId,
+            RedirectAttributes redirectAttributes) {
+
+        try {
+            apprentiService.modifierEntreprise(id, entrepriseId);
+            redirectAttributes.addFlashAttribute(ATTR_SUCCESS, "✅ L'entreprise a été modifiée avec succès !");
+        } catch (RessourceIntrouvableException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "❌ " + e.getMessage());
+        }
+
+        return REDIRECT_GERER_PREFIX + id + GERER_SUFFIX;
+    }
+
+    // Endpoint pour modifier le maître d'apprentissage d'un apprenti
+    @PatchMapping("/{id}/maitre-apprentissage")
+    public String modifierMaitreApprentissage(
+            @PathVariable Integer id,
+            @RequestParam(required = false) Integer maitreApprentissageId,
+            RedirectAttributes redirectAttributes) {
+
+        try {
+            apprentiService.modifierMaitreApprentissage(id, maitreApprentissageId);
+            redirectAttributes.addFlashAttribute(ATTR_SUCCESS, "✅ Le maître d'apprentissage a été modifié avec succès !");
+        } catch (RessourceIntrouvableException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "❌ " + e.getMessage());
+        }
+
+        return REDIRECT_GERER_PREFIX + id + GERER_SUFFIX;
+    }
+
+    // Endpoint pour afficher l'historique complet d'un apprenti archivé
+    @GetMapping("/{id}/historique")
+    public String afficherHistorique(@PathVariable Integer id, Model model) {
+        Apprenti apprenti = apprentiService.getUnApprenti(id)
+                .orElseThrow(() -> new RessourceIntrouvableException("Apprenti", id));
+
+        // Récupérer tous les dossiers annuels
+        List<DossierAnnuel> dossiers = apprenti.getDossierAnnuels();
+
+        // Séparer les dossiers par promotion
+        DossierAnnuel dossierL1 = dossiers.stream()
+                .filter(d -> d.getPromotion() == altn72.TpFilRouge.modele.Promotion.L1)
+                .findFirst()
+                .orElse(null);
+
+        DossierAnnuel dossierL2 = dossiers.stream()
+                .filter(d -> d.getPromotion() == altn72.TpFilRouge.modele.Promotion.L2)
+                .findFirst()
+                .orElse(null);
+
+        DossierAnnuel dossierL3 = dossiers.stream()
+                .filter(d -> d.getPromotion() == altn72.TpFilRouge.modele.Promotion.L3)
+                .findFirst()
+                .orElse(null);
+
+        model.addAttribute(ATTR_APPRENTI, apprenti);
+        model.addAttribute("dossierL1", dossierL1);
+        model.addAttribute("dossierL2", dossierL2);
+        model.addAttribute("dossierL3", dossierL3);
+
+        return "apprentis/historique";
     }
 
     // Endpoint pour commencer une nouvelle année

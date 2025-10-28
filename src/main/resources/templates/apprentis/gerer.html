@@ -145,6 +145,37 @@
             margin-bottom: 0.25rem;
             color: var(--text-secondary);
         }
+
+        .select-with-add {
+            display: flex;
+            gap: 0.5rem;
+            align-items: flex-end;
+        }
+
+        .select-with-add select {
+            flex: 1;
+        }
+
+        /* Styles pour les formulaires déroulants */
+        .collapsible-form {
+            overflow: hidden;
+            max-height: 0;
+            opacity: 0;
+            transition: max-height 0.3s ease-out, opacity 0.3s ease-out, margin 0.3s ease-out;
+            margin-bottom: 0;
+        }
+
+        .collapsible-form.show {
+            max-height: 1000px;
+            opacity: 1;
+            margin-bottom: 1rem;
+        }
+
+        .collapsible-form.hidden {
+            max-height: 0;
+            opacity: 0;
+            margin-bottom: 0;
+        }
     </style>
 </head>
 <body>
@@ -178,7 +209,9 @@
             <span th:text="${successMessage}"></span>
         </div>
 
-        <div th:if="${errorMessage}" class="alert-error">
+        <!-- Message d'erreur global (sauf erreurs contextuelles) -->
+        <div th:if="${errorMessage != null and !#strings.startsWith(errorMessage, 'VISITE:') and !#strings.startsWith(errorMessage, 'SOUTENANCE:') and !#strings.startsWith(errorMessage, 'RAPPORT:')}"
+             class="alert-error">
             <span th:text="${errorMessage}"></span>
         </div>
 
@@ -259,15 +292,18 @@
                     <form id="form-entreprise">
                         <div class="form-group">
                             <label for="entreprise">Entreprise *</label>
-                            <select id="entreprise" name="entreprise" required>
-                                <option value="">-- Sélectionner une entreprise --</option>
-                                <option th:each="entreprise : ${entreprises}" 
-                                        th:value="${entreprise.entrepriseId}" 
-                                        th:text="${entreprise.raisonSociale}"
-                                        th:selected="${apprenti.entreprise != null && entreprise.entrepriseId == apprenti.entreprise.entrepriseId}">
-                                    Entreprise
-                                </option>
-                            </select>
+                            <div class="select-with-add">
+                                <select id="entreprise" name="entreprise" required>
+                                    <option value="">-- Sélectionner une entreprise --</option>
+                                    <option th:each="entreprise : ${entreprises}"
+                                            th:value="${entreprise.entrepriseId}"
+                                            th:text="${entreprise.raisonSociale}"
+                                            th:selected="${apprenti.entreprise != null && entreprise.entrepriseId == apprenti.entreprise.entrepriseId}">
+                                        Entreprise
+                                    </option>
+                                </select>
+                                <button type="button" class="btn btn-secondary" onclick="redirectToNouvelleEntreprise()">+ Nouvelle Entreprise</button>
+                            </div>
                         </div>
                         <div class="action-buttons">
                             <button type="button" class="btn btn-secondary" onclick="cancelEdit('entreprise')">Annuler</button>
@@ -318,15 +354,18 @@
                     <form id="form-maitre">
                         <div class="form-group">
                             <label for="maitre">Maître d'Apprentissage *</label>
-                            <select id="maitre" name="maitre" required>
-                                <option value="">-- Sélectionner un maître --</option>
-                                <option th:each="maitre : ${maitresApprentissage}" 
-                                        th:value="${maitre.maitreApprentissageId}" 
-                                        th:text="${maitre.nom + ' ' + maitre.prenom + ' - ' + maitre.poste}"
-                                        th:selected="${apprenti.maitreApprentissage != null && maitre.maitreApprentissageId == apprenti.maitreApprentissage.maitreApprentissageId}">
-                                    Maître
-                                </option>
-                            </select>
+                            <div class="select-with-add">
+                                <select id="maitre" name="maitre" required>
+                                    <option value="">-- Sélectionner un maître --</option>
+                                    <option th:each="maitre : ${maitresApprentissage}"
+                                            th:value="${maitre.maitreApprentissageId}"
+                                            th:text="${maitre.nom + ' ' + maitre.prenom + ' - ' + maitre.poste}"
+                                            th:selected="${apprenti.maitreApprentissage != null && maitre.maitreApprentissageId == apprenti.maitreApprentissage.maitreApprentissageId}">
+                                        Maître
+                                    </option>
+                                </select>
+                                <button type="button" class="btn btn-secondary" onclick="redirectToNouveauMaitre()">+ Nouveau Maître</button>
+                            </div>
                         </div>
                         <div class="action-buttons">
                             <button type="button" class="btn btn-secondary" onclick="cancelEdit('maitre')">Annuler</button>
@@ -349,13 +388,34 @@
                     <div class="info-section">
                         <div class="section-header">
                             <div class="section-title">📅 Visite</div>
-                            <form th:if="${dossierCourant.visite != null}" th:action="@{/dossiers/visite/{visiteId}/supprimer(visiteId=${dossierCourant.visite.visiteId})}" method="post">
-                                <input type="hidden" name="apprentiId" th:value="${apprenti.apprentiId}">
-                                <button type="submit" class="btn btn-secondary btn-small">Supprimer</button>
-                            </form>
+                            <div>
+                                <button th:if="${dossierCourant.visite == null}"
+                                        type="button"
+                                        class="btn btn-primary btn-small"
+                                        onclick="toggleAddForm('visite')">+ Ajouter</button>
+                                <button th:if="${dossierCourant.visite != null}"
+                                        type="button"
+                                        class="btn btn-primary btn-small"
+                                        onclick="toggleEditForm('visite')">✏️ Modifier</button>
+                                <form th:if="${dossierCourant.visite != null}"
+                                      th:action="@{/dossiers/visite/{visiteId}/supprimer(visiteId=${dossierCourant.visite.visiteId})}"
+                                      method="post"
+                                      style="display: inline;">
+                                    <input type="hidden" name="apprentiId" th:value="${apprenti.apprentiId}">
+                                    <button type="submit" class="btn btn-secondary btn-small" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette visite ?')">🗑️ Supprimer</button>
+                                </form>
+                            </div>
                         </div>
 
-                        <div th:if="${dossierCourant.visite != null}" class="item-card">
+                        <!-- Message d'erreur contextuel pour la visite -->
+                        <div th:if="${errorMessage != null and #strings.startsWith(errorMessage, 'VISITE:')}"
+                             class="alert-error"
+                             style="margin-bottom: 1rem;">
+                            <span th:utext="${#strings.substringAfter(errorMessage, 'VISITE:')}"></span>
+                        </div>
+
+                        <!-- Affichage des données existantes -->
+                        <div id="view-visite" th:if="${dossierCourant.visite != null}" class="item-card">
                             <div class="item-field">
                                 <div class="field-label">Date :</div>
                                 <div class="field-value" th:text="${#temporals.format(dossierCourant.visite.date, 'dd/MM/yyyy')}">-</div>
@@ -370,61 +430,92 @@
                             </div>
                         </div>
 
+                        <!-- Message vide -->
                         <div th:if="${dossierCourant.visite == null}" class="item-empty">
-                            Aucune visite enregistrée pour cette promotion.
+                            Aucune visite enregistrée. Cliquez sur "Ajouter" pour en créer une.
                         </div>
 
-                        <form th:if="${dossierCourant.visite == null}" th:action="@{/dossiers/visite/ajouter}" method="post" class="item-card">
-                            <input type="hidden" name="dossierAnnuelId" th:value="${dossierCourant.dossierAnnuelId}">
-                            <input type="hidden" name="apprentiId" th:value="${apprenti.apprentiId}">
-                            <div class="form-group">
-                                <label for="visite-date">Date *</label>
-                                <input type="date" id="visite-date" name="date" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="visite-format">Format *</label>
-                                <input type="text" id="visite-format" name="format" maxlength="50" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="visite-commentaires">Commentaires</label>
-                                <textarea id="visite-commentaires" name="commentaires" maxlength="1024"></textarea>
-                            </div>
-                            <div class="action-buttons">
-                                <button type="submit" class="btn btn-primary btn-small">Créer</button>
-                            </div>
-                        </form>
+                        <!-- Formulaire d'ajout (caché par défaut) -->
+                        <div id="form-add-visite" class="collapsible-form hidden" th:if="${dossierCourant.visite == null}">
+                            <form th:action="@{/dossiers/visite/ajouter}" method="post" class="item-card">
+                                <input type="hidden" name="dossierAnnuelId" th:value="${dossierCourant.dossierAnnuelId}">
+                                <input type="hidden" name="apprentiId" th:value="${apprenti.apprentiId}">
+                                <div class="form-group">
+                                    <label for="visite-date">Date *</label>
+                                    <input type="date" id="visite-date" name="date" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="visite-format">Format *</label>
+                                    <input type="text" id="visite-format" name="format" maxlength="50" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="visite-commentaires">Commentaires</label>
+                                    <textarea id="visite-commentaires" name="commentaires" maxlength="1024"></textarea>
+                                </div>
+                                <div class="action-buttons">
+                                    <button type="submit" class="btn btn-primary btn-small">Créer</button>
+                                    <button type="button" class="btn btn-secondary btn-small" onclick="toggleAddForm('visite')">Annuler</button>
+                                </div>
+                            </form>
+                        </div>
 
-                        <form th:if="${dossierCourant.visite != null}" th:action="@{/dossiers/visite/{visiteId}/modifier(visiteId=${dossierCourant.visite.visiteId})}" method="post" class="item-card">
-                            <input type="hidden" name="dossierAnnuelId" th:value="${dossierCourant.dossierAnnuelId}">
-                            <input type="hidden" name="apprentiId" th:value="${apprenti.apprentiId}">
-                            <div class="form-group">
-                                <label for="visite-date-update">Date *</label>
-                                <input type="date" id="visite-date-update" name="date" required th:value="${dossierCourant.visite.date}">
-                            </div>
-                            <div class="form-group">
-                                <label for="visite-format-update">Format *</label>
-                                <input type="text" id="visite-format-update" name="format" maxlength="50" required th:value="${dossierCourant.visite.format}">
-                            </div>
-                            <div class="form-group">
-                                <label for="visite-commentaires-update">Commentaires</label>
-                                <textarea id="visite-commentaires-update" name="commentaires" maxlength="1024" th:text="${dossierCourant.visite.commentaires}"></textarea>
-                            </div>
-                            <div class="action-buttons">
-                                <button type="submit" class="btn btn-primary btn-small">Mettre à jour</button>
-                            </div>
-                        </form>
+                        <!-- Formulaire de modification (caché par défaut) -->
+                        <div id="form-edit-visite" class="collapsible-form hidden" th:if="${dossierCourant.visite != null}">
+                            <form th:action="@{/dossiers/visite/{visiteId}/modifier(visiteId=${dossierCourant.visite.visiteId})}" method="post" class="item-card">
+                                <input type="hidden" name="dossierAnnuelId" th:value="${dossierCourant.dossierAnnuelId}">
+                                <input type="hidden" name="apprentiId" th:value="${apprenti.apprentiId}">
+                                <div class="form-group">
+                                    <label for="visite-date-update">Date *</label>
+                                    <input type="date" id="visite-date-update" name="date" required th:value="${dossierCourant.visite.date}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="visite-format-update">Format *</label>
+                                    <input type="text" id="visite-format-update" name="format" maxlength="50" required th:value="${dossierCourant.visite.format}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="visite-commentaires-update">Commentaires</label>
+                                    <textarea id="visite-commentaires-update" name="commentaires" maxlength="1024" th:text="${dossierCourant.visite.commentaires}"></textarea>
+                                </div>
+                                <div class="action-buttons">
+                                    <button type="submit" class="btn btn-primary btn-small">Mettre à jour</button>
+                                    <button type="button" class="btn btn-secondary btn-small" onclick="toggleEditForm('visite')">Annuler</button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
 
                     <div class="info-section">
                         <div class="section-header">
                             <div class="section-title">🎤 Soutenance</div>
-                            <form th:if="${dossierCourant.soutenance != null}" th:action="@{/dossiers/soutenance/{soutenanceId}/supprimer(soutenanceId=${dossierCourant.soutenance.soutenanceId})}" method="post">
-                                <input type="hidden" name="apprentiId" th:value="${apprenti.apprentiId}">
-                                <button type="submit" class="btn btn-secondary btn-small">Supprimer</button>
-                            </form>
+                            <div>
+                                <button th:if="${dossierCourant.soutenance == null}"
+                                        type="button"
+                                        class="btn btn-primary btn-small"
+                                        onclick="toggleAddForm('soutenance')">+ Ajouter</button>
+                                <button th:if="${dossierCourant.soutenance != null}"
+                                        type="button"
+                                        class="btn btn-primary btn-small"
+                                        onclick="toggleEditForm('soutenance')">✏️ Modifier</button>
+                                <form th:if="${dossierCourant.soutenance != null}"
+                                      th:action="@{/dossiers/soutenance/{soutenanceId}/supprimer(soutenanceId=${dossierCourant.soutenance.soutenanceId})}"
+                                      method="post"
+                                      style="display: inline;"
+                                      onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette soutenance ?')">
+                                    <input type="hidden" name="apprentiId" th:value="${apprenti.apprentiId}">
+                                    <button type="submit" class="btn btn-secondary btn-small">🗑️ Supprimer</button>
+                                </form>
+                            </div>
                         </div>
 
-                        <div th:if="${dossierCourant.soutenance != null}" class="item-card">
+                        <!-- Message d'erreur contextuel pour la soutenance -->
+                        <div th:if="${errorMessage != null and #strings.startsWith(errorMessage, 'SOUTENANCE:')}"
+                             class="alert-error"
+                             style="margin-bottom: 1rem;">
+                            <span th:utext="${#strings.substringAfter(errorMessage, 'SOUTENANCE:')}"></span>
+                        </div>
+
+                        <!-- Affichage des données existantes -->
+                        <div id="view-soutenance" th:if="${dossierCourant.soutenance != null}" class="item-card">
                             <div class="item-field">
                                 <div class="field-label">Date :</div>
                                 <div class="field-value" th:text="${#temporals.format(dossierCourant.soutenance.date, 'dd/MM/yyyy')}">-</div>
@@ -439,61 +530,92 @@
                             </div>
                         </div>
 
+                        <!-- Message vide -->
                         <div th:if="${dossierCourant.soutenance == null}" class="item-empty">
-                            Aucune soutenance enregistrée pour cette promotion.
+                            Aucune soutenance enregistrée. Cliquez sur "Ajouter" pour en créer une.
                         </div>
 
-                        <form th:if="${dossierCourant.soutenance == null}" th:action="@{/dossiers/soutenance/ajouter}" method="post" class="item-card">
-                            <input type="hidden" name="dossierAnnuelId" th:value="${dossierCourant.dossierAnnuelId}">
-                            <input type="hidden" name="apprentiId" th:value="${apprenti.apprentiId}">
-                            <div class="form-group">
-                                <label for="soutenance-date">Date *</label>
-                                <input type="date" id="soutenance-date" name="date" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="soutenance-note">Note finale</label>
-                                <input type="number" id="soutenance-note" name="noteFinale" min="0" max="20" step="0.5">
-                            </div>
-                            <div class="form-group">
-                                <label for="soutenance-commentaires">Commentaires</label>
-                                <textarea id="soutenance-commentaires" name="commentaires" maxlength="1024"></textarea>
-                            </div>
-                            <div class="action-buttons">
-                                <button type="submit" class="btn btn-primary btn-small">Créer</button>
-                            </div>
-                        </form>
+                        <!-- Formulaire d'ajout (caché par défaut) -->
+                        <div id="form-add-soutenance" class="collapsible-form hidden" th:if="${dossierCourant.soutenance == null}">
+                            <form th:action="@{/dossiers/soutenance/ajouter}" method="post" class="item-card">
+                                <input type="hidden" name="dossierAnnuelId" th:value="${dossierCourant.dossierAnnuelId}">
+                                <input type="hidden" name="apprentiId" th:value="${apprenti.apprentiId}">
+                                <div class="form-group">
+                                    <label for="soutenance-date">Date *</label>
+                                    <input type="date" id="soutenance-date" name="date" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="soutenance-note">Note finale</label>
+                                    <input type="number" id="soutenance-note" name="noteFinale" min="0" max="20" step="0.5">
+                                </div>
+                                <div class="form-group">
+                                    <label for="soutenance-commentaires">Commentaires</label>
+                                    <textarea id="soutenance-commentaires" name="commentaires" maxlength="1024"></textarea>
+                                </div>
+                                <div class="action-buttons">
+                                    <button type="submit" class="btn btn-primary btn-small">Créer</button>
+                                    <button type="button" class="btn btn-secondary btn-small" onclick="toggleAddForm('soutenance')">Annuler</button>
+                                </div>
+                            </form>
+                        </div>
 
-                        <form th:if="${dossierCourant.soutenance != null}" th:action="@{/dossiers/soutenance/{soutenanceId}/modifier(soutenanceId=${dossierCourant.soutenance.soutenanceId})}" method="post" class="item-card">
-                            <input type="hidden" name="dossierAnnuelId" th:value="${dossierCourant.dossierAnnuelId}">
-                            <input type="hidden" name="apprentiId" th:value="${apprenti.apprentiId}">
-                            <div class="form-group">
-                                <label for="soutenance-date-update">Date *</label>
-                                <input type="date" id="soutenance-date-update" name="date" required th:value="${dossierCourant.soutenance.date}">
-                            </div>
-                            <div class="form-group">
-                                <label for="soutenance-note-update">Note finale</label>
-                                <input type="number" id="soutenance-note-update" name="noteFinale" min="0" max="20" step="0.5" th:value="${dossierCourant.soutenance.noteFinale}">
-                            </div>
-                            <div class="form-group">
-                                <label for="soutenance-commentaires-update">Commentaires</label>
-                                <textarea id="soutenance-commentaires-update" name="commentaires" maxlength="1024" th:text="${dossierCourant.soutenance.commentaires}"></textarea>
-                            </div>
-                            <div class="action-buttons">
-                                <button type="submit" class="btn btn-primary btn-small">Mettre à jour</button>
-                            </div>
-                        </form>
+                        <!-- Formulaire de modification (caché par défaut) -->
+                        <div id="form-edit-soutenance" class="collapsible-form hidden" th:if="${dossierCourant.soutenance != null}">
+                            <form th:action="@{/dossiers/soutenance/{soutenanceId}/modifier(soutenanceId=${dossierCourant.soutenance.soutenanceId})}" method="post" class="item-card">
+                                <input type="hidden" name="dossierAnnuelId" th:value="${dossierCourant.dossierAnnuelId}">
+                                <input type="hidden" name="apprentiId" th:value="${apprenti.apprentiId}">
+                                <div class="form-group">
+                                    <label for="soutenance-date-update">Date *</label>
+                                    <input type="date" id="soutenance-date-update" name="date" required th:value="${dossierCourant.soutenance.date}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="soutenance-note-update">Note finale</label>
+                                    <input type="number" id="soutenance-note-update" name="noteFinale" min="0" max="20" step="0.5" th:value="${dossierCourant.soutenance.noteFinale}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="soutenance-commentaires-update">Commentaires</label>
+                                    <textarea id="soutenance-commentaires-update" name="commentaires" maxlength="1024" th:text="${dossierCourant.soutenance.commentaires}"></textarea>
+                                </div>
+                                <div class="action-buttons">
+                                    <button type="submit" class="btn btn-primary btn-small">Mettre à jour</button>
+                                    <button type="button" class="btn btn-secondary btn-small" onclick="toggleEditForm('soutenance')">Annuler</button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
 
                     <div class="info-section">
                         <div class="section-header">
                             <div class="section-title">📄 Rapport</div>
-                            <form th:if="${dossierCourant.rapport != null}" th:action="@{/dossiers/rapport/{rapportId}/supprimer(rapportId=${dossierCourant.rapport.rapportId})}" method="post">
-                                <input type="hidden" name="apprentiId" th:value="${apprenti.apprentiId}">
-                                <button type="submit" class="btn btn-secondary btn-small">Supprimer</button>
-                            </form>
+                            <div>
+                                <button th:if="${dossierCourant.rapport == null}"
+                                        type="button"
+                                        class="btn btn-primary btn-small"
+                                        onclick="toggleAddForm('rapport')">+ Ajouter</button>
+                                <button th:if="${dossierCourant.rapport != null}"
+                                        type="button"
+                                        class="btn btn-primary btn-small"
+                                        onclick="toggleEditForm('rapport')">✏️ Modifier</button>
+                                <form th:if="${dossierCourant.rapport != null}"
+                                      th:action="@{/dossiers/rapport/{rapportId}/supprimer(rapportId=${dossierCourant.rapport.rapportId})}"
+                                      method="post"
+                                      style="display: inline;"
+                                      onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce rapport ?')">
+                                    <input type="hidden" name="apprentiId" th:value="${apprenti.apprentiId}">
+                                    <button type="submit" class="btn btn-secondary btn-small">🗑️ Supprimer</button>
+                                </form>
+                            </div>
                         </div>
 
-                        <div th:if="${dossierCourant.rapport != null}" class="item-card">
+                        <!-- Message d'erreur contextuel pour le rapport -->
+                        <div th:if="${errorMessage != null and #strings.startsWith(errorMessage, 'RAPPORT:')}"
+                             class="alert-error"
+                             style="margin-bottom: 1rem;">
+                            <span th:utext="${#strings.substringAfter(errorMessage, 'RAPPORT:')}"></span>
+                        </div>
+
+                        <!-- Affichage des données existantes -->
+                        <div id="view-rapport" th:if="${dossierCourant.rapport != null}" class="item-card">
                             <div class="item-field" th:if="${dossierCourant.rapport.sujet != null}">
                                 <div class="field-label">Sujet :</div>
                                 <div class="field-value" th:text="${dossierCourant.rapport.sujet}">-</div>
@@ -508,54 +630,245 @@
                             </div>
                         </div>
 
+                        <!-- Message vide -->
                         <div th:if="${dossierCourant.rapport == null}" class="item-empty">
-                            Aucun rapport enregistré pour cette promotion.
+                            Aucun rapport enregistré. Cliquez sur "Ajouter" pour en créer un.
                         </div>
 
-                        <form th:if="${dossierCourant.rapport == null}" th:action="@{/dossiers/rapport/ajouter}" method="post" class="item-card">
-                            <input type="hidden" name="dossierAnnuelId" th:value="${dossierCourant.dossierAnnuelId}">
-                            <input type="hidden" name="apprentiId" th:value="${apprenti.apprentiId}">
-                            <div class="form-group">
-                                <label for="rapport-sujet">Sujet *</label>
-                                <input type="text" id="rapport-sujet" name="sujet" maxlength="255" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="rapport-note">Note finale</label>
-                                <input type="number" id="rapport-note" name="noteFinale" min="0" max="20" step="0.5">
-                            </div>
-                            <div class="form-group">
-                                <label for="rapport-commentaires">Commentaires</label>
-                                <textarea id="rapport-commentaires" name="commentaires" maxlength="1024"></textarea>
-                            </div>
-                            <div class="action-buttons">
-                                <button type="submit" class="btn btn-primary btn-small">Créer</button>
-                            </div>
-                        </form>
+                        <!-- Formulaire d'ajout (caché par défaut) -->
+                        <div id="form-add-rapport" class="collapsible-form hidden" th:if="${dossierCourant.rapport == null}">
+                            <form th:action="@{/dossiers/rapport/ajouter}" method="post" class="item-card">
+                                <input type="hidden" name="dossierAnnuelId" th:value="${dossierCourant.dossierAnnuelId}">
+                                <input type="hidden" name="apprentiId" th:value="${apprenti.apprentiId}">
+                                <div class="form-group">
+                                    <label for="rapport-sujet">Sujet *</label>
+                                    <input type="text" id="rapport-sujet" name="sujet" maxlength="255" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="rapport-note">Note finale</label>
+                                    <input type="number" id="rapport-note" name="noteFinale" min="0" max="20" step="0.5">
+                                </div>
+                                <div class="form-group">
+                                    <label for="rapport-commentaires">Commentaires</label>
+                                    <textarea id="rapport-commentaires" name="commentaires" maxlength="1024"></textarea>
+                                </div>
+                                <div class="action-buttons">
+                                    <button type="submit" class="btn btn-primary btn-small">Créer</button>
+                                    <button type="button" class="btn btn-secondary btn-small" onclick="toggleAddForm('rapport')">Annuler</button>
+                                </div>
+                            </form>
+                        </div>
 
-                        <form th:if="${dossierCourant.rapport != null}" th:action="@{/dossiers/rapport/{rapportId}/modifier(rapportId=${dossierCourant.rapport.rapportId})}" method="post" class="item-card">
-                            <input type="hidden" name="dossierAnnuelId" th:value="${dossierCourant.dossierAnnuelId}">
-                            <input type="hidden" name="apprentiId" th:value="${apprenti.apprentiId}">
-                            <div class="form-group">
-                                <label for="rapport-sujet-update">Sujet *</label>
-                                <input type="text" id="rapport-sujet-update" name="sujet" maxlength="255" required th:value="${dossierCourant.rapport.sujet}">
-                            </div>
-                            <div class="form-group">
-                                <label for="rapport-note-update">Note finale</label>
-                                <input type="number" id="rapport-note-update" name="noteFinale" min="0" max="20" step="0.5" th:value="${dossierCourant.rapport.noteFinale}">
-                            </div>
-                            <div class="form-group">
-                                <label for="rapport-commentaires-update">Commentaires</label>
-                                <textarea id="rapport-commentaires-update" name="commentaires" maxlength="1024" th:text="${dossierCourant.rapport.commentaires}"></textarea>
-                            </div>
-                            <div class="action-buttons">
-                                <button type="submit" class="btn btn-primary btn-small">Mettre à jour</button>
-                            </div>
-                        </form>
+                        <!-- Formulaire de modification (caché par défaut) -->
+                        <div id="form-edit-rapport" class="collapsible-form hidden" th:if="${dossierCourant.rapport != null}">
+                            <form th:action="@{/dossiers/rapport/{rapportId}/modifier(rapportId=${dossierCourant.rapport.rapportId})}" method="post" class="item-card">
+                                <input type="hidden" name="dossierAnnuelId" th:value="${dossierCourant.dossierAnnuelId}">
+                                <input type="hidden" name="apprentiId" th:value="${apprenti.apprentiId}">
+                                <div class="form-group">
+                                    <label for="rapport-sujet-update">Sujet *</label>
+                                    <input type="text" id="rapport-sujet-update" name="sujet" maxlength="255" required th:value="${dossierCourant.rapport.sujet}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="rapport-note-update">Note finale</label>
+                                    <input type="number" id="rapport-note-update" name="noteFinale" min="0" max="20" step="0.5" th:value="${dossierCourant.rapport.noteFinale}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="rapport-commentaires-update">Commentaires</label>
+                                    <textarea id="rapport-commentaires-update" name="commentaires" maxlength="1024" th:text="${dossierCourant.rapport.commentaires}"></textarea>
+                                </div>
+                                <div class="action-buttons">
+                                    <button type="submit" class="btn btn-primary btn-small">Mettre à jour</button>
+                                    <button type="button" class="btn btn-secondary btn-small" onclick="toggleEditForm('rapport')">Annuler</button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        const apprentiId = /*[[${apprenti.apprentiId}]]*/ 0;
+        const errorMessage = /*[[${errorMessage}]]*/ null;
+
+        // Au chargement de la page, ouvrir automatiquement le formulaire qui a une erreur
+        document.addEventListener('DOMContentLoaded', function() {
+            if (errorMessage) {
+                if (errorMessage.startsWith('VISITE:')) {
+                    const visiteForm = document.getElementById('form-add-visite') || document.getElementById('form-edit-visite');
+                    if (visiteForm) {
+                        visiteForm.classList.remove('hidden');
+                        visiteForm.classList.add('show');
+                        // Scroll vers la section
+                        visiteForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                } else if (errorMessage.startsWith('SOUTENANCE:')) {
+                    const soutenanceForm = document.getElementById('form-add-soutenance') || document.getElementById('form-edit-soutenance');
+                    if (soutenanceForm) {
+                        soutenanceForm.classList.remove('hidden');
+                        soutenanceForm.classList.add('show');
+                        soutenanceForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                } else if (errorMessage.startsWith('RAPPORT:')) {
+                    const rapportForm = document.getElementById('form-add-rapport') || document.getElementById('form-edit-rapport');
+                    if (rapportForm) {
+                        rapportForm.classList.remove('hidden');
+                        rapportForm.classList.add('show');
+                        rapportForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }
+            }
+        });
+
+        function toggleAddForm(formName) {
+            const formElement = document.getElementById('form-add-' + formName);
+            const emptyElement = formElement.previousElementSibling;
+
+            if (formElement.classList.contains('hidden')) {
+                // Afficher le formulaire
+                formElement.classList.remove('hidden');
+                formElement.classList.add('show');
+                if (emptyElement && emptyElement.classList.contains('item-empty')) {
+                    emptyElement.classList.add('hidden');
+                }
+            } else {
+                // Cacher le formulaire
+                formElement.classList.remove('show');
+                formElement.classList.add('hidden');
+                if (emptyElement && emptyElement.classList.contains('item-empty')) {
+                    emptyElement.classList.remove('hidden');
+                }
+            }
+        }
+
+        function toggleEditForm(formName) {
+            const formElement = document.getElementById('form-edit-' + formName);
+            const viewElement = document.getElementById('view-' + formName);
+
+            if (formElement.classList.contains('hidden')) {
+                // Afficher le formulaire de modification et cacher la vue
+                formElement.classList.remove('hidden');
+                formElement.classList.add('show');
+                if (viewElement) {
+                    viewElement.classList.add('hidden');
+                }
+            } else {
+                // Cacher le formulaire et afficher la vue
+                formElement.classList.remove('show');
+                formElement.classList.add('hidden');
+                if (viewElement) {
+                    viewElement.classList.remove('hidden');
+                }
+            }
+        }
+
+        function toggleEdit(section) {
+            const sectionElement = document.getElementById('section-' + section);
+            const isInViewMode = sectionElement.classList.contains('view-mode');
+
+            if (isInViewMode) {
+                // Passer en mode édition
+                sectionElement.classList.remove('view-mode');
+                sectionElement.classList.add('edit-mode');
+                sectionElement.querySelector('.view-content').classList.add('hidden');
+                sectionElement.querySelector('.edit-content').classList.remove('hidden');
+                sectionElement.querySelector('.edit-text').classList.add('hidden');
+                sectionElement.querySelector('.save-text').classList.remove('hidden');
+            } else {
+                // Sauvegarder et retourner en mode consultation
+                saveSection(section);
+            }
+        }
+
+        function cancelEdit(section) {
+            const sectionElement = document.getElementById('section-' + section);
+
+            // Retourner en mode consultation
+            sectionElement.classList.remove('edit-mode');
+            sectionElement.classList.add('view-mode');
+            sectionElement.querySelector('.view-content').classList.remove('hidden');
+            sectionElement.querySelector('.edit-content').classList.add('hidden');
+            sectionElement.querySelector('.edit-text').classList.remove('hidden');
+            sectionElement.querySelector('.save-text').classList.add('hidden');
+        }
+
+        function saveSection(section) {
+            if (section === 'entreprise') {
+                saveEntreprise();
+            } else if (section === 'maitre') {
+                saveMaitreApprentissage();
+            }
+        }
+
+        function saveEntreprise() {
+            const entrepriseId = document.getElementById('entreprise').value;
+
+            // Créer un formulaire pour envoyer les données
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = `/apprentis/${apprentiId}/entreprise`;
+
+            // Ajouter le champ _method pour PATCH
+            const methodInput = document.createElement('input');
+            methodInput.type = 'hidden';
+            methodInput.name = '_method';
+            methodInput.value = 'PATCH';
+            form.appendChild(methodInput);
+
+            // Ajouter l'ID de l'entreprise
+            if (entrepriseId) {
+                const entrepriseInput = document.createElement('input');
+                entrepriseInput.type = 'hidden';
+                entrepriseInput.name = 'entrepriseId';
+                entrepriseInput.value = entrepriseId;
+                form.appendChild(entrepriseInput);
+            }
+
+            document.body.appendChild(form);
+            form.submit();
+        }
+
+        function saveMaitreApprentissage() {
+            const maitreId = document.getElementById('maitre').value;
+
+            // Créer un formulaire pour envoyer les données
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = `/apprentis/${apprentiId}/maitre-apprentissage`;
+
+            // Ajouter le champ _method pour PATCH
+            const methodInput = document.createElement('input');
+            methodInput.type = 'hidden';
+            methodInput.name = '_method';
+            methodInput.value = 'PATCH';
+            form.appendChild(methodInput);
+
+            // Ajouter l'ID du maître
+            if (maitreId) {
+                const maitreInput = document.createElement('input');
+                maitreInput.type = 'hidden';
+                maitreInput.name = 'maitreApprentissageId';
+                maitreInput.value = maitreId;
+                form.appendChild(maitreInput);
+            }
+
+            document.body.appendChild(form);
+            form.submit();
+        }
+
+        function redirectToNouvelleEntreprise() {
+            // Sauvegarder l'ID de l'apprenti en session si nécessaire
+            window.location.href = '/entreprises/nouveau?returnTo=apprentis/' + apprentiId + '/gerer';
+        }
+
+        function redirectToNouveauMaitre() {
+            // Sauvegarder l'ID de l'apprenti en session si nécessaire
+            window.location.href = '/maitre-apprentissage/nouveau?returnTo=apprentis/' + apprentiId + '/gerer';
+        }
+        /*]]>*/
+    </script>
 
 </body>
 </html>

@@ -9,7 +9,6 @@ import altn72.TpFilRouge.service.SoutenanceService;
 import altn72.TpFilRouge.service.VisiteService;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -26,7 +25,6 @@ public class DossierAnnuelControleur {
     private final RapportService rapportService;
     private final VisiteService visiteService;
     private final SoutenanceService soutenanceService;
-    private final DossierAnnuelService dossierAnnuelService;
 
     public DossierAnnuelControleur(RapportService rapportService,
                                    VisiteService visiteService,
@@ -35,7 +33,6 @@ public class DossierAnnuelControleur {
         this.rapportService = rapportService;
         this.visiteService = visiteService;
         this.soutenanceService = soutenanceService;
-        this.dossierAnnuelService = dossierAnnuelService;
     }
 
 
@@ -45,10 +42,9 @@ public class DossierAnnuelControleur {
     public String ajouterRapport(@Valid @ModelAttribute CreerRapportDto dto,
                                  BindingResult bindingResult,
                                  @RequestParam Integer apprentiId,
-                                 RedirectAttributes redirectAttributes,
-                                 Model model) {
+                                 RedirectAttributes redirectAttributes) {
         if (bindingResult.hasErrors()) {
-            redirectAttributes.addFlashAttribute(ATTR_ERROR, "❌ Erreur de validation : vérifiez les champs du rapport");
+            redirectAttributes.addFlashAttribute(ATTR_ERROR, formatValidationErrors(bindingResult, "RAPPORT"));
             return redirectToGerer(apprentiId);
         }
 
@@ -69,7 +65,7 @@ public class DossierAnnuelControleur {
                                   @RequestParam Integer apprentiId,
                                   RedirectAttributes redirectAttributes) {
         if (bindingResult.hasErrors()) {
-            redirectAttributes.addFlashAttribute(ATTR_ERROR, "❌ Erreur de validation : vérifiez les champs du rapport");
+            redirectAttributes.addFlashAttribute(ATTR_ERROR, formatValidationErrors(bindingResult, "RAPPORT"));
             return redirectToGerer(apprentiId);
         }
 
@@ -105,7 +101,7 @@ public class DossierAnnuelControleur {
                                 @RequestParam Integer apprentiId,
                                 RedirectAttributes redirectAttributes) {
         if (bindingResult.hasErrors()) {
-            redirectAttributes.addFlashAttribute(ATTR_ERROR, "❌ Erreur de validation : vérifiez les champs de la visite");
+            redirectAttributes.addFlashAttribute(ATTR_ERROR, formatValidationErrors(bindingResult, "VISITE"));
             return redirectToGerer(apprentiId);
         }
 
@@ -126,7 +122,7 @@ public class DossierAnnuelControleur {
                                  @RequestParam Integer apprentiId,
                                  RedirectAttributes redirectAttributes) {
         if (bindingResult.hasErrors()) {
-            redirectAttributes.addFlashAttribute(ATTR_ERROR, "❌ Erreur de validation : vérifiez les champs de la visite");
+            redirectAttributes.addFlashAttribute(ATTR_ERROR, formatValidationErrors(bindingResult, "VISITE"));
             return redirectToGerer(apprentiId);
         }
 
@@ -162,7 +158,7 @@ public class DossierAnnuelControleur {
                                     @RequestParam Integer apprentiId,
                                     RedirectAttributes redirectAttributes) {
         if (bindingResult.hasErrors()) {
-            redirectAttributes.addFlashAttribute(ATTR_ERROR, "❌ Erreur de validation : vérifiez les champs de la soutenance");
+            redirectAttributes.addFlashAttribute(ATTR_ERROR, formatValidationErrors(bindingResult, "SOUTENANCE"));
             return redirectToGerer(apprentiId);
         }
 
@@ -183,7 +179,7 @@ public class DossierAnnuelControleur {
                                      @RequestParam Integer apprentiId,
                                      RedirectAttributes redirectAttributes) {
         if (bindingResult.hasErrors()) {
-            redirectAttributes.addFlashAttribute(ATTR_ERROR, "❌ Erreur de validation : vérifiez les champs de la soutenance");
+            redirectAttributes.addFlashAttribute(ATTR_ERROR, formatValidationErrors(bindingResult, "SOUTENANCE"));
             return redirectToGerer(apprentiId);
         }
 
@@ -213,6 +209,26 @@ public class DossierAnnuelControleur {
 
     private String redirectToGerer(Integer apprentiId) {
         return REDIRECT_PREFIX + apprentiId + GERER_SUFFIX;
+    }
+
+    private String formatValidationErrors(BindingResult bindingResult, String prefix) {
+        StringBuilder errorMessage = new StringBuilder();
+        bindingResult.getFieldErrors().forEach(error -> {
+            String fieldName = getFieldDisplayName(error.getField());
+            errorMessage.append(fieldName).append(" : ").append(error.getDefaultMessage()).append("<br>");
+        });
+        return prefix + ":" + errorMessage;
+    }
+
+    private String getFieldDisplayName(String fieldName) {
+        return switch (fieldName) {
+            case "date" -> "Date";
+            case "format" -> "Format";
+            case "commentaires" -> "Commentaires";
+            case "sujet" -> "Sujet";
+            case "noteFinale" -> "Note finale";
+            default -> fieldName;
+        };
     }
 }
 

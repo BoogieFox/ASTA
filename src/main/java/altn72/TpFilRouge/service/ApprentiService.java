@@ -39,6 +39,30 @@ public class ApprentiService {
         return apprentiRepository.findAll();
     }
 
+    /**
+     * Récupère tous les apprentis actifs (non archivés).
+     * Un apprenti est considéré comme actif si sa promotion est L1, L2 ou L3.
+     *
+     * @return la liste des apprentis actifs
+     */
+    public List<Apprenti> getApprentisActifs() {
+        return apprentiRepository.findAll().stream()
+                .filter(apprenti -> apprenti.getPromotion() != Promotion.ARCHIVE)
+                .toList();
+    }
+
+    /**
+     * Récupère tous les apprentis archivés.
+     * Un apprenti est considéré comme archivé si sa promotion est ARCHIVE.
+     *
+     * @return la liste des apprentis archivés
+     */
+    public List<Apprenti> getApprentisArchives() {
+        return apprentiRepository.findAll().stream()
+                .filter(apprenti -> apprenti.getPromotion() == Promotion.ARCHIVE)
+                .toList();
+    }
+
     public Optional<Apprenti> getUnApprenti(Integer idApprenti) {
         return apprentiRepository.findById(idApprenti);
     }
@@ -106,6 +130,54 @@ public class ApprentiService {
         apprenti.setEmail(dto.getEmail());
         apprenti.setTelephone(dto.getTelephone());
         apprenti.setMajeure(dto.getMajeure());
+
+        return apprentiRepository.save(apprenti);
+    }
+
+    /**
+     * Modifie l'entreprise d'un apprenti existant.
+     *
+     * @param apprentiId l'ID de l'apprenti à modifier
+     * @param entrepriseId l'ID de la nouvelle entreprise (peut être null pour retirer l'entreprise)
+     * @return l'apprenti mis à jour
+     * @throws RessourceIntrouvableException si l'apprenti ou l'entreprise n'existe pas
+     */
+    @Transactional
+    public Apprenti modifierEntreprise(Integer apprentiId, Integer entrepriseId) {
+        Apprenti apprenti = apprentiRepository.findById(apprentiId)
+                .orElseThrow(() -> new RessourceIntrouvableException("Apprenti", apprentiId));
+
+        if (entrepriseId != null) {
+            Entreprise entreprise = entrepriseRepository.findById(entrepriseId)
+                    .orElseThrow(() -> new RessourceIntrouvableException("Entreprise", entrepriseId));
+            apprenti.setEntreprise(entreprise);
+        } else {
+            apprenti.setEntreprise(null);
+        }
+
+        return apprentiRepository.save(apprenti);
+    }
+
+    /**
+     * Modifie le maître d'apprentissage d'un apprenti existant.
+     *
+     * @param apprentiId l'ID de l'apprenti à modifier
+     * @param maitreApprentissageId l'ID du nouveau maître d'apprentissage (peut être null pour retirer le maître)
+     * @return l'apprenti mis à jour
+     * @throws RessourceIntrouvableException si l'apprenti ou le maître d'apprentissage n'existe pas
+     */
+    @Transactional
+    public Apprenti modifierMaitreApprentissage(Integer apprentiId, Integer maitreApprentissageId) {
+        Apprenti apprenti = apprentiRepository.findById(apprentiId)
+                .orElseThrow(() -> new RessourceIntrouvableException("Apprenti", apprentiId));
+
+        if (maitreApprentissageId != null) {
+            MaitreApprentissage maitreApprentissage = maitreApprentissageRepository.findById(maitreApprentissageId)
+                    .orElseThrow(() -> new RessourceIntrouvableException("Maître d'apprentissage", maitreApprentissageId));
+            apprenti.setMaitreApprentissage(maitreApprentissage);
+        } else {
+            apprenti.setMaitreApprentissage(null);
+        }
 
         return apprentiRepository.save(apprenti);
     }

@@ -58,6 +58,18 @@
             background-color: #f1f5f9;
             color: #475569;
         }
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+        }
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+        .empty-state-message {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
     </style>
 </head>
 <body>
@@ -97,12 +109,12 @@
         <div id="encours-content" class="tab-content active">
             <div class="card">
                 <!-- Message si la liste est vide -->
-                <div th:if="${#lists.isEmpty(apprentis)}" class="empty-message">
+                <div th:if="${#lists.isEmpty(apprentisActifs)}" class="empty-message">
                     La liste est vide. Ajoutez au moins un apprenti
                 </div>
                 
                 <!-- Table si la liste n'est pas vide -->
-                <div th:if="${!#lists.isEmpty(apprentis)}" class="table-container">
+                <div th:if="${!#lists.isEmpty(apprentisActifs)}" class="table-container">
                     <table>
                         <thead>
                             <tr>
@@ -117,13 +129,15 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr th:each="apprenti : ${apprentis}">
+                            <tr th:each="apprenti : ${apprentisActifs}">
                                 <td th:text="${apprenti.nom}">Dupont</td>
                                 <td th:text="${apprenti.prenom}">Sophie</td>
                                 <td th:text="${apprenti.email}">sophie.dupont@example.com</td>
                                 <td th:text="${apprenti.telephone}">06 12 34 56 78</td>
                                 <td th:text="${apprenti.majeure}">Cybersécurité</td>
-                                <td th:text="${apprenti.promotion.label}">L1</td>
+                                <td>
+                                    <span class="status-badge status-active" th:text="${apprenti.promotion.label}">L1</span>
+                                </td>
                                 <td th:text="${apprenti.entreprise != null ? apprenti.entreprise.raisonSociale : 'N/A'}">TechCorp</td>
                                 <td>
                                     <div class="table-actions">
@@ -139,9 +153,48 @@
 
         <!-- Tab Archivé -->
         <div id="archive-content" class="tab-content">
-            <div class="empty-state">
-                <div class="empty-state-icon">📁</div>
-                <p class="empty-state-message">Aucun apprenti archivé pour le moment.</p>
+            <div class="card">
+                <!-- Message si la liste est vide -->
+                <div th:if="${#lists.isEmpty(apprentisArchives)}" class="empty-state">
+                    <div class="empty-state-icon">📁</div>
+                    <p class="empty-state-message">Aucun apprenti archivé pour le moment.</p>
+                </div>
+
+                <!-- Table si la liste n'est pas vide -->
+                <div th:if="${!#lists.isEmpty(apprentisArchives)}" class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nom</th>
+                                <th>Prénom</th>
+                                <th>Email</th>
+                                <th>Téléphone</th>
+                                <th>Majeure</th>
+                                <th>Statut</th>
+                                <th>Entreprise</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="apprenti : ${apprentisArchives}">
+                                <td th:text="${apprenti.nom}">Dupont</td>
+                                <td th:text="${apprenti.prenom}">Sophie</td>
+                                <td th:text="${apprenti.email}">sophie.dupont@example.com</td>
+                                <td th:text="${apprenti.telephone}">06 12 34 56 78</td>
+                                <td th:text="${apprenti.majeure}">Cybersécurité</td>
+                                <td>
+                                    <span class="status-badge status-archived">ARCHIVÉ</span>
+                                </td>
+                                <td th:text="${apprenti.entreprise != null ? apprenti.entreprise.raisonSociale : 'N/A'}">TechCorp</td>
+                                <td>
+                                    <div class="table-actions">
+                                        <a th:href="@{/apprentis/{id}/historique(id=${apprenti.apprentiId})}" class="btn btn-primary btn-small">📚 Historique</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
 

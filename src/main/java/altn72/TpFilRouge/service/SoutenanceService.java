@@ -54,10 +54,18 @@ public class SoutenanceService {
 
     @Transactional
     public void supprimerSoutenance(Integer soutenanceId) {
-        if (!soutenanceRepository.existsById(soutenanceId)) {
-            throw new RessourceIntrouvableException("Soutenance", soutenanceId);
+        Soutenance soutenance = soutenanceRepository.findById(soutenanceId)
+                .orElseThrow(() -> new RessourceIntrouvableException("Soutenance", soutenanceId));
+
+        // Casser la relation bidirectionnelle avec le DossierAnnuel
+        DossierAnnuel dossierAnnuel = soutenance.getDossierAnnuel();
+        if (dossierAnnuel != null) {
+            dossierAnnuel.setSoutenance(null);
+            dossierAnnuelRepository.save(dossierAnnuel);
         }
-        soutenanceRepository.deleteById(soutenanceId);
+
+        // Supprimer la soutenance
+        soutenanceRepository.delete(soutenance);
     }
 }
 

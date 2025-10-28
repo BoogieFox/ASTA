@@ -41,7 +41,9 @@ public class EntrepriseControleur {
 
     // Formulaire de création d'une nouvelle entreprise
     @GetMapping("/nouveau")
-    public String afficherFormulaireCreation(HttpSession session, Model model) {
+    public String afficherFormulaireCreation(@RequestParam(required = false) String returnTo,
+                                            HttpSession session,
+                                            Model model) {
         // Récupérer les données d'apprenti depuis la session
         CreerApprentiDto apprentiData = (CreerApprentiDto) session.getAttribute("apprentiData");
         if (apprentiData == null) {
@@ -50,6 +52,7 @@ public class EntrepriseControleur {
         
         model.addAttribute("entreprise", new CreerEntrepriseDto());
         model.addAttribute("apprentiData", apprentiData);
+        model.addAttribute("returnTo", returnTo);
         return "entreprises/formulaire";
     }
 
@@ -57,6 +60,7 @@ public class EntrepriseControleur {
     @PostMapping("/nouveau")
     public String creerEntreprise(@Valid @ModelAttribute("entreprise") CreerEntrepriseDto dto,
                                   BindingResult bindingResult,
+                                  @RequestParam(required = false) String returnTo,
                                   HttpSession session,
                                   Model model) {
         // Récupérer les données d'apprenti depuis la session
@@ -67,6 +71,7 @@ public class EntrepriseControleur {
         
         if (bindingResult.hasErrors()) {
             model.addAttribute("apprentiData", apprentiData);
+            model.addAttribute("returnTo", returnTo);
             return "entreprises/formulaire";
         }
 
@@ -78,11 +83,16 @@ public class EntrepriseControleur {
             // après avoir récupéré les données
             // session.removeAttribute("apprentiData"); // ← SUPPRIMÉ
             
-            // Rediriger vers le formulaire d'apprenti avec message de succès
-            return "redirect:/apprentis/nouveau?success=entreprise-created";
+            // Rediriger vers la page appropriée
+            if (returnTo != null && !returnTo.isEmpty()) {
+                return "redirect:/" + returnTo + "?success=entreprise-created";
+            } else {
+                return "redirect:/apprentis/nouveau?success=entreprise-created";
+            }
         } catch (EntrepriseDejaExistanteException e) {
             model.addAttribute("errorMessage", e.getMessage());
             model.addAttribute("apprentiData", apprentiData);
+            model.addAttribute("returnTo", returnTo);
             return "entreprises/formulaire";
         }
     }

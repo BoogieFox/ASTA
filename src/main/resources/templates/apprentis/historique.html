@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="'Historique - ' + ${apprenti.prenom} + ' ' + ${apprenti.nom} + ' - ASTA'">Historique - ASTA</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .timeline {
+            position: relative;
+            padding-left: 2rem;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(to bottom, var(--primary-color), #94a3b8);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 2rem;
+            padding-left: 2rem;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -2rem;
+            top: 0.5rem;
+            width: 1rem;
+            height: 1rem;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            border: 3px solid white;
+            box-shadow: 0 0 0 3px var(--primary-color);
+        }
+
+        .timeline-item.archived::before {
+            background-color: #94a3b8;
+            box-shadow: 0 0 0 3px #94a3b8;
+        }
+
+        .year-card {
+            background-color: white;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .year-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .year-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .year-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .badge-l1 {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+
+        .badge-l2 {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-l3 {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+
+        .badge-archive {
+            background-color: #f1f5f9;
+            color: #475569;
+        }
+
+        .dossier-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .dossier-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .section-subtitle {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            background-color: var(--background);
+            padding: 1rem;
+            border-radius: 0.375rem;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .info-value {
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+
+        .empty-notice {
+            background-color: var(--background);
+            padding: 1.5rem;
+            border-radius: 0.375rem;
+            text-align: center;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        .apprenti-summary {
+            background: linear-gradient(135deg, var(--primary-color), #3b82f6);
+            color: white;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .apprenti-name {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .apprenti-info {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .apprenti-info-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-content">
+            <a href="/" class="navbar-brand">ASTA</a>
+            <ul class="navbar-menu">
+                <li><a href="/">Accueil</a></li>
+                <li><a href="/apprentis">Apprentis</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <div class="page-header-actions">
+                <h1>📚 Historique complet</h1>
+                <a href="/apprentis" class="btn btn-secondary">← Retour à la liste</a>
+            </div>
+        </div>
+
+        <!-- Résumé de l'apprenti -->
+        <div class="apprenti-summary">
+            <div class="apprenti-name" th:text="${apprenti.prenom} + ' ' + ${apprenti.nom}">Nom Prénom</div>
+            <div class="apprenti-info">
+                <div class="apprenti-info-item">
+                    <span>📧</span>
+                    <span th:text="${apprenti.email}">email@example.com</span>
+                </div>
+                <div class="apprenti-info-item">
+                    <span>📱</span>
+                    <span th:text="${apprenti.telephone}">0123456789</span>
+                </div>
+                <div class="apprenti-info-item">
+                    <span>🎓</span>
+                    <span th:text="${apprenti.majeure}">Majeure</span>
+                </div>
+                <div class="apprenti-info-item" th:if="${apprenti.entreprise != null}">
+                    <span>🏢</span>
+                    <span th:text="${apprenti.entreprise.raisonSociale}">Entreprise</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Timeline des dossiers annuels -->
+        <div class="timeline">
+            <!-- Dossier L1 -->
+            <div class="timeline-item" th:if="${dossierL1 != null}">
+                <div class="year-card">
+                    <div class="year-header">
+                        <h2 class="year-title">🎓 Première année</h2>
+                        <span class="year-badge badge-l1">L1</span>
+                    </div>
+
+                    <!-- Visite -->
+                    <div class="dossier-section">
+                        <div class="section-subtitle">📅 Visite</div>
+                        <div th:if="${dossierL1.visite != null}" class="info-grid">
+                            <div class="info-item">
+                                <span class="info-label">Date</span>
+                                <span class="info-value" th:text="${#temporals.format(dossierL1.visite.date, 'dd/MM/yyyy')}">-</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Format</span>
+                                <span class="info-value" th:text="${dossierL1.visite.format}">-</span>
+                            </div>
+                            <div class="info-item" th:if="${dossierL1.visite.commentaires != null}" style="grid-column: 1 / -1;">
+                                <span class="info-label">Commentaires</span>
+                                <span class="info-value" th:text="${dossierL1.visite.commentaires}">-</span>
+                            </div>
+                        </div>
+                        <div th:if="${dossierL1.visite == null}" class="empty-notice">Aucune visite enregistrée</div>
+                    </div>
+
+                    <!-- Soutenance -->
+                    <div class="dossier-section">
+                        <div class="section-subtitle">🎤 Soutenance</div>
+                        <div th:if="${dossierL1.soutenance != null}" class="info-grid">
+                            <div class="info-item">
+                                <span class="info-label">Date</span>
+                                <span class="info-value" th:text="${#temporals.format(dossierL1.soutenance.date, 'dd/MM/yyyy')}">-</span>
+                            </div>
+                            <div class="info-item" th:if="${dossierL1.soutenance.noteFinale != null}">
+                                <span class="info-label">Note finale</span>
+                                <span class="info-value" th:text="${dossierL1.soutenance.noteFinale} + '/20'">-</span>
+                            </div>
+                            <div class="info-item" th:if="${dossierL1.soutenance.commentaires != null}" style="grid-column: 1 / -1;">
+                                <span class="info-label">Commentaires</span>
+                                <span class="info-value" th:text="${dossierL1.soutenance.commentaires}">-</span>
+                            </div>
+                        </div>
+                        <div th:if="${dossierL1.soutenance == null}" class="empty-notice">Aucune soutenance enregistrée</div>
+                    </div>
+
+                    <!-- Rapport -->
+                    <div class="dossier-section">
+                        <div class="section-subtitle">📄 Rapport</div>
+                        <div th:if="${dossierL1.rapport != null}" class="info-grid">
+                            <div class="info-item">
+                                <span class="info-label">Sujet</span>
+                                <span class="info-value" th:text="${dossierL1.rapport.sujet}">-</span>
+                            </div>
+                            <div class="info-item" th:if="${dossierL1.rapport.noteFinale != null}">
+                                <span class="info-label">Note finale</span>
+                                <span class="info-value" th:text="${dossierL1.rapport.noteFinale} + '/20'">-</span>
+                            </div>
+                            <div class="info-item" th:if="${dossierL1.rapport.commentaires != null}" style="grid-column: 1 / -1;">
+                                <span class="info-label">Commentaires</span>
+                                <span class="info-value" th:text="${dossierL1.rapport.commentaires}">-</span>
+                            </div>
+                        </div>
+                        <div th:if="${dossierL1.rapport == null}" class="empty-notice">Aucun rapport enregistré</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dossier L2 -->
+            <div class="timeline-item" th:if="${dossierL2 != null}">
+                <div class="year-card">
+                    <div class="year-header">
+                        <h2 class="year-title">🎓 Deuxième année</h2>
+                        <span class="year-badge badge-l2">L2</span>
+                    </div>
+
+                    <!-- Visite -->
+                    <div class="dossier-section">
+                        <div class="section-subtitle">📅 Visite</div>
+                        <div th:if="${dossierL2.visite != null}" class="info-grid">
+                            <div class="info-item">
+                                <span class="info-label">Date</span>
+                                <span class="info-value" th:text="${#temporals.format(dossierL2.visite.date, 'dd/MM/yyyy')}">-</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Format</span>
+                                <span class="info-value" th:text="${dossierL2.visite.format}">-</span>
+                            </div>
+                            <div class="info-item" th:if="${dossierL2.visite.commentaires != null}" style="grid-column: 1 / -1;">
+                                <span class="info-label">Commentaires</span>
+                                <span class="info-value" th:text="${dossierL2.visite.commentaires}">-</span>
+                            </div>
+                        </div>
+                        <div th:if="${dossierL2.visite == null}" class="empty-notice">Aucune visite enregistrée</div>
+                    </div>
+
+                    <!-- Soutenance -->
+                    <div class="dossier-section">
+                        <div class="section-subtitle">🎤 Soutenance</div>
+                        <div th:if="${dossierL2.soutenance != null}" class="info-grid">
+                            <div class="info-item">
+                                <span class="info-label">Date</span>
+                                <span class="info-value" th:text="${#temporals.format(dossierL2.soutenance.date, 'dd/MM/yyyy')}">-</span>
+                            </div>
+                            <div class="info-item" th:if="${dossierL2.soutenance.noteFinale != null}">
+                                <span class="info-label">Note finale</span>
+                                <span class="info-value" th:text="${dossierL2.soutenance.noteFinale} + '/20'">-</span>
+                            </div>
+                            <div class="info-item" th:if="${dossierL2.soutenance.commentaires != null}" style="grid-column: 1 / -1;">
+                                <span class="info-label">Commentaires</span>
+                                <span class="info-value" th:text="${dossierL2.soutenance.commentaires}">-</span>
+                            </div>
+                        </div>
+                        <div th:if="${dossierL2.soutenance == null}" class="empty-notice">Aucune soutenance enregistrée</div>
+                    </div>
+
+                    <!-- Rapport -->
+                    <div class="dossier-section">
+                        <div class="section-subtitle">📄 Rapport</div>
+                        <div th:if="${dossierL2.rapport != null}" class="info-grid">
+                            <div class="info-item">
+                                <span class="info-label">Sujet</span>
+                                <span class="info-value" th:text="${dossierL2.rapport.sujet}">-</span>
+                            </div>
+                            <div class="info-item" th:if="${dossierL2.rapport.noteFinale != null}">
+                                <span class="info-label">Note finale</span>
+                                <span class="info-value" th:text="${dossierL2.rapport.noteFinale} + '/20'">-</span>
+                            </div>
+                            <div class="info-item" th:if="${dossierL2.rapport.commentaires != null}" style="grid-column: 1 / -1;">
+                                <span class="info-label">Commentaires</span>
+                                <span class="info-value" th:text="${dossierL2.rapport.commentaires}">-</span>
+                            </div>
+                        </div>
+                        <div th:if="${dossierL2.rapport == null}" class="empty-notice">Aucun rapport enregistré</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dossier L3 -->
+            <div class="timeline-item" th:if="${dossierL3 != null}">
+                <div class="year-card">
+                    <div class="year-header">
+                        <h2 class="year-title">🎓 Troisième année</h2>
+                        <span class="year-badge badge-l3">L3</span>
+                    </div>
+
+                    <!-- Visite -->
+                    <div class="dossier-section">
+                        <div class="section-subtitle">📅 Visite</div>
+                        <div th:if="${dossierL3.visite != null}" class="info-grid">
+                            <div class="info-item">
+                                <span class="info-label">Date</span>
+                                <span class="info-value" th:text="${#temporals.format(dossierL3.visite.date, 'dd/MM/yyyy')}">-</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Format</span>
+                                <span class="info-value" th:text="${dossierL3.visite.format}">-</span>
+                            </div>
+                            <div class="info-item" th:if="${dossierL3.visite.commentaires != null}" style="grid-column: 1 / -1;">
+                                <span class="info-label">Commentaires</span>
+                                <span class="info-value" th:text="${dossierL3.visite.commentaires}">-</span>
+                            </div>
+                        </div>
+                        <div th:if="${dossierL3.visite == null}" class="empty-notice">Aucune visite enregistrée</div>
+                    </div>
+
+                    <!-- Soutenance -->
+                    <div class="dossier-section">
+                        <div class="section-subtitle">🎤 Soutenance</div>
+                        <div th:if="${dossierL3.soutenance != null}" class="info-grid">
+                            <div class="info-item">
+                                <span class="info-label">Date</span>
+                                <span class="info-value" th:text="${#temporals.format(dossierL3.soutenance.date, 'dd/MM/yyyy')}">-</span>
+                            </div>
+                            <div class="info-item" th:if="${dossierL3.soutenance.noteFinale != null}">
+                                <span class="info-label">Note finale</span>
+                                <span class="info-value" th:text="${dossierL3.soutenance.noteFinale} + '/20'">-</span>
+                            </div>
+                            <div class="info-item" th:if="${dossierL3.soutenance.commentaires != null}" style="grid-column: 1 / -1;">
+                                <span class="info-label">Commentaires</span>
+                                <span class="info-value" th:text="${dossierL3.soutenance.commentaires}">-</span>
+                            </div>
+                        </div>
+                        <div th:if="${dossierL3.soutenance == null}" class="empty-notice">Aucune soutenance enregistrée</div>
+                    </div>
+
+                    <!-- Rapport -->
+                    <div class="dossier-section">
+                        <div class="section-subtitle">📄 Rapport</div>
+                        <div th:if="${dossierL3.rapport != null}" class="info-grid">
+                            <div class="info-item">
+                                <span class="info-label">Sujet</span>
+                                <span class="info-value" th:text="${dossierL3.rapport.sujet}">-</span>
+                            </div>
+                            <div class="info-item" th:if="${dossierL3.rapport.noteFinale != null}">
+                                <span class="info-label">Note finale</span>
+                                <span class="info-value" th:text="${dossierL3.rapport.noteFinale} + '/20'">-</span>
+                            </div>
+                            <div class="info-item" th:if="${dossierL3.rapport.commentaires != null}" style="grid-column: 1 / -1;">
+                                <span class="info-label">Commentaires</span>
+                                <span class="info-value" th:text="${dossierL3.rapport.commentaires}">-</span>
+                            </div>
+                        </div>
+                        <div th:if="${dossierL3.rapport == null}" class="empty-notice">Aucun rapport enregistré</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Badge archivé -->
+            <div class="timeline-item archived">
+                <div class="year-card">
+                    <div class="year-header">
+                        <h2 class="year-title">✅ Formation terminée</h2>
+                        <span class="year-badge badge-archive">ARCHIVÉ</span>
+                    </div>
+                    <p style="color: var(--text-secondary); text-align: center; margin: 0;">
+                        Cet apprenti a terminé sa formation avec succès.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

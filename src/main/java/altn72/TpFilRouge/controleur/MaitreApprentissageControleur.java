@@ -30,7 +30,9 @@ public class MaitreApprentissageControleur {
 
     // Formulaire de création d'un nouveau maître d'apprentissage
     @GetMapping("/nouveau")
-    public String afficherFormulaireCreation(HttpSession session, Model model) {
+    public String afficherFormulaireCreation(@RequestParam(required = false) String returnTo,
+                                            HttpSession session,
+                                            Model model) {
         // Récupérer les données d'apprenti depuis la session
         CreerApprentiDto apprentiData = (CreerApprentiDto) session.getAttribute("apprentiData");
         if (apprentiData == null) {
@@ -39,6 +41,7 @@ public class MaitreApprentissageControleur {
 
         model.addAttribute("maitreApprentissage", new CreerMaitreApprentissageDto());
         model.addAttribute("apprentiData", apprentiData);
+        model.addAttribute("returnTo", returnTo);
         return "maitresApprentissage/formulaire";
     }
 
@@ -46,6 +49,7 @@ public class MaitreApprentissageControleur {
     @PostMapping("/nouveau")
     public String creerMaitreApprentissage(@Valid @ModelAttribute("maitreApprentissage") CreerMaitreApprentissageDto dto,
                                           BindingResult bindingResult,
+                                          @RequestParam(required = false) String returnTo,
                                           HttpSession session,
                                           Model model) {
         // Récupérer les données d'apprenti depuis la session
@@ -56,6 +60,7 @@ public class MaitreApprentissageControleur {
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("apprentiData", apprentiData);
+            model.addAttribute("returnTo", returnTo);
             return "maitresApprentissage/formulaire";
         }
 
@@ -67,11 +72,16 @@ public class MaitreApprentissageControleur {
             // après avoir récupéré les données
             // session.removeAttribute("apprentiData"); // ← SUPPRIMÉ
 
-            // Rediriger vers le formulaire d'apprenti avec message de succès
-            return "redirect:/apprentis/nouveau?success=maitre-created";
+            // Rediriger vers la page appropriée
+            if (returnTo != null && !returnTo.isEmpty()) {
+                return "redirect:/" + returnTo + "?success=maitre-created";
+            } else {
+                return "redirect:/apprentis/nouveau?success=maitre-created";
+            }
         } catch (MaitreApprentissageDejaExistantException e) {
             model.addAttribute("errorMessage", e.getMessage());
             model.addAttribute("apprentiData", apprentiData);
+            model.addAttribute("returnTo", returnTo);
             return "maitresApprentissage/formulaire";
         }
     }

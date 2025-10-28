@@ -9,8 +9,6 @@ import altn72.TpFilRouge.modele.repository.RapportRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
 
 @Service
 public class RapportService {
@@ -57,10 +55,18 @@ public class RapportService {
 
     @Transactional
     public void supprimerRapport(Integer rapportId) {
-        if (!rapportRepository.existsById(rapportId)) {
-            throw new RessourceIntrouvableException("Rapport", rapportId);
+        Rapport rapport = rapportRepository.findById(rapportId)
+                .orElseThrow(() -> new RessourceIntrouvableException("Rapport", rapportId));
+
+        // Casser la relation bidirectionnelle avec le DossierAnnuel
+        DossierAnnuel dossierAnnuel = rapport.getDossierAnnuel();
+        if (dossierAnnuel != null) {
+            dossierAnnuel.setRapport(null);
+            dossierAnnuelRepository.save(dossierAnnuel);
         }
-        rapportRepository.deleteById(rapportId);
+
+        // Supprimer le rapport
+        rapportRepository.delete(rapport);
     }
 
 }

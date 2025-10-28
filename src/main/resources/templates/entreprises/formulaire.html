@@ -59,7 +59,9 @@
 
         <div class="card">
             <form th:action="@{/entreprises/nouveau}" th:object="${entreprise}" method="post">
-                
+                <!-- Champ caché pour transmettre l'URL de retour -->
+                <input type="hidden" name="returnTo" th:value="${returnTo}">
+
                 <div class="form-group">
                     <label for="raisonSociale">Raison Sociale *</label>
                     <input type="text" id="raisonSociale" th:field="*{raisonSociale}" required>
@@ -80,8 +82,9 @@
                 </div>
 
                 <div class="form-actions">
-                    <button type="submit" class="btn btn-primary">💾 Enregistrer et retourner au formulaire d'apprenti</button>
-                    <a href="/apprentis/nouveau" class="btn btn-secondary">❌ Annuler et retourner au formulaire d'apprenti</a>
+                    <button type="submit" class="btn btn-primary">💾 Enregistrer et retourner</button>
+                    <a th:href="${returnTo != null && !#strings.isEmpty(returnTo)} ? '/' + ${returnTo} : '/apprentis/nouveau'"
+                       class="btn btn-secondary">❌ Annuler</a>
                 </div>
             </form>
         </div>
