@@ -50,7 +50,7 @@ Nous aimerions mettre en avant les points suivants :
 
 2. **Gestion d'erreurs** :
    - Handler global d'exceptions (`@ControllerAdvice`) pour afficher une page d'erreur custom lorsqu'on essait d'accéder à une ressource qui n'éxiste pas.
-   - Exceptions métier personnalisées (ApprentiDejaExistantException, RessourceIntrouvableException, etc.) gérés dans les services directement avec l'utilisation de FlashAttribute pour les messages d'erreurs/succès.
+   - Exceptions métier personnalisées (ApprentiDejaExistantException, etc.) gérés dans les services directement avec l'utilisation de FlashAttribute pour les messages d'erreurs/succès.
 
 3. **Sécurité** :
    - Authentification avec Spring Security
@@ -59,11 +59,6 @@ Nous aimerions mettre en avant les points suivants :
    - Gestion de sessions sécurisée
 
 
-4. **Sécurité** :
-   - Authentification avec Spring Security
-   - Hashage des mots de passe avec BCrypt
-   - Protection des routes nécessitant une authentification, et redirection
-   - Gestion de sessions sécurisée
 
 5. **Gestion avancée des relations JPA** :
     - Relations bidirectionnelles (OneToMany, ManyToOne, OneToOne)
