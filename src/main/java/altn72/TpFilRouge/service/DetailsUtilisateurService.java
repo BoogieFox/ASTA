@@ -9,11 +9,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
-public class CustomUserDetailsService implements UserDetailsService {
+public class DetailsUtilisateurService implements UserDetailsService {
 
     private final TuteurRepository repo;
 
-    public CustomUserDetailsService(TuteurRepository repo) {
+    public DetailsUtilisateurService(TuteurRepository repo) {
         this.repo = repo;
     }
 
@@ -22,7 +22,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         Tuteur tuteur = repo.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Utilisateur inconnu"));
         return User.builder()
-                .username(tuteur.getEmail())
+                .username(tuteur.getPrenom())
                 .password(tuteur.getPassword())
                 .roles("TUTOR")
                 .build();

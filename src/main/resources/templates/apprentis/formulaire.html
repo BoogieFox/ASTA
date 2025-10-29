@@ -36,6 +36,7 @@
         <div class="navbar-content">
             <a href="/apprentis" class="navbar-brand">ASTA</a>
             <ul class="navbar-menu">
+                <li><p>Bonjour <b th:text="${#authentication.name}">Utilisateur</b> !</p>
                 <li><a href="/apprentis">Accueil</a></li>
                 <li>
                     <form th:action="@{/logout}" method="post" style="display: inline;">

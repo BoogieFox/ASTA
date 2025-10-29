@@ -1,6 +1,6 @@
 package altn72.TpFilRouge.Security;
 
-import altn72.TpFilRouge.service.CustomUserDetailsService;
+import altn72.TpFilRouge.service.DetailsUtilisateurService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -14,9 +14,9 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 public class SecurityConfig {
 
-    private final CustomUserDetailsService userDetailsService;
+    private final DetailsUtilisateurService userDetailsService;
 
-    public SecurityConfig(CustomUserDetailsService userDetailsService) {
+    public SecurityConfig(DetailsUtilisateurService userDetailsService) {
         this.userDetailsService = userDetailsService;
     }
 
