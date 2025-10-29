@@ -176,20 +176,7 @@
     </style>
 </head>
 <body>
-    <nav class="navbar">
-        <div class="navbar-content">
-            <a href="/apprentis" class="navbar-brand">ASTA</a>
-            <ul class="navbar-menu">
-                <li><p>Bonjour <b th:text="${#authentication.name}">Utilisateur</b> !</p>
-                <li><a href="/apprentis">Accueil</a></li>
-                <li>
-                    <form th:action="@{/logout}" method="post" style="display: inline;">
-                        <button type="submit" class="btn btn-secondary btn-small">Déconnexion</button>
-                    </form>
-                </li>
-            </ul>
-        </div>
-    </nav>
+    <div th:replace="fragments :: navbar"></div>
 
     <div class="container">
         <div class="page-header">

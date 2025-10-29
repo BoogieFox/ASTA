@@ -1,4 +1,4 @@
-# Rapport de Projet - ASTA - Bryan Bohec - Armando Lopes de Sousa, Benjaming Thibout (ING2 APP LSI2)
+# Rapport de Projet - ASTA - Bryan Bohec, Armando Lopes de Sousa, Benjamin Thibout (ING2 APP LSI2)
 ## Application de Suivi de Tutorat d'Apprentis
 
 ---
@@ -34,7 +34,7 @@ Pour tester l'application, utilisez les identifiants suivants :
 
 - Accessible depuis l'url : ************
 
-- Lancer le projet en local, il y a normalement pas de configuration à effectuer
+- Lancer le projet en local, il n'y a normalement pas de configuration à effectuer
 
 ---
 
@@ -44,13 +44,13 @@ Pour tester l'application, utilisez les identifiants suivants :
 
 Nous aimerions mettre en avant les points suivants :
 
-1. **- Validation des donnée** :
-   - Géré avec Bean Validation dans les DTO qui nous permet de fournir des messages d'erreur explicite directement dans les champs grâce à BindingResult
+1. **- Validation des données** :
+   - Gérée avec Bean Validation dans les DTO qui nous permet de fournir des messages d'erreur explicites directement dans les champs grâce à BindingResult
    - Messages de feedback clairs (succès/erreur)
 
 2. **Gestion d'erreurs** :
-   - Handler global d'exceptions (`@ControllerAdvice`) pour afficher une page d'erreur custom lorsqu'on essait d'accéder à une ressource qui n'éxiste pas.
-   - Exceptions métier personnalisées (ApprentiDejaExistantException, RessourceIntrouvableException, etc.) gérés dans les services directement avec l'utilisation de FlashAttribute pour les messages d'erreurs/succès.
+   - Handler global d'exceptions (`@ControllerAdvice`) pour afficher une page d'erreur spécifique lorsque l'on essaie d'accéder à une ressource qui n'éxiste pas.
+   - Exceptions métier personnalisées (ApprentiDejaExistantException, RessourceIntrouvableException, etc.) gérées dans les services directement avec l'utilisation de FlashAttribute pour les messages d'erreurs/succès.
 
 3. **Sécurité** :
    - Authentification avec Spring Security
@@ -58,14 +58,7 @@ Nous aimerions mettre en avant les points suivants :
    - Protection des routes nécessitant une authentification, et redirection
    - Gestion de sessions sécurisée
 
-
-4. **Sécurité** :
-   - Authentification avec Spring Security
-   - Hashage des mots de passe avec BCrypt
-   - Protection des routes nécessitant une authentification, et redirection
-   - Gestion de sessions sécurisée
-
-5. **Gestion avancée des relations JPA** :
+4. **Gestion avancée des relations JPA** :
     - Relations bidirectionnelles (OneToMany, ManyToOne, OneToOne)
    - Gestion du cycle de vie des entités avec cascade et orphanRemoval
 
@@ -79,7 +72,7 @@ Nous aimerions mettre en avant les points suivants :
 
 ### c) Quelle a été la contribution de chaque membre de l'équipe ?
 
-- Contribution faites à 3 : 
+- Contribution faite à 3 : 
     - Création de la structure de données (les modèles)
 - Contributions de Bryan :
     - Participation au front (nav, page de liste, page de création, page de modification)
@@ -110,13 +103,13 @@ Les relations bidirectionnelles offrent une grande flexibilité, mais nécessite
 
 
 #### Point 3 : **La gestion des exceptions**
-Nous avons trouvé qu'en Spring Boot, la gestion des exceptions (customs et globale) est particulièrement efficace et simple d'utilisation en terme de code. Le document fourni (Clean Code - Gestion des exceptions) est très clair et nous a pas mal aiguillé sur les bonnes pratiques.
+Nous avons trouvé qu'en Spring Boot, la gestion des exceptions (customs et globale) est particulièrement efficace et simple d'utilisation en termes de code. Le document fourni (Clean Code - Gestion des exceptions) est très clair et a permi de bien nous aiguiller sur les bonnes pratiques.
 
 
 
 ### e) Les fonctionnalités que vous n'avez pas eu le temps de mettre en œuvre et pourquoi
 
-Nous estimons que nous avons rempli le cahier des charges minimum du projet. Nous pensons qu'il n'y a pas vraiment de fonctionnalités que nous avant manqués. Cependant, il reste pour nous un point qui n'a pas été évoqué dans le rapport : la gestions de plusieurs utilisateurs simultanés. Nous n'avons pas lié le tuteur à des apprentis spécifiques. C'est à dire que nous avons un tuteur qui a accès a tous les apprentis du système. Il faudrait sécuriser les endpoints et services pour s'assurer de récupérer uniquement les apprentis du tuteur qui est actuellement connecté.
+Nous estimons que nous avons rempli le cahier des charges minimum du projet. Nous pensons qu'il n'y a pas vraiment de fonctionnalités que nous avont manqués. Cependant, il reste pour nous un point qui n'a pas été évoqué dans le rapport : la gestion de plusieurs utilisateurs simultanés. Nous n'avons pas lié le tuteur à des apprentis spécifiques. C'est-à-dire que nous avons un tuteur qui a accès à tous les apprentis du système. Il faudrait sécuriser les endpoints et services pour s'assurer de récupérer uniquement les apprentis du tuteur qui est actuellement connecté.
 
 ### f) À quel niveau, dans votre projet, avez-vous réussi à respecter entièrement ou partiellement les principes SOLID ?
 
