@@ -34,7 +34,7 @@ Pour tester l'application, utilisez les identifiants suivants :
 
 - Accessible depuis l'url : ************
 
-- Lancer le projet en local, il n'y a normalement pas de configuration à effectuer
+- Lancer le projet en local, il y a normalement pas de configuration à effectuer
 
 ---
 
@@ -44,8 +44,8 @@ Pour tester l'application, utilisez les identifiants suivants :
 
 Nous aimerions mettre en avant les points suivants :
 
-1. **- Validation des données** :
-   - Gérée avec Bean Validation dans les DTO qui nous permet de fournir des messages d'erreur explicites directement dans les champs grâce à BindingResult
+1. **- Validation des donnée** :
+   - Géré avec Bean Validation dans les DTO qui nous permet de fournir des messages d'erreur explicite directement dans les champs grâce à BindingResult
    - Messages de feedback clairs (succès/erreur)
 
 2. **Gestion d'erreurs** :
