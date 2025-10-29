@@ -9,6 +9,11 @@ import altn72.TpFilRouge.modele.repository.SoutenanceRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+/**
+ * Service de gestion des soutenances.
+ * Gère la logique métier liée aux soutenances : création, modification, suppression et validation.
+ * Un dossier annuel ne peut contenir qu'une seule soutenance.
+ */
 @Service
 public class SoutenanceService {
     private final SoutenanceRepository soutenanceRepository;
@@ -19,6 +24,15 @@ public class SoutenanceService {
         this.dossierAnnuelRepository = dossierAnnuelRepository;
     }
 
+    /**
+     * Ajoute une nouvelle soutenance à un dossier annuel.
+     * Vérifie qu'aucune soutenance n'existe déjà pour ce dossier.
+     * 
+     * @param dto les données de la soutenance à créer
+     * @return la soutenance créée avec son ID généré
+     * @throws RessourceIntrouvableException si le dossier annuel n'existe pas
+     * @throws RuntimeException si une soutenance existe déjà pour ce dossier
+     */
     @Transactional
     public Soutenance ajouterSoutenance(CreerSoutenanceDto dto) {
         // Récupérer le dossier annuel
@@ -40,6 +54,14 @@ public class SoutenanceService {
         return soutenanceRepository.save(soutenance);
     }
 
+    /**
+     * Modifie une soutenance existante.
+     * 
+     * @param soutenanceId l'ID de la soutenance à modifier
+     * @param dto les nouvelles données de la soutenance
+     * @return la soutenance modifiée
+     * @throws RessourceIntrouvableException si la soutenance n'existe pas
+     */
     @Transactional
     public Soutenance modifierSoutenance(Integer soutenanceId, CreerSoutenanceDto dto) {
         Soutenance soutenance = soutenanceRepository.findById(soutenanceId)
@@ -52,6 +74,13 @@ public class SoutenanceService {
         return soutenanceRepository.save(soutenance);
     }
 
+    /**
+     * Supprime une soutenance.
+     * Gère correctement la relation bidirectionnelle avec le dossier annuel.
+     * 
+     * @param soutenanceId l'ID de la soutenance à supprimer
+     * @throws RessourceIntrouvableException si la soutenance n'existe pas
+     */
     @Transactional
     public void supprimerSoutenance(Integer soutenanceId) {
         Soutenance soutenance = soutenanceRepository.findById(soutenanceId)

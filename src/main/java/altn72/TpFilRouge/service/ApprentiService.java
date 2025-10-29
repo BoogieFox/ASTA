@@ -18,6 +18,11 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Service de gestion des apprentis.
+ * Gère la logique métier liée aux apprentis : création, modification, archivage,
+ * passage de promotion, et gestion des relations avec les entreprises et maîtres d'apprentissage.
+ */
 @Service
 public class ApprentiService {
     private final ApprentiRepository apprentiRepository;
@@ -35,6 +40,11 @@ public class ApprentiService {
         this.dossierAnnuelService = dossierAnnuelService;
     }
 
+    /**
+     * Récupère tous les apprentis.
+     * 
+     * @return la liste de tous les apprentis (actifs et archivés)
+     */
     public List<Apprenti> getApprentis() {
         return apprentiRepository.findAll();
     }
@@ -63,10 +73,26 @@ public class ApprentiService {
                 .toList();
     }
 
+    /**
+     * Récupère un apprenti par son identifiant.
+     * 
+     * @param idApprenti l'ID de l'apprenti
+     * @return un Optional contenant l'apprenti s'il existe, Optional.empty() sinon
+     */
     public Optional<Apprenti> getUnApprenti(Integer idApprenti) {
         return apprentiRepository.findById(idApprenti);
     }
 
+    /**
+     * Ajoute un nouvel apprenti dans le système.
+     * Crée automatiquement un dossier annuel pour la promotion L1.
+     * Vérifie que l'email n'est pas déjà utilisé.
+     * 
+     * @param dto les données de l'apprenti à créer
+     * @return l'apprenti créé avec son ID généré
+     * @throws ApprentiDejaExistantException si l'email existe déjà
+     * @throws RessourceIntrouvableException si l'entreprise ou le maître d'apprentissage spécifié n'existe pas
+     */
     @Transactional
     public Apprenti ajouterApprenti(CreerApprentiDto dto) {
         // Check si le mail est déjà utilisé

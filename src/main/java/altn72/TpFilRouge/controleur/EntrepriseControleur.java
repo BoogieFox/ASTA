@@ -5,6 +5,8 @@ import altn72.TpFilRouge.modele.Entreprise;
 import altn72.TpFilRouge.modele.dto.CreerApprentiDto;
 import altn72.TpFilRouge.modele.dto.CreerEntrepriseDto;
 import altn72.TpFilRouge.service.EntrepriseService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
@@ -14,6 +16,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+@Tag(name = "Pages des entreprises", description = "Endpoints des vues Thymeleaf liées à la gestion des entreprises")
 @Controller
 @RequestMapping("/entreprises")
 public class EntrepriseControleur {
@@ -39,7 +42,10 @@ public class EntrepriseControleur {
 
     // ========== Pages Thymeleaf ==========
 
-    // Formulaire de création d'une nouvelle entreprise
+    @Operation(
+        summary = "Formulaire de création d'une entreprise",
+        description = "Affiche la page Thymeleaf du formulaire pour créer une nouvelle entreprise."
+    )
     @GetMapping("/nouveau")
     public String afficherFormulaireCreation(@RequestParam(required = false) String returnTo,
                                             HttpSession session,
@@ -56,7 +62,10 @@ public class EntrepriseControleur {
         return "entreprises/formulaire";
     }
 
-    // Endpoint Thymeleaf pour créer une entreprise
+    @Operation(
+        summary = "Créer une entreprise",
+        description = "Traite le formulaire de création d'une entreprise et redirige vers la page d'origine avec un message de succès."
+    )
     @PostMapping("/nouveau")
     public String creerEntreprise(@Valid @ModelAttribute("entreprise") CreerEntrepriseDto dto,
                                   BindingResult bindingResult,

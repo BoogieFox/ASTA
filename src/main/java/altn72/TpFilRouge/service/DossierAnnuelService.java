@@ -11,6 +11,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+/**
+ * Service de gestion des dossiers annuels.
+ * Gère la logique métier liée aux dossiers annuels : création, consultation et récupération du dossier courant d'un apprenti.
+ */
 @Service
 public class DossierAnnuelService {
     private final DossierAnnuelRepository dossierAnnuelRepository;
@@ -22,15 +26,36 @@ public class DossierAnnuelService {
         this.apprentiRepository = apprentiRepository;
     }
 
+    /**
+     * Récupère un dossier annuel par son identifiant.
+     * 
+     * @param dossierAnnuelId l'ID du dossier annuel
+     * @return un Optional contenant le dossier annuel s'il existe, Optional.empty() sinon
+     */
     public Optional<DossierAnnuel> getUnDossierAnnuel(Integer dossierAnnuelId) {
         return dossierAnnuelRepository.findById(dossierAnnuelId);
     }
 
+    /**
+     * Récupère le dossier annuel courant d'un apprenti (correspondant à sa promotion actuelle).
+     * 
+     * @param apprentiId l'ID de l'apprenti
+     * @return un Optional contenant le dossier courant s'il existe, Optional.empty() sinon
+     */
     public Optional<DossierAnnuel> getDossierCourant(Integer apprentiId) {
         return apprentiRepository.findById(apprentiId)
                 .flatMap(apprenti -> dossierAnnuelRepository.findByApprentiAndPromotion(apprenti, apprenti.getPromotion()));
     }
 
+    /**
+     * Crée un nouveau dossier annuel pour la promotion actuelle d'un apprenti.
+     * Vérifie qu'aucun dossier n'existe déjà pour cette promotion.
+     * 
+     * @param apprentiId l'ID de l'apprenti
+     * @return le dossier annuel créé
+     * @throws RessourceIntrouvableException si l'apprenti n'existe pas
+     * @throws IllegalStateException si un dossier existe déjà pour cette promotion
+     */
     @Transactional
     public DossierAnnuel creerDossierCourant(Integer apprentiId) {
         Apprenti apprenti = apprentiRepository.findById(apprentiId)

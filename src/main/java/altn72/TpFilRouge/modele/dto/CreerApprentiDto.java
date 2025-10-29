@@ -7,33 +7,45 @@ import jakarta.validation.constraints.Size;
 
 import java.io.Serializable;
 
+/**
+ * DTO pour la création d'un apprenti.
+ * Contient toutes les informations nécessaires pour créer un nouvel apprenti,
+ * y compris les identifiants optionnels de l'entreprise et du maître d'apprentissage.
+ */
 public class CreerApprentiDto implements Serializable {
     
     private static final long serialVersionUID = 1L;
 
+    /** Nom de famille de l'apprenti */
     @NotBlank(message = "Le nom est obligatoire")
     @Size(max = 100, message = "Le nom ne doit pas dépasser 100 caractères")
     private String nom;
 
+    /** Prénom de l'apprenti */
     @NotBlank(message = "Le prénom est obligatoire")
     @Size(max = 100, message = "Le prénom ne doit pas dépasser 100 caractères")
     private String prenom;
 
+    /** Adresse email de l'apprenti (doit être unique) */
     @NotBlank(message = "L'email est obligatoire")
     @Email(message = "L'email doit être valide")
     @Size(max = 100, message = "L'email ne doit pas dépasser 100 caractères")
     private String email;
 
+    /** Numéro de téléphone de l'apprenti (10 à 15 chiffres) */
     @NotBlank(message = "Le téléphone est obligatoire")
     @Pattern(regexp = "^[0-9]{10,15}$", message = "Le téléphone doit contenir entre 10 et 15 chiffres")
     private String telephone;
 
+    /** Majeure ou spécialisation de l'apprenti */
     @NotBlank(message = "La majeure est obligatoire")
     @Size(max = 100, message = "La majeure ne doit pas dépasser 100 caractères")
     private String majeure;
 
+    /** Identifiant de l'entreprise (optionnel) */
     private Integer entrepriseId;
     
+    /** Identifiant du maître d'apprentissage (optionnel) */
     private Integer maitreApprentissageId;
 
     public CreerApprentiDto() {}

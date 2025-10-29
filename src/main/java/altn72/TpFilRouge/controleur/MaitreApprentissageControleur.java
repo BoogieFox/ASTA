@@ -5,6 +5,8 @@ import altn72.TpFilRouge.modele.MaitreApprentissage;
 import altn72.TpFilRouge.modele.dto.CreerApprentiDto;
 import altn72.TpFilRouge.modele.dto.CreerMaitreApprentissageDto;
 import altn72.TpFilRouge.service.MaitreApprentissageService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
@@ -14,6 +16,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+@Tag(name = "Pages des maîtres d'apprentissage", description = "Endpoints des vues Thymeleaf liées à la gestion des maîtres d'apprentissage")
 @Controller
 @RequestMapping("/maitre-apprentissage")
 public class MaitreApprentissageControleur {
@@ -28,7 +31,10 @@ public class MaitreApprentissageControleur {
 
     // ========== Pages Thymeleaf ==========
 
-    // Formulaire de création d'un nouveau maître d'apprentissage
+    @Operation(
+        summary = "Formulaire de création d'un maître d'apprentissage",
+        description = "Affiche la page Thymeleaf du formulaire pour créer un nouveau maître d'apprentissage."
+    )
     @GetMapping("/nouveau")
     public String afficherFormulaireCreation(@RequestParam(required = false) String returnTo,
                                             HttpSession session,
@@ -45,7 +51,10 @@ public class MaitreApprentissageControleur {
         return "maitresApprentissage/formulaire";
     }
 
-    // Endpoint Thymeleaf pour créer un maître d'apprentissage
+    @Operation(
+        summary = "Créer un maître d'apprentissage",
+        description = "Traite le formulaire de création d'un maître d'apprentissage et redirige vers la page d'origine avec un message de succès."
+    )
     @PostMapping("/nouveau")
     public String creerMaitreApprentissage(@Valid @ModelAttribute("maitreApprentissage") CreerMaitreApprentissageDto dto,
                                           BindingResult bindingResult,

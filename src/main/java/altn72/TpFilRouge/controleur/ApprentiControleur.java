@@ -6,6 +6,8 @@ import altn72.TpFilRouge.modele.DossierAnnuel;
 import altn72.TpFilRouge.modele.dto.CreerApprentiDto;
 import altn72.TpFilRouge.modele.dto.ModifierApprentiDto;
 import altn72.TpFilRouge.service.*;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
@@ -17,6 +19,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.List;
 import java.util.Optional;
 
+@Tag(name = "Pages des apprentis", description = "Endpoints des vues Thymeleaf liées à la gestion des apprentis")
 @Controller
 @RequestMapping("/apprentis")
 public class ApprentiControleur {
@@ -54,7 +57,10 @@ public class ApprentiControleur {
 
     // ========== Pages Thymeleaf ==========
 
-    // Liste des apprentis
+    @Operation(
+        summary = "Liste des apprentis",
+        description = "Affiche la page Thymeleaf avec la liste des apprentis actifs et archivés."
+    )
     @GetMapping
     public String listerApprentis(org.springframework.ui.Model model) {
         model.addAttribute("apprentisActifs", apprentiService.getApprentisActifs());
@@ -62,7 +68,10 @@ public class ApprentiControleur {
         return VIEW_LISTE;
     }
 
-    // Formulaire de création d'un nouvel apprenti
+    @Operation(
+        summary = "Formulaire de création d'un apprenti",
+        description = "Affiche la page Thymeleaf du formulaire pour créer un nouvel apprenti."
+    )
     @GetMapping("/nouveau")
     public String afficherFormulaireCreation(@RequestParam(required = false) String success,
                                              HttpSession session,
@@ -96,7 +105,10 @@ public class ApprentiControleur {
         return VIEW_FORMULAIRE;
     }
 
-    // Endpoint Thymeleaf pour créer un apprenti
+    @Operation(
+        summary = "Créer un apprenti",
+        description = "Traite le formulaire de création d'un apprenti et redirige vers la liste des apprentis."
+    )
     @PostMapping("/nouveau")
     public String creerApprenti(@Valid @ModelAttribute(ATTR_APPRENTI) CreerApprentiDto dto,
                                 BindingResult bindingResult,
@@ -114,34 +126,49 @@ public class ApprentiControleur {
     return REDIRECT_APPRENTIS;
     }
 
-    // Endpoint pour sauvegarder les données en session avant d'aller au formulaire d'entreprise
+    @Operation(
+        summary = "Sauvegarder en session pour créer une entreprise",
+        description = "Sauvegarde temporairement les données de l'apprenti en session et redirige vers le formulaire de création d'entreprise."
+    )
     @PostMapping("/sauvegarder-session")
     public String sauvegarderEnSession(@ModelAttribute CreerApprentiDto dto, HttpSession session) {
         session.setAttribute(SESSION_APPRENTI_DATA, dto);
         return "redirect:/entreprises/nouveau";
     }
 
-    // Endpoint pour sauvegarder les données en session avant d'aller au formulaire de maître d'apprentissage
+    @Operation(
+        summary = "Sauvegarder en session pour créer un maître d'apprentissage",
+        description = "Sauvegarde temporairement les données de l'apprenti en session et redirige vers le formulaire de création de maître d'apprentissage."
+    )
     @PostMapping("/sauvegarder-session-maitre")
     public String sauvegarderEnSessionMaitre(@ModelAttribute CreerApprentiDto dto, HttpSession session) {
         session.setAttribute(SESSION_APPRENTI_DATA, dto);
         return "redirect:/maitre-apprentissage/nouveau";
     }
 
-    // Formulaire de modification d'un apprenti (avec données mockées)
+    @Operation(
+        summary = "Formulaire de modification d'un apprenti",
+        description = "Affiche la page Thymeleaf du formulaire pour modifier un apprenti existant."
+    )
     @GetMapping("/{id}/modifier")
     public String afficherFormulaireModification(@PathVariable Integer id, Model model) {
         model.addAttribute(ATTR_IS_CREATION, false);
         return VIEW_FORMULAIRE;
     }
 
-    // Page dossier d'un apprenti (avec données mockées)
+    @Operation(
+        summary = "Page du dossier d'un apprenti",
+        description = "Affiche la page Thymeleaf du dossier détaillé d'un apprenti."
+    )
     @GetMapping("/{id}/dossier")
     public String afficherDossier(@PathVariable Integer id) {
         return "apprentis/dossier";
     }
 
-    // Page pour gérer un apprenti (consultation + modification en une seule page)
+    @Operation(
+        summary = "Page de gestion d'un apprenti",
+        description = "Affiche la page Thymeleaf pour gérer un apprenti (consultation et modification des informations)."
+    )
     @GetMapping("/{id}/gerer")
     public String gererApprenti(@PathVariable Integer id,
                                @RequestParam(required = false) String success,
@@ -176,7 +203,10 @@ public class ApprentiControleur {
         return VIEW_GERER;
     }
 
-    // Endpoint pour mettre à jour un apprenti (redirige vers la liste)
+    @Operation(
+        summary = "Mettre à jour un apprenti",
+        description = "Traite la mise à jour d'un apprenti et redirige vers la liste des apprentis."
+    )
     @PostMapping("/{id}")
     public String modifierApprenti(@PathVariable Integer id, @ModelAttribute Apprenti apprenti) {
         // Pour l'instant, juste une redirection
@@ -184,6 +214,10 @@ public class ApprentiControleur {
     }
 
 
+    @Operation(
+        summary = "Modifier les informations personnelles d'un apprenti",
+        description = "Traite la modification des informations personnelles d'un apprenti et redirige vers la page de gestion."
+    )
     @PatchMapping("/{id}/informations")
     public String modifierInformationsPersonnelles(
             @PathVariable Integer id,
@@ -216,7 +250,10 @@ public class ApprentiControleur {
         return REDIRECT_GERER_PREFIX + id + GERER_SUFFIX;
     }
 
-    // Endpoint pour modifier l'entreprise d'un apprenti
+    @Operation(
+        summary = "Modifier l'entreprise d'un apprenti",
+        description = "Traite la modification de l'entreprise d'un apprenti et redirige vers la page de gestion."
+    )
     @PatchMapping("/{id}/entreprise")
     public String modifierEntreprise(
             @PathVariable Integer id,
@@ -233,7 +270,10 @@ public class ApprentiControleur {
         return REDIRECT_GERER_PREFIX + id + GERER_SUFFIX;
     }
 
-    // Endpoint pour modifier le maître d'apprentissage d'un apprenti
+    @Operation(
+        summary = "Modifier le maître d'apprentissage d'un apprenti",
+        description = "Traite la modification du maître d'apprentissage d'un apprenti et redirige vers la page de gestion."
+    )
     @PatchMapping("/{id}/maitre-apprentissage")
     public String modifierMaitreApprentissage(
             @PathVariable Integer id,
@@ -250,7 +290,10 @@ public class ApprentiControleur {
         return REDIRECT_GERER_PREFIX + id + GERER_SUFFIX;
     }
 
-    // Endpoint pour afficher l'historique complet d'un apprenti archivé
+    @Operation(
+        summary = "Page de l'historique d'un apprenti",
+        description = "Affiche la page Thymeleaf avec l'historique complet d'un apprenti archivé (tous ses dossiers annuels)."
+    )
     @GetMapping("/{id}/historique")
     public String afficherHistorique(@PathVariable Integer id, Model model) {
         Apprenti apprenti = apprentiService.getUnApprenti(id)
@@ -283,7 +326,10 @@ public class ApprentiControleur {
         return "apprentis/historique";
     }
 
-    // Endpoint pour commencer une nouvelle année
+    @Operation(
+        summary = "Commencer une nouvelle année académique",
+        description = "Traite le passage à la nouvelle année académique (fait progresser tous les apprentis actifs d'une promotion) et redirige vers la liste des apprentis."
+    )
     @PostMapping("/commencer-nouvelle-annee")
     public String commencerNouvelleAnnee(RedirectAttributes redirectAttributes) {
         try {

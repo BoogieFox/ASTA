@@ -10,6 +10,11 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 
+/**
+ * Service de gestion des rapports.
+ * Gère la logique métier liée aux rapports : création, modification, suppression et validation.
+ * Un dossier annuel ne peut contenir qu'un seul rapport.
+ */
 @Service
 public class RapportService {
     private final RapportRepository rapportRepository;
@@ -20,6 +25,15 @@ public class RapportService {
         this.dossierAnnuelRepository = dossierAnnuelRepository;
     }
 
+    /**
+     * Ajoute un nouveau rapport à un dossier annuel.
+     * Vérifie qu'aucun rapport n'existe déjà pour ce dossier.
+     * 
+     * @param dto les données du rapport à créer
+     * @return le rapport créé avec son ID généré
+     * @throws RessourceIntrouvableException si le dossier annuel n'existe pas
+     * @throws RuntimeException si un rapport existe déjà pour ce dossier
+     */
     @Transactional
     public Rapport ajouterRapport(CreerRapportDto dto) {
         // Récupérer le dossier annuel
@@ -41,6 +55,14 @@ public class RapportService {
         return rapportRepository.save(rapport);
     }
 
+    /**
+     * Modifie un rapport existant.
+     * 
+     * @param rapportId l'ID du rapport à modifier
+     * @param dto les nouvelles données du rapport
+     * @return le rapport modifié
+     * @throws RessourceIntrouvableException si le rapport n'existe pas
+     */
     @Transactional
     public Rapport modifierRapport(Integer rapportId, CreerRapportDto dto) {
         Rapport rapport = rapportRepository.findById(rapportId)
@@ -53,6 +75,13 @@ public class RapportService {
         return rapportRepository.save(rapport);
     }
 
+    /**
+     * Supprime un rapport.
+     * Gère correctement la relation bidirectionnelle avec le dossier annuel.
+     * 
+     * @param rapportId l'ID du rapport à supprimer
+     * @throws RessourceIntrouvableException si le rapport n'existe pas
+     */
     @Transactional
     public void supprimerRapport(Integer rapportId) {
         Rapport rapport = rapportRepository.findById(rapportId)

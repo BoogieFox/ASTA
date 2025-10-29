@@ -9,6 +9,11 @@ import altn72.TpFilRouge.modele.repository.VisiteRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+/**
+ * Service de gestion des visites.
+ * Gère la logique métier liée aux visites : création, modification, suppression et validation.
+ * Un dossier annuel ne peut contenir qu'une seule visite.
+ */
 @Service
 public class VisiteService {
     private final VisiteRepository visiteRepository;
@@ -19,6 +24,15 @@ public class VisiteService {
         this.dossierAnnuelRepository = dossierAnnuelRepository;
     }
 
+    /**
+     * Ajoute une nouvelle visite à un dossier annuel.
+     * Vérifie qu'aucune visite n'existe déjà pour ce dossier.
+     * 
+     * @param dto les données de la visite à créer
+     * @return la visite créée avec son ID généré
+     * @throws RessourceIntrouvableException si le dossier annuel n'existe pas
+     * @throws RuntimeException si une visite existe déjà pour ce dossier
+     */
     @Transactional
     public Visite ajouterVisite(CreerVisiteDto dto) {
         // Récupérer le dossier annuel
@@ -40,6 +54,14 @@ public class VisiteService {
         return visiteRepository.save(visite);
     }
 
+    /**
+     * Modifie une visite existante.
+     * 
+     * @param visiteId l'ID de la visite à modifier
+     * @param dto les nouvelles données de la visite
+     * @return la visite modifiée
+     * @throws RessourceIntrouvableException si la visite n'existe pas
+     */
     @Transactional
     public Visite modifierVisite(Integer visiteId, CreerVisiteDto dto) {
         Visite visite = visiteRepository.findById(visiteId)
@@ -52,6 +74,13 @@ public class VisiteService {
         return visiteRepository.save(visite);
     }
 
+    /**
+     * Supprime une visite.
+     * Gère correctement la relation bidirectionnelle avec le dossier annuel.
+     * 
+     * @param visiteId l'ID de la visite à supprimer
+     * @throws RessourceIntrouvableException si la visite n'existe pas
+     */
     @Transactional
     public void supprimerVisite(Integer visiteId) {
         Visite visite = visiteRepository.findById(visiteId)
