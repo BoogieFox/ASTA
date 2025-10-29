@@ -72,6 +72,50 @@ public class ApprentiService {
                 .filter(apprenti -> apprenti.getPromotion() == Promotion.ARCHIVE)
                 .toList();
     }
+    
+    /**
+     * Recherche des apprentis actifs selon un terme et un mode de recherche spécifique.
+     * 
+     * @param searchTerm le terme de recherche
+     * @param searchMode le mode de recherche : "tout", "apprenti", "entreprise", "mission"
+     * @return la liste des apprentis actifs correspondants
+     */
+    public List<Apprenti> searchApprentisActifs(String searchTerm, String searchMode) {
+        if (searchTerm == null || searchTerm.trim().isEmpty()) {
+            return getApprentisActifs();
+        }
+        
+        List<Apprenti> results = switch (searchMode) {
+            case "apprenti" -> apprentiRepository.searchApprentisByName(searchTerm.trim(), null);
+            case "entreprise" -> apprentiRepository.searchApprentisByEntreprise(searchTerm.trim(), null);
+            case "mission" -> apprentiRepository.searchApprentisByMission(searchTerm.trim(), null);
+            default -> apprentiRepository.searchApprentis(searchTerm.trim(), null); // "tout"
+        };
+        
+        return results.stream()
+                .filter(apprenti -> apprenti.getPromotion() != Promotion.ARCHIVE)
+                .toList();
+    }
+    
+    /**
+     * Recherche des apprentis archivés selon un terme et un mode de recherche spécifique.
+     * 
+     * @param searchTerm le terme de recherche
+     * @param searchMode le mode de recherche : "tout", "apprenti", "entreprise", "mission"
+     * @return la liste des apprentis archivés correspondants
+     */
+    public List<Apprenti> searchApprentisArchives(String searchTerm, String searchMode) {
+        if (searchTerm == null || searchTerm.trim().isEmpty()) {
+            return getApprentisArchives();
+        }
+        
+        return switch (searchMode) {
+            case "apprenti" -> apprentiRepository.searchApprentisByName(searchTerm.trim(), Promotion.ARCHIVE);
+            case "entreprise" -> apprentiRepository.searchApprentisByEntreprise(searchTerm.trim(), Promotion.ARCHIVE);
+            case "mission" -> apprentiRepository.searchApprentisByMission(searchTerm.trim(), Promotion.ARCHIVE);
+            default -> apprentiRepository.searchApprentis(searchTerm.trim(), Promotion.ARCHIVE); // "tout"
+        };
+    }
 
     /**
      * Récupère un apprenti par son identifiant.

@@ -76,15 +76,31 @@
         .search-box {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
+            gap: 0.5rem;
             width: 100%;
-            max-width: 700px;
+            max-width: 800px;
+        }
+        .search-select {
+            padding: 0.75rem 0.5rem;
+            border: 2px solid var(--border-color);
+            border-radius: 0.5rem 0 0 0.5rem;
+            font-size: 0.9rem;
+            background-color: #f8fafc;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: border-color 0.2s;
+            min-width: 130px;
+        }
+        .search-select:focus {
+            outline: none;
+            border-color: var(--primary-color);
         }
         .search-input {
             flex: 1;
             padding: 0.75rem 1rem;
             border: 2px solid var(--border-color);
-            border-radius: 0.5rem;
+            border-left: none;
+            border-radius: 0;
             font-size: 0.95rem;
             transition: border-color 0.2s;
             box-sizing: border-box;
@@ -95,6 +111,10 @@
         }
         .search-input:focus {
             outline: none;
+            border-color: var(--border-color);
+        }
+        .search-box:focus-within .search-input,
+        .search-box:focus-within .search-select {
             border-color: var(--primary-color);
         }
         .search-icon {
@@ -106,7 +126,27 @@
             margin-top: 0.5rem;
             font-size: 0.875rem;
             color: var(--text-secondary);
-            margin-left: 2.25rem;
+        }
+        .search-result-info {
+            margin-bottom: 1rem;
+            padding: 0.75rem 1rem;
+            background-color: #e0f2fe;
+            border-left: 4px solid var(--primary-color);
+            border-radius: 0.375rem;
+            color: #0c4a6e;
+            font-weight: 500;
+        }
+        .search-result-info strong {
+            color: var(--primary-color);
+        }
+        .search-mode-badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 0.25rem;
+            font-size: 0.85rem;
+            margin-left: 0.5rem;
         }
         .no-results {
             text-align: center;
@@ -153,6 +193,20 @@
             </div>
         </div>
 
+        <!-- Indicateur de résultats de recherche -->
+        <div th:if="${searchTerm != null and searchTerm != ''}" class="search-result-info">
+            🔎 Résultats de recherche pour : <strong th:text="${searchTerm}"></strong>
+            <span class="search-mode-badge" th:switch="${searchMode}">
+                <span th:case="'apprenti'">👤 Apprenti</span>
+                <span th:case="'entreprise'">🏢 Entreprise</span>
+                <span th:case="'mission'">📋 Mission</span>
+                <span th:case="*">🌐 Tout</span>
+            </span>
+            <br>
+            (<span th:text="${#lists.size(apprentisActifs)}"></span> actif(s), 
+            <span th:text="${#lists.size(apprentisArchives)}"></span> archivé(s))
+        </div>
+
         <div class="tabs">
             <button class="tab active" onclick="switchTab('encours')">En cours</button>
             <button class="tab" onclick="switchTab('archive')">Archivé</button>
@@ -169,25 +223,78 @@
 
         <!-- Barre de recherche -->
         <div class="search-container">
-            <div class="search-box">
+            <form method="get" action="/apprentis" class="search-box">
                 <span class="search-icon">🔍</span>
+                <select name="mode" id="searchMode" class="search-select" th:value="${searchMode}">
+                    <option value="tout" th:selected="${searchMode == null or searchMode == 'tout'}">🌐 Tout</option>
+                    <option value="apprenti" th:selected="${searchMode == 'apprenti'}">👤 Apprenti</option>
+                    <option value="entreprise" th:selected="${searchMode == 'entreprise'}">🏢 Entreprise</option>
+                    <option value="mission" th:selected="${searchMode == 'mission'}">📋 Mission</option>
+                </select>
                 <input type="text"
                        id="searchInput"
+                       name="search"
                        class="search-input"
-                       placeholder="Rechercher un apprenti (nom, entreprise, mission)..."
-                       onkeyup="filterApprentis()">
-            </div>
+                       placeholder="Rechercher..."
+                       th:value="${searchTerm}"
+                       autofocus>
+                <button type="submit" class="btn btn-primary" style="margin: 0;">Rechercher</button>
+                <a th:if="${searchTerm != null and searchTerm != ''}" 
+                   href="/apprentis" 
+                   class="btn btn-secondary" 
+                   style="margin: 0;">✖ Effacer</a>
+            </form>
             <div class="search-help">
-                💡 Recherchez par nom, prénom, entreprise ou mots-clés de mission
+                💡 <span id="searchHelpText">Recherchez dans tous les critères</span>
             </div>
         </div>
+
+        <script>
+            // Mettre à jour le texte d'aide et le placeholder selon le mode sélectionné
+            document.getElementById('searchMode').addEventListener('change', function() {
+                const mode = this.value;
+                const helpText = document.getElementById('searchHelpText');
+                const searchInput = document.getElementById('searchInput');
+                
+                switch(mode) {
+                    case 'apprenti':
+                        helpText.textContent = 'Recherchez par nom ou prénom d\'apprenti';
+                        searchInput.placeholder = 'Ex: Dupont, Marie...';
+                        break;
+                    case 'entreprise':
+                        helpText.textContent = 'Recherchez par raison sociale d\'entreprise';
+                        searchInput.placeholder = 'Ex: TechCorp, Google...';
+                        break;
+                    case 'mission':
+                        helpText.textContent = 'Recherchez par mots-clés de mission';
+                        searchInput.placeholder = 'Ex: développement, cybersécurité...';
+                        break;
+                    default:
+                        helpText.textContent = 'Recherchez dans tous les critères';
+                        searchInput.placeholder = 'Rechercher...';
+                }
+            });
+            
+            // Initialiser le bon texte au chargement de la page
+            document.addEventListener('DOMContentLoaded', function() {
+                document.getElementById('searchMode').dispatchEvent(new Event('change'));
+            });
+        </script>
 
         <!-- Tab En cours -->
         <div id="encours-content" class="tab-content active">
             <div class="card">
-                <!-- Message si la liste est vide -->
-                <div th:if="${#lists.isEmpty(apprentisActifs)}" class="empty-message">
-                    La liste est vide. Ajoutez au moins un apprenti
+                <!-- Message si aucun résultat de recherche -->
+                <div th:if="${searchTerm != null and searchTerm != '' and #lists.isEmpty(apprentisActifs)}" class="no-results">
+                    <div class="no-results-icon">🔍</div>
+                    <p><strong>Aucun résultat trouvé</strong></p>
+                    <p>Aucun apprenti actif ne correspond à votre recherche "<span th:text="${searchTerm}"></span>"</p>
+                    <p><a href="/apprentis" class="btn btn-secondary" style="margin-top: 1rem;">Réinitialiser la recherche</a></p>
+                </div>
+
+                <!-- Message si la liste est vide (sans recherche) -->
+                <div th:if="${(searchTerm == null or searchTerm == '') and #lists.isEmpty(apprentisActifs)}" class="empty-message">
+                    La liste est vide. Ajoutez au moins un apprenti !
                 </div>
 
                 <!-- Table si la liste n'est pas vide -->
@@ -206,12 +313,7 @@
                             </tr>
                         </thead>
                         <tbody id="tbody-encours">
-                            <tr th:each="apprenti : ${apprentisActifs}"
-                                class="apprenti-row"
-                                th:attr="data-nom=${apprenti.nom},
-                                         data-prenom=${apprenti.prenom},
-                                         data-entreprise=${apprenti.entreprise != null ? apprenti.entreprise.raisonSociale : ''},
-                                         data-mission=${apprenti.mission != null ? apprenti.mission.motsCles : ''}">
+                            <tr th:each="apprenti : ${apprentisActifs}">
                                 <td th:text="${apprenti.nom}">Dupont</td>
                                 <td th:text="${apprenti.prenom}">Sophie</td>
                                 <td th:text="${apprenti.email}">sophie.dupont@example.com</td>
@@ -230,31 +332,24 @@
                         </tbody>
                     </table>
                 </div>
-
-                <!-- Message aucun résultat de recherche -->
-                <div id="no-results-encours" class="no-results" style="display: none;">
-                    <div class="no-results-icon">🔍</div>
-                    <p><strong>Aucun résultat trouvé</strong></p>
-                    <p>Essayez avec d'autres mots-clés</p>
-                </div>
-
             </div>
         </div>
 
         <!-- Tab Archivé -->
         <div id="archive-content" class="tab-content">
             <div class="card">
-                <!-- Message si la liste est vide -->
-                <div th:if="${#lists.isEmpty(apprentisArchives)}" class="empty-state">
-                    <div class="empty-state-icon">📁</div>
-                    <p class="empty-state-message">Aucun apprenti archivé pour le moment.</p>
+                <!-- Message si aucun résultat de recherche -->
+                <div th:if="${searchTerm != null and searchTerm != '' and #lists.isEmpty(apprentisArchives)}" class="no-results">
+                    <div class="no-results-icon">�</div>
+                    <p><strong>Aucun résultat trouvé</strong></p>
+                    <p>Aucun apprenti archivé ne correspond à votre recherche "<span th:text="${searchTerm}"></span>"</p>
+                    <p><a href="/apprentis" class="btn btn-secondary" style="margin-top: 1rem;">Réinitialiser la recherche</a></p>
                 </div>
 
-                <!-- Message aucun résultat de recherche -->
-                <div id="no-results-archive" class="no-results" style="display: none;">
-                    <div class="no-results-icon">🔍</div>
-                    <p><strong>Aucun résultat trouvé</strong></p>
-                    <p>Essayez avec d'autres mots-clés</p>
+                <!-- Message si la liste est vide (sans recherche) -->
+                <div th:if="${(searchTerm == null or searchTerm == '') and #lists.isEmpty(apprentisArchives)}" class="empty-state">
+                    <div class="empty-state-icon">�</div>
+                    <p class="empty-state-message">Aucun apprenti archivé pour le moment.</p>
                 </div>
 
                 <!-- Table si la liste n'est pas vide -->
@@ -273,12 +368,7 @@
                             </tr>
                         </thead>
                         <tbody id="tbody-archive">
-                            <tr th:each="apprenti : ${apprentisArchives}"
-                                class="apprenti-row"
-                                th:attr="data-nom=${apprenti.nom},
-                                         data-prenom=${apprenti.prenom},
-                                         data-entreprise=${apprenti.entreprise != null ? apprenti.entreprise.raisonSociale : ''},
-                                         data-mission=${apprenti.mission != null ? apprenti.mission.motsCles : ''}">
+                            <tr th:each="apprenti : ${apprentisArchives}">
                                 <td th:text="${apprenti.nom}">Dupont</td>
                                 <td th:text="${apprenti.prenom}">Sophie</td>
                                 <td th:text="${apprenti.email}">sophie.dupont@example.com</td>
@@ -327,72 +417,7 @@
             document.getElementById(tabName + '-content').classList.add('active');
             // Add active class to clicked tab
             event.target.classList.add('active');
-
-            // Réappliquer le filtre de recherche sur le nouvel onglet
-            filterApprentis();
         }
-
-        function filterApprentis() {
-            const searchInput = document.getElementById('searchInput');
-            const filter = searchInput.value.toLowerCase().trim();
-
-            // Déterminer quel onglet est actif
-            const activeTab = document.querySelector('.tab-content.active');
-            const isEnCours = activeTab.id === 'encours-content';
-
-            const tbody = isEnCours ? document.getElementById('tbody-encours') : document.getElementById('tbody-archive');
-            const noResultsDiv = isEnCours ? document.getElementById('no-results-encours') : document.getElementById('no-results-archive');
-
-            if (!tbody) return; // Si pas de tableau (liste vide), ne rien faire
-
-            const rows = tbody.getElementsByClassName('apprenti-row');
-            let visibleCount = 0;
-
-            // Parcourir toutes les lignes
-            for (let i = 0; i < rows.length; i++) {
-                const row = rows[i];
-                const nom = (row.getAttribute('data-nom') || '').toLowerCase();
-                const prenom = (row.getAttribute('data-prenom') || '').toLowerCase();
-                const entreprise = (row.getAttribute('data-entreprise') || '').toLowerCase();
-                const mission = (row.getAttribute('data-mission') || '').toLowerCase();
-
-                // Chercher dans tous les champs
-                const nomComplet = nom + ' ' + prenom;
-                const prenomNom = prenom + ' ' + nom;
-
-                const matchFound = filter === '' ||
-                                   nom.includes(filter) ||
-                                   prenom.includes(filter) ||
-                                   nomComplet.includes(filter) ||
-                                   prenomNom.includes(filter) ||
-                                   entreprise.includes(filter) ||
-                                   mission.includes(filter);
-
-                if (matchFound) {
-                    row.style.display = '';
-                    visibleCount++;
-                } else {
-                    row.style.display = 'none';
-                }
-            }
-
-            // Afficher/masquer le message "aucun résultat"
-            if (visibleCount === 0 && filter !== '') {
-                noResultsDiv.style.display = 'block';
-            } else {
-                noResultsDiv.style.display = 'none';
-            }
-        }
-
-        // Réinitialiser le filtre quand on change d'onglet
-        document.addEventListener('DOMContentLoaded', function() {
-            const tabs = document.querySelectorAll('.tab');
-            tabs.forEach(tab => {
-                tab.addEventListener('click', function() {
-                    // Le filtre reste actif même en changeant d'onglet
-                });
-            });
-        });
     </script>
 </body>
 </html>

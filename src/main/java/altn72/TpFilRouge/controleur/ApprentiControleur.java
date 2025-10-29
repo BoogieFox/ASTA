@@ -59,12 +59,23 @@ public class ApprentiControleur {
 
     @Operation(
         summary = "Liste des apprentis",
-        description = "Affiche la page Thymeleaf avec la liste des apprentis actifs et archivés."
+        description = "Affiche la page Thymeleaf avec la liste des apprentis actifs et archivés. Supporte la recherche par mot-clé avec différents modes (tout, apprenti, entreprise, mission)."
     )
     @GetMapping
-    public String listerApprentis(org.springframework.ui.Model model) {
-        model.addAttribute("apprentisActifs", apprentiService.getApprentisActifs());
-        model.addAttribute("apprentisArchives", apprentiService.getApprentisArchives());
+    public String listerApprentis(@RequestParam(required = false) String search,
+                                  @RequestParam(required = false, defaultValue = "tout") String mode,
+                                  org.springframework.ui.Model model) {
+        if (search != null && !search.trim().isEmpty()) {
+            model.addAttribute("apprentisActifs", apprentiService.searchApprentisActifs(search, mode));
+            model.addAttribute("apprentisArchives", apprentiService.searchApprentisArchives(search, mode));
+            model.addAttribute("searchTerm", search);
+            model.addAttribute("searchMode", mode);
+        } else {
+            model.addAttribute("apprentisActifs", apprentiService.getApprentisActifs());
+            model.addAttribute("apprentisArchives", apprentiService.getApprentisArchives());
+            model.addAttribute("searchTerm", "");
+            model.addAttribute("searchMode", mode);
+        }
         return VIEW_LISTE;
     }
 
