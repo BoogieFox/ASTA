@@ -70,104 +70,6 @@
             color: var(--text-secondary);
             font-size: 1.1rem;
         }
-        .search-container {
-            margin-bottom: 1.5rem;
-        }
-        .search-box {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            width: 100%;
-            max-width: 800px;
-        }
-        .search-select {
-            padding: 0.75rem 0.5rem;
-            border: 2px solid var(--border-color);
-            border-radius: 0.5rem 0 0 0.5rem;
-            font-size: 0.9rem;
-            background-color: #f8fafc;
-            color: var(--text-primary);
-            cursor: pointer;
-            transition: border-color 0.2s;
-            min-width: 130px;
-        }
-        .search-select:focus {
-            outline: none;
-            border-color: var(--primary-color);
-        }
-        .search-input {
-            flex: 1;
-            padding: 0.75rem 1rem;
-            border: 2px solid var(--border-color);
-            border-left: none;
-            border-radius: 0;
-            font-size: 0.95rem;
-            transition: border-color 0.2s;
-            box-sizing: border-box;
-        }
-        .search-input::placeholder {
-            color: #9ca3af;
-            font-size: 0.9rem;
-        }
-        .search-input:focus {
-            outline: none;
-            border-color: var(--border-color);
-        }
-        .search-box:focus-within .search-input,
-        .search-box:focus-within .search-select {
-            border-color: var(--primary-color);
-        }
-        .search-icon {
-            font-size: 1.5rem;
-            color: var(--primary-color);
-            flex-shrink: 0;
-        }
-        .search-help {
-            margin-top: 0.5rem;
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-        }
-        .search-result-info {
-            margin-bottom: 1rem;
-            padding: 0.75rem 1rem;
-            background-color: #e0f2fe;
-            border-left: 4px solid var(--primary-color);
-            border-radius: 0.375rem;
-            color: #0c4a6e;
-            font-weight: 500;
-        }
-        .search-result-info strong {
-            color: var(--primary-color);
-        }
-        .search-mode-badge {
-            display: inline-block;
-            padding: 0.25rem 0.5rem;
-            background-color: var(--primary-color);
-            color: white;
-            border-radius: 0.25rem;
-            font-size: 0.85rem;
-            margin-left: 0.5rem;
-        }
-        .no-results {
-            text-align: center;
-            padding: 3rem 1.5rem;
-            color: var(--text-secondary);
-            background-color: #f9fafb;
-            border-radius: 0.5rem;
-            margin: 1rem 0;
-        }
-        .no-results-icon {
-            font-size: 3.5rem;
-            margin-bottom: 1rem;
-            opacity: 0.5;
-        }
-        .no-results p {
-            margin: 0.5rem 0;
-        }
-        .no-results strong {
-            color: var(--text-primary);
-            font-size: 1.1rem;
-        }
     </style>
 </head>
 <body>
@@ -225,24 +127,25 @@
         <div class="search-container">
             <form method="get" action="/apprentis" class="search-box">
                 <span class="search-icon">🔍</span>
-                <select name="mode" id="searchMode" class="search-select" th:value="${searchMode}">
-                    <option value="tout" th:selected="${searchMode == null or searchMode == 'tout'}">🌐 Tout</option>
-                    <option value="apprenti" th:selected="${searchMode == 'apprenti'}">👤 Apprenti</option>
-                    <option value="entreprise" th:selected="${searchMode == 'entreprise'}">🏢 Entreprise</option>
-                    <option value="mission" th:selected="${searchMode == 'mission'}">📋 Mission</option>
-                </select>
-                <input type="text"
-                       id="searchInput"
-                       name="search"
-                       class="search-input"
-                       placeholder="Rechercher..."
-                       th:value="${searchTerm}"
-                       autofocus>
-                <button type="submit" class="btn btn-primary" style="margin: 0;">Rechercher</button>
-                <a th:if="${searchTerm != null and searchTerm != ''}" 
+                <div class="search-fields">
+                    <label for="searchMode"></label><select name="mode" id="searchMode" class="search-select" th:value="${searchMode}">
+                        <option value="tout" th:selected="${searchMode == null or searchMode == 'tout'}">🌐 Tout</option>
+                        <option value="apprenti" th:selected="${searchMode == 'apprenti'}">👤 Apprenti</option>
+                        <option value="entreprise" th:selected="${searchMode == 'entreprise'}">🏢 Entreprise</option>
+                        <option value="mission" th:selected="${searchMode == 'mission'}">📋 Mission</option>
+                    </select>
+                    <label for="searchInput"></label><input type="text"
+                                                            id="searchInput"
+                                                            name="search"
+                                                            class="search-input"
+                                                            placeholder="Rechercher..."
+                                                            th:value="${searchTerm}"
+                                                            autofocus>
+                    <button type="submit" class="btn btn-primary">Rechercher</button>
+                </div>
+                <a th:if="${searchTerm != null and searchTerm != ''}"
                    href="/apprentis" 
-                   class="btn btn-secondary" 
-                   style="margin: 0;">✖ Effacer</a>
+                   class="btn btn-secondary">✖ Effacer</a>
             </form>
             <div class="search-help">
                 💡 <span id="searchHelpText">Recherchez dans tous les critères</span>
