@@ -15,6 +15,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Tag(name = "Pages des entreprises", description = "Endpoints des vues Thymeleaf liées à la gestion des entreprises")
 @Controller
@@ -70,6 +71,7 @@ public class EntrepriseControleur {
                                   BindingResult bindingResult,
                                   @RequestParam(required = false) String returnTo,
                                   HttpSession session,
+                                  RedirectAttributes redirectAttributes,
                                   Model model) {
         CreerApprentiDto apprentiData = (CreerApprentiDto) session.getAttribute("apprentiData");
         if (apprentiData == null) {
@@ -92,10 +94,9 @@ public class EntrepriseControleur {
                 return "redirect:/apprentis/nouveau?success=entreprise-created";
             }
         } catch (EntrepriseDejaExistanteException e) {
-            model.addAttribute("errorMessage", e.getMessage());
-            model.addAttribute("apprentiData", apprentiData);
-            model.addAttribute("returnTo", returnTo);
-            return "entreprises/formulaire";
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            redirectAttributes.addFlashAttribute("entreprise", dto);
+            return "redirect:/entreprises/nouveau" + (returnTo != null ? "?returnTo=" + returnTo : "");
         }
     }
 }

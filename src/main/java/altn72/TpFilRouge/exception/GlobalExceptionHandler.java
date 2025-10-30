@@ -13,29 +13,6 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 public class GlobalExceptionHandler {
 
     /**
-     * Gère l'exception quand un apprenti avec le même email existe déjà.
-     * Retourne vers une page d'erreur générique avec le message d'erreur.
-     */
-    @ExceptionHandler(ApprentiDejaExistantException.class)
-    public String handleApprentiDejaExistantException(ApprentiDejaExistantException ex, Model model) {
-        model.addAttribute("errorTitle", "Conflit de données");
-        model.addAttribute("errorMessage", ex.getMessage());
-        model.addAttribute("errorCode", "409");
-        return "error/custom-error";
-    }
-
-    /**
-     * Gère l'exception quand une entreprise avec la même raison sociale existe déjà.
-     */
-    @ExceptionHandler(EntrepriseDejaExistanteException.class)
-    public String handleEntrepriseDejaExistanteException(EntrepriseDejaExistanteException ex, Model model) {
-        model.addAttribute("errorTitle", "Conflit de données");
-        model.addAttribute("errorMessage", ex.getMessage());
-        model.addAttribute("errorCode", "409");
-        return "error/custom-error";
-    }
-
-    /**
      * Gère l'exception quand une ressource demandée n'existe pas.
      */
     @ExceptionHandler(RessourceIntrouvableException.class)
