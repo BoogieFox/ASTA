@@ -4,7 +4,11 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
 
+@Setter
+@Getter
 public class CreerMaitreApprentissageDto {
 
     @NotBlank(message = "Le nom est obligatoire")
@@ -42,51 +46,4 @@ public class CreerMaitreApprentissageDto {
         this.remarques = remarques;
     }
 
-    public String getNom() {
-        return nom;
-    }
-
-    public void setNom(String nom) {
-        this.nom = nom;
-    }
-
-    public String getPrenom() {
-        return prenom;
-    }
-
-    public void setPrenom(String prenom) {
-        this.prenom = prenom;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getTelephone() {
-        return telephone;
-    }
-
-    public void setTelephone(String telephone) {
-        this.telephone = telephone;
-    }
-
-    public String getPoste() {
-        return poste;
-    }
-
-    public void setPoste(String poste) {
-        this.poste = poste;
-    }
-
-    public String getRemarques() {
-        return remarques;
-    }
-
-    public void setRemarques(String remarques) {
-        this.remarques = remarques;
-    }
 }

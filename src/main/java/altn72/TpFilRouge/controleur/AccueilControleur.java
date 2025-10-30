@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class AccueilControleur {
 
     @Operation(
-        summary = "Page d'accueil",
-        description = "Redirige automatiquement vers la liste des apprentis."
+            summary = "Page d'accueil",
+            description = "Redirige automatiquement vers la liste des apprentis."
     )
     @GetMapping("/")
     public String accueil() {

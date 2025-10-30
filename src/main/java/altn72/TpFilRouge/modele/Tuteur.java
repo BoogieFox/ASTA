@@ -1,12 +1,16 @@
 package altn72.TpFilRouge.modele;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.List;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "tuteur", schema = "base_asta")
 public class Tuteur {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "tuteur_id", nullable = false)
@@ -24,15 +28,4 @@ public class Tuteur {
     @OneToMany(mappedBy = "tuteur")
     private List<Apprenti> apprentis;
 
-    // Getters et Setters
-    public Integer getMaitreApprentissageId() { return tuteurId; }
-    public void setMaitreApprentissageId(Integer maitreApprentissageId) { this.tuteurId = maitreApprentissageId; }
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
-    public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; }
-    public String getPrenom() { return prenom; }
-    public void setPrenom(String prenom) { this.prenom = prenom; }
-    public List<Apprenti> getApprentis() { return apprentis; }
-    public void setApprentis(List<Apprenti> apprentis) { this.apprentis = apprentis; }
 }

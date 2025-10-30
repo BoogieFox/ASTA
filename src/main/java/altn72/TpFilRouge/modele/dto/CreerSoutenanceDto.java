@@ -4,10 +4,16 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.LocalDate;
 
+@Setter
+@Getter
 public class CreerSoutenanceDto {
 
+    // Getters and Setters
     @NotNull(message = "La date est obligatoire")
     private LocalDate date;
 
@@ -29,37 +35,5 @@ public class CreerSoutenanceDto {
         this.dossierAnnuelId = dossierAnnuelId;
     }
 
-    // Getters and Setters
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public void setDate(LocalDate date) {
-        this.date = date;
-    }
-
-    public Double getNoteFinale() {
-        return noteFinale;
-    }
-
-    public void setNoteFinale(Double noteFinale) {
-        this.noteFinale = noteFinale;
-    }
-
-    public String getCommentaires() {
-        return commentaires;
-    }
-
-    public void setCommentaires(String commentaires) {
-        this.commentaires = commentaires;
-    }
-
-    public Integer getDossierAnnuelId() {
-        return dossierAnnuelId;
-    }
-
-    public void setDossierAnnuelId(Integer dossierAnnuelId) {
-        this.dossierAnnuelId = dossierAnnuelId;
-    }
 }
 

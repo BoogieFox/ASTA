@@ -2,11 +2,15 @@ package altn72.TpFilRouge.modele.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * DTO pour la création d'une entreprise.
  * Contient les informations essentielles pour créer une nouvelle entreprise.
  */
+@Setter
+@Getter
 public class CreerEntrepriseDto {
 
     /** Raison sociale de l'entreprise (doit être unique) */
@@ -31,27 +35,4 @@ public class CreerEntrepriseDto {
         this.informationsLocaux = informationsLocaux;
     }
 
-    public String getRaisonSociale() {
-        return raisonSociale;
-    }
-
-    public void setRaisonSociale(String raisonSociale) {
-        this.raisonSociale = raisonSociale;
-    }
-
-    public String getAdresse() {
-        return adresse;
-    }
-
-    public void setAdresse(String adresse) {
-        this.adresse = adresse;
-    }
-
-    public String getInformationsLocaux() {
-        return informationsLocaux;
-    }
-
-    public void setInformationsLocaux(String informationsLocaux) {
-        this.informationsLocaux = informationsLocaux;
-    }
 }

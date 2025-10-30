@@ -4,6 +4,8 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.io.Serializable;
 
@@ -12,6 +14,8 @@ import java.io.Serializable;
  * Contient toutes les informations necessaires pour creer un nouvel apprenti,
  * y compris les identifiants optionnels de l'entreprise et du maitre d'apprentissage.
  */
+@Getter
+@Setter
 public class CreerApprentiDto implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -56,14 +60,13 @@ public class CreerApprentiDto implements Serializable {
     @Size(max = 1024, message = "Les commentaires ne doivent pas depasser 1024 caracteres")
     private String commentairesMission;
 
-    /** Identifiant de l'entreprise (optionnel) */
+    /** Identifiant de l'entreprise */
     private Integer entrepriseId;
 
-    /** Identifiant du maitre d'apprentissage (optionnel) */
+    /** Identifiant du maitre d'apprentissage */
     private Integer maitreApprentissageId;
 
     public CreerApprentiDto() {
-        // Constructeur par defaut
     }
 
     public CreerApprentiDto(String nom, String prenom, String email, String telephone, String majeure) {
@@ -74,83 +77,4 @@ public class CreerApprentiDto implements Serializable {
         this.majeure = majeure;
     }
 
-    public String getNom() {
-        return nom;
-    }
-
-    public void setNom(String nom) {
-        this.nom = nom;
-    }
-
-    public String getPrenom() {
-        return prenom;
-    }
-
-    public void setPrenom(String prenom) {
-        this.prenom = prenom;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getTelephone() {
-        return telephone;
-    }
-
-    public void setTelephone(String telephone) {
-        this.telephone = telephone;
-    }
-
-    public String getMajeure() {
-        return majeure;
-    }
-
-    public void setMajeure(String majeure) {
-        this.majeure = majeure;
-    }
-
-    public String getMotsClesMission() {
-        return motsClesMission;
-    }
-
-    public void setMotsClesMission(String motsClesMission) {
-        this.motsClesMission = motsClesMission;
-    }
-
-    public String getMetierCibleMission() {
-        return metierCibleMission;
-    }
-
-    public void setMetierCibleMission(String metierCibleMission) {
-        this.metierCibleMission = metierCibleMission;
-    }
-
-    public String getCommentairesMission() {
-        return commentairesMission;
-    }
-
-    public void setCommentairesMission(String commentairesMission) {
-        this.commentairesMission = commentairesMission;
-    }
-
-    public Integer getEntrepriseId() {
-        return entrepriseId;
-    }
-
-    public void setEntrepriseId(Integer entrepriseId) {
-        this.entrepriseId = entrepriseId;
-    }
-
-    public Integer getMaitreApprentissageId() {
-        return maitreApprentissageId;
-    }
-
-    public void setMaitreApprentissageId(Integer maitreApprentissageId) {
-        this.maitreApprentissageId = maitreApprentissageId;
-    }
 }

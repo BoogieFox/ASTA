@@ -3,10 +3,16 @@ package altn72.TpFilRouge.modele.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.LocalDate;
 
+@Setter
+@Getter
 public class CreerVisiteDto {
 
+    // Getters and Setters
     @NotNull(message = "La date est obligatoire")
     private LocalDate date;
 
@@ -28,37 +34,5 @@ public class CreerVisiteDto {
         this.dossierAnnuelId = dossierAnnuelId;
     }
 
-    // Getters and Setters
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public void setDate(LocalDate date) {
-        this.date = date;
-    }
-
-    public String getFormat() {
-        return format;
-    }
-
-    public void setFormat(String format) {
-        this.format = format;
-    }
-
-    public String getCommentaires() {
-        return commentaires;
-    }
-
-    public void setCommentaires(String commentaires) {
-        this.commentaires = commentaires;
-    }
-
-    public Integer getDossierAnnuelId() {
-        return dossierAnnuelId;
-    }
-
-    public void setDossierAnnuelId(Integer dossierAnnuelId) {
-        this.dossierAnnuelId = dossierAnnuelId;
-    }
 }
 

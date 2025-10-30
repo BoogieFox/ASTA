@@ -27,14 +27,13 @@ public class VisiteService {
     /**
      * Ajoute une nouvelle visite à un dossier annuel.
      * Vérifie qu'aucune visite n'existe déjà pour ce dossier.
-     * 
+     *
      * @param dto les données de la visite à créer
-     * @return la visite créée avec son ID généré
      * @throws RessourceIntrouvableException si le dossier annuel n'existe pas
-     * @throws RuntimeException si une visite existe déjà pour ce dossier
+     * @throws RuntimeException              si une visite existe déjà pour ce dossier
      */
     @Transactional
-    public Visite ajouterVisite(CreerVisiteDto dto) {
+    public void ajouterVisite(CreerVisiteDto dto) {
         // Récupérer le dossier annuel
         DossierAnnuel dossierAnnuel = dossierAnnuelRepository.findById(dto.getDossierAnnuelId())
                 .orElseThrow(() -> new RessourceIntrouvableException("DossierAnnuel", dto.getDossierAnnuelId()));
@@ -51,19 +50,18 @@ public class VisiteService {
         visite.setCommentaires(dto.getCommentaires());
         visite.setDossierAnnuel(dossierAnnuel);
 
-        return visiteRepository.save(visite);
+        visiteRepository.save(visite);
     }
 
     /**
      * Modifie une visite existante.
-     * 
+     *
      * @param visiteId l'ID de la visite à modifier
-     * @param dto les nouvelles données de la visite
-     * @return la visite modifiée
+     * @param dto      les nouvelles données de la visite
      * @throws RessourceIntrouvableException si la visite n'existe pas
      */
     @Transactional
-    public Visite modifierVisite(Integer visiteId, CreerVisiteDto dto) {
+    public void modifierVisite(Integer visiteId, CreerVisiteDto dto) {
         Visite visite = visiteRepository.findById(visiteId)
                 .orElseThrow(() -> new RessourceIntrouvableException("Visite", visiteId));
 
@@ -71,7 +69,7 @@ public class VisiteService {
         visite.setFormat(dto.getFormat());
         visite.setCommentaires(dto.getCommentaires());
 
-        return visiteRepository.save(visite);
+        visiteRepository.save(visite);
     }
 
     /**

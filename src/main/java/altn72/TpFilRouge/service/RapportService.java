@@ -28,14 +28,13 @@ public class RapportService {
     /**
      * Ajoute un nouveau rapport à un dossier annuel.
      * Vérifie qu'aucun rapport n'existe déjà pour ce dossier.
-     * 
+     *
      * @param dto les données du rapport à créer
-     * @return le rapport créé avec son ID généré
      * @throws RessourceIntrouvableException si le dossier annuel n'existe pas
-     * @throws RuntimeException si un rapport existe déjà pour ce dossier
+     * @throws RuntimeException              si un rapport existe déjà pour ce dossier
      */
     @Transactional
-    public Rapport ajouterRapport(CreerRapportDto dto) {
+    public void ajouterRapport(CreerRapportDto dto) {
         // Récupérer le dossier annuel
         DossierAnnuel dossierAnnuel = dossierAnnuelRepository.findById(dto.getDossierAnnuelId())
                 .orElseThrow(() -> new RessourceIntrouvableException("DossierAnnuel", dto.getDossierAnnuelId()));
@@ -52,19 +51,18 @@ public class RapportService {
         rapport.setCommentaires(dto.getCommentaires());
         rapport.setDossierAnnuel(dossierAnnuel);
 
-        return rapportRepository.save(rapport);
+        rapportRepository.save(rapport);
     }
 
     /**
      * Modifie un rapport existant.
-     * 
+     *
      * @param rapportId l'ID du rapport à modifier
-     * @param dto les nouvelles données du rapport
-     * @return le rapport modifié
+     * @param dto       les nouvelles données du rapport
      * @throws RessourceIntrouvableException si le rapport n'existe pas
      */
     @Transactional
-    public Rapport modifierRapport(Integer rapportId, CreerRapportDto dto) {
+    public void modifierRapport(Integer rapportId, CreerRapportDto dto) {
         Rapport rapport = rapportRepository.findById(rapportId)
                 .orElseThrow(() -> new RessourceIntrouvableException("Rapport", rapportId));
 
@@ -72,7 +70,7 @@ public class RapportService {
         rapport.setNoteFinale(dto.getNoteFinale());
         rapport.setCommentaires(dto.getCommentaires());
 
-        return rapportRepository.save(rapport);
+        rapportRepository.save(rapport);
     }
 
     /**

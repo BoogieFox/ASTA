@@ -43,17 +43,16 @@ public class MaitreApprentissageService {
     /**
      * Ajoute un nouveau maître d'apprentissage dans le système.
      * Vérifie que l'email n'existe pas déjà.
-     * 
+     *
      * @param maitreApprentissage le maître d'apprentissage à créer
-     * @return le maître d'apprentissage créé avec son ID généré
      * @throws MaitreApprentissageDejaExistantException si l'email existe déjà
      */
     @Transactional
-    public MaitreApprentissage ajouterMaitreApprentissage(MaitreApprentissage maitreApprentissage) {
+    public void ajouterMaitreApprentissage(MaitreApprentissage maitreApprentissage) {
         if (maitreApprentissageRepository.existsByEmail(maitreApprentissage.getEmail())) {
             throw new MaitreApprentissageDejaExistantException(maitreApprentissage.getEmail());
         }
-        return maitreApprentissageRepository.save(maitreApprentissage);
+        maitreApprentissageRepository.save(maitreApprentissage);
     }
 
 

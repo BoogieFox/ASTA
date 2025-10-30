@@ -1,19 +1,18 @@
 package altn72.TpFilRouge.controleur;
 
-import altn72.TpFilRouge.modele.dto.CreerRapportDto;
-import altn72.TpFilRouge.modele.dto.CreerSoutenanceDto;
-import altn72.TpFilRouge.modele.dto.CreerVisiteDto;
-import altn72.TpFilRouge.service.DossierAnnuelService;
-import altn72.TpFilRouge.service.RapportService;
-import altn72.TpFilRouge.service.SoutenanceService;
-import altn72.TpFilRouge.service.VisiteService;
+import jakarta.validation.Valid;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import altn72.TpFilRouge.modele.dto.CreerRapportDto;
+import altn72.TpFilRouge.modele.dto.CreerSoutenanceDto;
+import altn72.TpFilRouge.modele.dto.CreerVisiteDto;
+import altn72.TpFilRouge.service.RapportService;
+import altn72.TpFilRouge.service.SoutenanceService;
+import altn72.TpFilRouge.service.VisiteService;
 
 @Tag(name = "Pages du dossier annuel", description = "Endpoints des vues Thymeleaf liées aux dossiers annuels (visites, soutenances, rapports)")
 @Controller
@@ -31,19 +30,15 @@ public class DossierAnnuelControleur {
 
     public DossierAnnuelControleur(RapportService rapportService,
                                    VisiteService visiteService,
-                                   SoutenanceService soutenanceService,
-                                   DossierAnnuelService dossierAnnuelService) {
+                                   SoutenanceService soutenanceService) {
         this.rapportService = rapportService;
         this.visiteService = visiteService;
         this.soutenanceService = soutenanceService;
     }
 
-
-    // ========== RAPPORTS ==========
-
     @Operation(
-        summary = "Ajouter un rapport",
-        description = "Traite l'ajout d'un nouveau rapport à un dossier annuel et redirige vers la page de gestion de l'apprenti."
+            summary = "Ajouter un rapport",
+            description = "Traite l'ajout d'un nouveau rapport à un dossier annuel et redirige vers la page de gestion de l'apprenti."
     )
     @PostMapping("/rapport/ajouter")
     public String ajouterRapport(@Valid @ModelAttribute CreerRapportDto dto,
@@ -66,8 +61,8 @@ public class DossierAnnuelControleur {
     }
 
     @Operation(
-        summary = "Modifier un rapport",
-        description = "Traite la modification d'un rapport existant et redirige vers la page de gestion de l'apprenti."
+            summary = "Modifier un rapport",
+            description = "Traite la modification d'un rapport existant et redirige vers la page de gestion de l'apprenti."
     )
     @PostMapping("/rapport/{rapportId}/modifier")
     public String modifierRapport(@PathVariable Integer rapportId,
@@ -91,8 +86,8 @@ public class DossierAnnuelControleur {
     }
 
     @Operation(
-        summary = "Supprimer un rapport",
-        description = "Traite la suppression d'un rapport et redirige vers la page de gestion de l'apprenti."
+            summary = "Supprimer un rapport",
+            description = "Traite la suppression d'un rapport et redirige vers la page de gestion de l'apprenti."
     )
     @PostMapping("/rapport/{rapportId}/supprimer")
     public String supprimerRapport(@PathVariable Integer rapportId,
@@ -111,8 +106,8 @@ public class DossierAnnuelControleur {
     // ========== VISITES ==========
 
     @Operation(
-        summary = "Ajouter une visite",
-        description = "Traite l'ajout d'une nouvelle visite à un dossier annuel et redirige vers la page de gestion de l'apprenti."
+            summary = "Ajouter une visite",
+            description = "Traite l'ajout d'une nouvelle visite à un dossier annuel et redirige vers la page de gestion de l'apprenti."
     )
     @PostMapping("/visite/ajouter")
     public String ajouterVisite(@Valid @ModelAttribute CreerVisiteDto dto,
@@ -135,8 +130,8 @@ public class DossierAnnuelControleur {
     }
 
     @Operation(
-        summary = "Modifier une visite",
-        description = "Traite la modification d'une visite existante et redirige vers la page de gestion de l'apprenti."
+            summary = "Modifier une visite",
+            description = "Traite la modification d'une visite existante et redirige vers la page de gestion de l'apprenti."
     )
     @PostMapping("/visite/{visiteId}/modifier")
     public String modifierVisite(@PathVariable Integer visiteId,
@@ -160,8 +155,8 @@ public class DossierAnnuelControleur {
     }
 
     @Operation(
-        summary = "Supprimer une visite",
-        description = "Traite la suppression d'une visite et redirige vers la page de gestion de l'apprenti."
+            summary = "Supprimer une visite",
+            description = "Traite la suppression d'une visite et redirige vers la page de gestion de l'apprenti."
     )
     @PostMapping("/visite/{visiteId}/supprimer")
     public String supprimerVisite(@PathVariable Integer visiteId,
@@ -180,8 +175,8 @@ public class DossierAnnuelControleur {
     // ========== SOUTENANCES ==========
 
     @Operation(
-        summary = "Ajouter une soutenance",
-        description = "Traite l'ajout d'une nouvelle soutenance à un dossier annuel et redirige vers la page de gestion de l'apprenti."
+            summary = "Ajouter une soutenance",
+            description = "Traite l'ajout d'une nouvelle soutenance à un dossier annuel et redirige vers la page de gestion de l'apprenti."
     )
     @PostMapping("/soutenance/ajouter")
     public String ajouterSoutenance(@Valid @ModelAttribute CreerSoutenanceDto dto,
@@ -204,8 +199,8 @@ public class DossierAnnuelControleur {
     }
 
     @Operation(
-        summary = "Modifier une soutenance",
-        description = "Traite la modification d'une soutenance existante et redirige vers la page de gestion de l'apprenti."
+            summary = "Modifier une soutenance",
+            description = "Traite la modification d'une soutenance existante et redirige vers la page de gestion de l'apprenti."
     )
     @PostMapping("/soutenance/{soutenanceId}/modifier")
     public String modifierSoutenance(@PathVariable Integer soutenanceId,
@@ -229,8 +224,8 @@ public class DossierAnnuelControleur {
     }
 
     @Operation(
-        summary = "Supprimer une soutenance",
-        description = "Traite la suppression d'une soutenance et redirige vers la page de gestion de l'apprenti."
+            summary = "Supprimer une soutenance",
+            description = "Traite la suppression d'une soutenance et redirige vers la page de gestion de l'apprenti."
     )
     @PostMapping("/soutenance/{soutenanceId}/supprimer")
     public String supprimerSoutenance(@PathVariable Integer soutenanceId,
