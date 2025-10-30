@@ -50,14 +50,13 @@ public class DossierAnnuelService {
     /**
      * Crée un nouveau dossier annuel pour la promotion actuelle d'un apprenti.
      * Vérifie qu'aucun dossier n'existe déjà pour cette promotion.
-     * 
+     *
      * @param apprentiId l'ID de l'apprenti
-     * @return le dossier annuel créé
      * @throws RessourceIntrouvableException si l'apprenti n'existe pas
-     * @throws IllegalStateException si un dossier existe déjà pour cette promotion
+     * @throws IllegalStateException         si un dossier existe déjà pour cette promotion
      */
     @Transactional
-    public DossierAnnuel creerDossierCourant(Integer apprentiId) {
+    public void creerDossierCourant(Integer apprentiId) {
         Apprenti apprenti = apprentiRepository.findById(apprentiId)
                 .orElseThrow(() -> new RessourceIntrouvableException("Apprenti", apprentiId));
 
@@ -69,7 +68,7 @@ public class DossierAnnuelService {
         DossierAnnuel dossierAnnuel = new DossierAnnuel(apprenti, promotion);
         apprenti.ajouterDossierAnnuel(dossierAnnuel);
 
-        return dossierAnnuelRepository.save(dossierAnnuel);
+        dossierAnnuelRepository.save(dossierAnnuel);
     }
 
 }

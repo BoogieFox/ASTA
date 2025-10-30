@@ -1,7 +1,11 @@
 package altn72.TpFilRouge.modele;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
+@Setter
+@Getter
 @Entity
 @Table(
     name = "dossier_annuel",
@@ -9,6 +13,7 @@ import jakarta.persistence.*;
     uniqueConstraints = @UniqueConstraint(name = "uk_dossier_apprenti_promotion", columnNames = {"apprenti_id", "promotion"})
 )
 public class DossierAnnuel {
+    // Getters and Setters
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "dossier_annuel_id", nullable = false)
@@ -39,52 +44,4 @@ public class DossierAnnuel {
         this.promotion = promotion;
     }
 
-    // Getters and Setters
-    public Integer getDossierAnnuelId() {
-        return dossierAnnuelId;
-    }
-
-    public void setDossierAnnuelId(Integer dossierAnnuelId) {
-        this.dossierAnnuelId = dossierAnnuelId;
-    }
-
-    public Apprenti getApprenti() {
-        return apprenti;
-    }
-
-    public void setApprenti(Apprenti apprenti) {
-        this.apprenti = apprenti;
-    }
-
-    public Rapport getRapport() {
-        return rapport;
-    }
-
-    public void setRapport(Rapport rapport) {
-        this.rapport = rapport;
-    }
-
-    public Visite getVisite() {
-        return visite;
-    }
-
-    public void setVisite(Visite visite) {
-        this.visite = visite;
-    }
-
-    public Soutenance getSoutenance() {
-        return soutenance;
-    }
-
-    public void setSoutenance(Soutenance soutenance) {
-        this.soutenance = soutenance;
-    }
-    
-    public Promotion getPromotion() {
-        return promotion;
-    }
-    
-    public void setPromotion(Promotion promotion) {
-        this.promotion = promotion;
-    }
 }

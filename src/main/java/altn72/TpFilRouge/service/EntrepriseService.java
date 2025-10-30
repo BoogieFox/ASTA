@@ -43,18 +43,17 @@ public class EntrepriseService {
     /**
      * Ajoute une nouvelle entreprise dans le système.
      * Vérifie que la raison sociale n'existe pas déjà.
-     * 
+     *
      * @param entreprise l'entreprise à créer
-     * @return l'entreprise créée avec son ID généré
      * @throws EntrepriseDejaExistanteException si la raison sociale existe déjà
      */
     @Transactional
-    public Entreprise ajouterEntreprise(Entreprise entreprise) {
+    public void ajouterEntreprise(Entreprise entreprise) {
         // Check si raison sociale existe déjà
         if (entrepriseRepository.existsByRaisonSociale(entreprise.getRaisonSociale())) {
             throw new EntrepriseDejaExistanteException(entreprise.getRaisonSociale());
         }
-        return entrepriseRepository.save(entreprise);
+        entrepriseRepository.save(entreprise);
     }
 
 }

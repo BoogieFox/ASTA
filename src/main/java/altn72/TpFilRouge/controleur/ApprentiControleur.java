@@ -1,5 +1,6 @@
 package altn72.TpFilRouge.controleur;
 
+import altn72.TpFilRouge.exception.ApprentiDejaExistantException;
 import altn72.TpFilRouge.exception.RessourceIntrouvableException;
 import altn72.TpFilRouge.modele.Apprenti;
 import altn72.TpFilRouge.modele.DossierAnnuel;
@@ -46,21 +47,19 @@ public class ApprentiControleur {
     private final DossierAnnuelService dossierAnnuelService;
 
 
-    public ApprentiControleur(ApprentiService apprentiService, 
-                             EntrepriseService entrepriseService,
-                             MaitreApprentissageService maitreApprentissageService,
-                             DossierAnnuelService dossierAnnuelService) {
+    public ApprentiControleur(ApprentiService apprentiService,
+                              EntrepriseService entrepriseService,
+                              MaitreApprentissageService maitreApprentissageService,
+                              DossierAnnuelService dossierAnnuelService) {
         this.apprentiService = apprentiService;
         this.entrepriseService = entrepriseService;
         this.maitreApprentissageService = maitreApprentissageService;
         this.dossierAnnuelService = dossierAnnuelService;
     }
 
-    // ========== Pages Thymeleaf ==========
-
     @Operation(
-        summary = "Liste des apprentis",
-        description = "Affiche la page Thymeleaf avec la liste des apprentis actifs et archivés. Supporte la recherche par mot-clé avec différents modes (tout, apprenti, entreprise, mission)."
+            summary = "Liste des apprentis",
+            description = "Affiche la page Thymeleaf avec la liste des apprentis actifs et archivés. Supporte la recherche par mot-clé avec différents modes (tout, apprenti, entreprise, mission)."
     )
     @GetMapping
     public String listerApprentis(@RequestParam(required = false) String search,
@@ -81,35 +80,29 @@ public class ApprentiControleur {
     }
 
     @Operation(
-        summary = "Formulaire de création d'un apprenti",
-        description = "Affiche la page Thymeleaf du formulaire pour créer un nouvel apprenti."
+            summary = "Formulaire de création d'un apprenti",
+            description = "Affiche la page Thymeleaf du formulaire pour créer un nouvel apprenti."
     )
     @GetMapping("/nouveau")
     public String afficherFormulaireCreation(@RequestParam(required = false) String success,
                                              HttpSession session,
                                              Model model) {
-        // Récupérer les données depuis la session si elles existent
         CreerApprentiDto apprenti = (CreerApprentiDto) session.getAttribute(SESSION_APPRENTI_DATA);
-        
+
         if (apprenti == null) {
-            // Si pas de données en session, créer un nouvel objet vide
             apprenti = new CreerApprentiDto();
         } else {
-            // Nettoyer la session après récupération
             session.removeAttribute(SESSION_APPRENTI_DATA);
         }
-        
+
         model.addAttribute(ATTR_APPRENTI, apprenti);
         model.addAttribute(ATTR_IS_CREATION, true);
         model.addAttribute(ATTR_ENTREPRISES, entrepriseService.getEntreprises());
         model.addAttribute(ATTR_MAITRES, maitreApprentissageService.getMaitresApprentissage());
 
-        // Afficher un message de succès si une entreprise vient d'être créée
         if ("entreprise-created".equals(success)) {
             model.addAttribute(ATTR_SUCCESS, "✅ Entreprise créée avec succès ! Vous pouvez maintenant la sélectionner dans la liste.");
         }
-        
-        // Afficher un message de succès si un maître d'apprentissage vient d'être créé
         if ("maitre-created".equals(success)) {
             model.addAttribute(ATTR_SUCCESS, "✅ Maître d'apprentissage créé avec succès ! Vous pouvez maintenant le sélectionner dans la liste.");
         }
@@ -118,12 +111,13 @@ public class ApprentiControleur {
     }
 
     @Operation(
-        summary = "Créer un apprenti",
-        description = "Traite le formulaire de création d'un apprenti et redirige vers la liste des apprentis."
+            summary = "Créer un apprenti",
+            description = "Traite le formulaire de création d'un apprenti et redirige vers la liste des apprentis."
     )
     @PostMapping("/nouveau")
     public String creerApprenti(@Valid @ModelAttribute(ATTR_APPRENTI) CreerApprentiDto dto,
                                 BindingResult bindingResult,
+                                RedirectAttributes redirectAttributes,
                                 Model model) {
         if (bindingResult.hasErrors()) {
             model.addAttribute(ATTR_IS_CREATION, true);
@@ -131,16 +125,20 @@ public class ApprentiControleur {
             model.addAttribute(ATTR_MAITRES, maitreApprentissageService.getMaitresApprentissage());
             return VIEW_FORMULAIRE;
         }
-        
-        // Les exceptions (ApprentiDejaExistantException, RessourceIntrouvableException)
-        // sont automatiquement gérées par le GlobalExceptionHandler
-        apprentiService.ajouterApprenti(dto);
-    return REDIRECT_APPRENTIS;
+
+        try {
+            apprentiService.ajouterApprenti(dto);
+            return REDIRECT_APPRENTIS;
+        } catch (ApprentiDejaExistantException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            redirectAttributes.addFlashAttribute(ATTR_APPRENTI, dto);
+            return "redirect:/apprentis/nouveau";
+        }
     }
 
     @Operation(
-        summary = "Sauvegarder en session pour créer une entreprise",
-        description = "Sauvegarde temporairement les données de l'apprenti en session et redirige vers le formulaire de création d'entreprise."
+            summary = "Sauvegarder en session pour créer une entreprise",
+            description = "Sauvegarde temporairement les données de l'apprenti en session et redirige vers le formulaire de création d'entreprise."
     )
     @PostMapping("/sauvegarder-session")
     public String sauvegarderEnSession(@ModelAttribute CreerApprentiDto dto, HttpSession session) {
@@ -149,8 +147,8 @@ public class ApprentiControleur {
     }
 
     @Operation(
-        summary = "Sauvegarder en session pour créer un maître d'apprentissage",
-        description = "Sauvegarde temporairement les données de l'apprenti en session et redirige vers le formulaire de création de maître d'apprentissage."
+            summary = "Sauvegarder en session pour créer un maître d'apprentissage",
+            description = "Sauvegarde temporairement les données de l'apprenti en session et redirige vers le formulaire de création de maître d'apprentissage."
     )
     @PostMapping("/sauvegarder-session-maitre")
     public String sauvegarderEnSessionMaitre(@ModelAttribute CreerApprentiDto dto, HttpSession session) {
@@ -159,8 +157,8 @@ public class ApprentiControleur {
     }
 
     @Operation(
-        summary = "Formulaire de modification d'un apprenti",
-        description = "Affiche la page Thymeleaf du formulaire pour modifier un apprenti existant."
+            summary = "Formulaire de modification d'un apprenti",
+            description = "Affiche la page Thymeleaf du formulaire pour modifier un apprenti existant."
     )
     @GetMapping("/{id}/modifier")
     public String afficherFormulaireModification(@PathVariable Integer id, Model model) {
@@ -169,8 +167,8 @@ public class ApprentiControleur {
     }
 
     @Operation(
-        summary = "Page du dossier d'un apprenti",
-        description = "Affiche la page Thymeleaf du dossier détaillé d'un apprenti."
+            summary = "Page du dossier d'un apprenti",
+            description = "Affiche la page Thymeleaf du dossier détaillé d'un apprenti."
     )
     @GetMapping("/{id}/dossier")
     public String afficherDossier(@PathVariable Integer id) {
@@ -178,40 +176,27 @@ public class ApprentiControleur {
     }
 
     @Operation(
-        summary = "Page de gestion d'un apprenti",
-        description = "Affiche la page Thymeleaf pour gérer un apprenti (consultation et modification des informations)."
+            summary = "Page de gestion d'un apprenti",
+            description = "Affiche la page Thymeleaf pour gérer un apprenti (consultation et modification des informations)."
     )
     @GetMapping("/{id}/gerer")
     public String gererApprenti(@PathVariable Integer id,
-                               @RequestParam(required = false) String success,
-                               Model model) {
-    Apprenti apprenti = apprentiService.getUnApprenti(id)
-        .orElseThrow(() -> new RessourceIntrouvableException("Apprenti", id));
-        
-        // Ajouter le DTO pour le binding si pas déjà présent (en cas d'erreur de validation)
+                                @RequestParam(required = false) String success,
+                                Model model) {
+        Apprenti apprenti = apprentiService.getUnApprenti(id)
+                .orElseThrow(() -> new RessourceIntrouvableException("Apprenti", id));
+
         if (!model.containsAttribute(ATTR_MODIFIER_DTO)) {
-            ModifierApprentiDto dto = new ModifierApprentiDto();
-            dto.setNom(apprenti.getNom());
-            dto.setPrenom(apprenti.getPrenom());
-            dto.setEmail(apprenti.getEmail());
-            dto.setTelephone(apprenti.getTelephone());
-            dto.setMajeure(apprenti.getMajeure());
-
-            Mission mission = apprenti.getMission();
-            dto.setMotsClesMission(mission != null && mission.getMotsCles() != null ? mission.getMotsCles() : "");
-            dto.setMetierCibleMission(mission != null && mission.getMetierCible() != null ? mission.getMetierCible() : "");
-            dto.setCommentairesMission(mission != null && mission.getCommentaires() != null ? mission.getCommentaires() : "");
-
+            ModifierApprentiDto dto = getModifierApprentiDto(apprenti);
             model.addAttribute(ATTR_MODIFIER_DTO, dto);
         }
 
-    Optional<DossierAnnuel> dossierCourant = dossierAnnuelService.getDossierCourant(id);
+        Optional<DossierAnnuel> dossierCourant = dossierAnnuelService.getDossierCourant(id);
         model.addAttribute(ATTR_DOSSIER_COURANT, dossierCourant.orElse(null));
         model.addAttribute(ATTR_APPRENTI, apprenti);
         model.addAttribute(ATTR_ENTREPRISES, entrepriseService.getEntreprises());
         model.addAttribute(ATTR_MAITRES, maitreApprentissageService.getMaitresApprentissage());
 
-        // Gérer les messages de succès
         if ("entreprise-created".equals(success)) {
             model.addAttribute(ATTR_SUCCESS, "✅ Entreprise créée avec succès ! Vous pouvez maintenant la sélectionner dans la liste.");
         } else if ("maitre-created".equals(success)) {
@@ -221,9 +206,25 @@ public class ApprentiControleur {
         return VIEW_GERER;
     }
 
+    private static ModifierApprentiDto getModifierApprentiDto(Apprenti apprenti) {
+        ModifierApprentiDto dto = new ModifierApprentiDto();
+        dto.setNom(apprenti.getNom());
+        dto.setPrenom(apprenti.getPrenom());
+        dto.setEmail(apprenti.getEmail());
+        dto.setTelephone(apprenti.getTelephone());
+        dto.setMajeure(apprenti.getMajeure());
+
+
+        Mission mission = apprenti.getMission();
+        dto.setMotsClesMission(mission != null && mission.getMotsCles() != null ? mission.getMotsCles() : "");
+        dto.setMetierCibleMission(mission != null && mission.getMetierCible() != null ? mission.getMetierCible() : "");
+        dto.setCommentairesMission(mission != null && mission.getCommentaires() != null ? mission.getCommentaires() : "");
+        return dto;
+    }
+
     @Operation(
-        summary = "Mettre à jour un apprenti",
-        description = "Traite la mise à jour d'un apprenti et redirige vers la liste des apprentis."
+            summary = "Mettre à jour un apprenti",
+            description = "Traite la mise à jour d'un apprenti et redirige vers la liste des apprentis."
     )
     @PostMapping("/{id}")
     public String modifierApprenti(@PathVariable Integer id, @ModelAttribute Apprenti apprenti) {
@@ -231,10 +232,9 @@ public class ApprentiControleur {
         return REDIRECT_APPRENTIS;
     }
 
-
     @Operation(
-        summary = "Modifier les informations personnelles d'un apprenti",
-        description = "Traite la modification des informations personnelles d'un apprenti et redirige vers la page de gestion."
+            summary = "Modifier les informations personnelles d'un apprenti",
+            description = "Traite la modification des informations personnelles d'un apprenti et redirige vers la page de gestion."
     )
     @PatchMapping("/{id}/informations")
     public String modifierInformationsPersonnelles(
@@ -243,13 +243,11 @@ public class ApprentiControleur {
             BindingResult bindingResult,
             RedirectAttributes redirectAttributes,
             Model model) {
-        
-        // Gérer les erreurs de validation
+
         if (bindingResult.hasErrors()) {
-            // Récupérer l'apprenti pour ré-afficher la page
             Apprenti apprenti = apprentiService.getUnApprenti(id)
                     .orElseThrow(() -> new RessourceIntrouvableException("Apprenti", id));
-            
+
             model.addAttribute(ATTR_APPRENTI, apprenti);
             model.addAttribute(ATTR_ENTREPRISES, entrepriseService.getEntreprises());
             model.addAttribute(ATTR_MAITRES, maitreApprentissageService.getMaitresApprentissage());
@@ -257,20 +255,16 @@ public class ApprentiControleur {
 
             return VIEW_GERER;
         }
-        
-        // Les exceptions (ApprentiDejaExistantException, RessourceIntrouvableException)
-        // sont automatiquement gérées par le GlobalExceptionHandler
-        apprentiService.modifierApprenti(id, dto);
-        
-        // Message de succès
-        redirectAttributes.addFlashAttribute(ATTR_SUCCESS, "✅ Les informations ont été modifiées avec succès !");
 
+
+        apprentiService.modifierApprenti(id, dto);
+        redirectAttributes.addFlashAttribute(ATTR_SUCCESS, "✅ Les informations ont été modifiées avec succès !");
         return REDIRECT_GERER_PREFIX + id + GERER_SUFFIX;
     }
 
     @Operation(
-        summary = "Modifier l'entreprise d'un apprenti",
-        description = "Traite la modification de l'entreprise d'un apprenti et redirige vers la page de gestion."
+            summary = "Modifier l'entreprise d'un apprenti",
+            description = "Traite la modification de l'entreprise d'un apprenti et redirige vers la page de gestion."
     )
     @PatchMapping("/{id}/entreprise")
     public String modifierEntreprise(
@@ -284,13 +278,12 @@ public class ApprentiControleur {
         } catch (RessourceIntrouvableException e) {
             redirectAttributes.addFlashAttribute("errorMessage", "❌ " + e.getMessage());
         }
-
         return REDIRECT_GERER_PREFIX + id + GERER_SUFFIX;
     }
 
     @Operation(
-        summary = "Modifier le maître d'apprentissage d'un apprenti",
-        description = "Traite la modification du maître d'apprentissage d'un apprenti et redirige vers la page de gestion."
+            summary = "Modifier le maître d'apprentissage d'un apprenti",
+            description = "Traite la modification du maître d'apprentissage d'un apprenti et redirige vers la page de gestion."
     )
     @PatchMapping("/{id}/maitre-apprentissage")
     public String modifierMaitreApprentissage(
@@ -309,18 +302,15 @@ public class ApprentiControleur {
     }
 
     @Operation(
-        summary = "Page de l'historique d'un apprenti",
-        description = "Affiche la page Thymeleaf avec l'historique complet d'un apprenti archivé (tous ses dossiers annuels)."
+            summary = "Page de l'historique d'un apprenti",
+            description = "Affiche la page Thymeleaf avec l'historique complet d'un apprenti archivé (tous ses dossiers annuels)."
     )
     @GetMapping("/{id}/historique")
     public String afficherHistorique(@PathVariable Integer id, Model model) {
         Apprenti apprenti = apprentiService.getUnApprenti(id)
                 .orElseThrow(() -> new RessourceIntrouvableException("Apprenti", id));
 
-        // Récupérer tous les dossiers annuels
         List<DossierAnnuel> dossiers = apprenti.getDossierAnnuels();
-
-        // Séparer les dossiers par promotion
         DossierAnnuel dossierL1 = dossiers.stream()
                 .filter(d -> d.getPromotion() == altn72.TpFilRouge.modele.Promotion.L1)
                 .findFirst()
@@ -345,20 +335,29 @@ public class ApprentiControleur {
     }
 
     @Operation(
-        summary = "Commencer une nouvelle année académique",
-        description = "Traite le passage à la nouvelle année académique (fait progresser tous les apprentis actifs d'une promotion) et redirige vers la liste des apprentis."
+            summary = "Commencer une nouvelle année académique",
+            description = "Traite le passage à la nouvelle année académique (fait progresser tous les apprentis actifs d'une promotion) et redirige vers la liste des apprentis."
     )
     @PostMapping("/commencer-nouvelle-annee")
     public String commencerNouvelleAnnee(RedirectAttributes redirectAttributes) {
         try {
             int apprentisModifies = apprentiService.commencerNouvelleAnnee();
-            redirectAttributes.addFlashAttribute("successMessage", 
-                "✅ Nouvelle année commencée ! " + apprentisModifies + " apprentis ont été passés à la promotion suivante.");
+            if (apprentisModifies >1 ) {
+                redirectAttributes.addFlashAttribute("successMessage",
+                        "✅ Nouvelle année commencée ! " + apprentisModifies + " apprentis ont été passés à la promotion suivante.");
+            } else if (apprentisModifies ==1) {
+                redirectAttributes.addFlashAttribute("successMessage",
+                        "✅ Nouvelle année commencée ! " + apprentisModifies + " apprenti a été passé à la promotion suivante.");
+            } else {
+                redirectAttributes.addFlashAttribute("successMessage",
+                        "✅ Nouvelle année commencée ! Aucun apprenti n'a été modifié.");
+            }
+            redirectAttributes.addFlashAttribute("successMessage",
+                    "✅ Nouvelle année commencée ! " + apprentisModifies + " apprentis ont été passés à la promotion suivante.");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", 
-                "❌ Erreur lors du passage de promotion : " + e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage",
+                    "❌ Erreur lors du passage de promotion : " + e.getMessage());
         }
-        
         return REDIRECT_APPRENTIS;
     }
 }

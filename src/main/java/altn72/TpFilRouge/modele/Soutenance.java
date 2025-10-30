@@ -1,11 +1,17 @@
 package altn72.TpFilRouge.modele;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.LocalDate;
 
+@Setter
+@Getter
 @Entity
 @Table(name = "soutenance", schema = "base_asta")
 public class Soutenance {
+    // Getters and Setters
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "soutenance_id", nullable = false)
@@ -33,44 +39,4 @@ public class Soutenance {
         this.dossierAnnuel = dossierAnnuel;
     }
 
-    // Getters and Setters
-    public Integer getSoutenanceId() {
-        return soutenanceId;
-    }
-
-    public void setSoutenanceId(Integer soutenanceId) {
-        this.soutenanceId = soutenanceId;
-    }
-
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public void setDate(LocalDate date) {
-        this.date = date;
-    }
-
-    public Double getNoteFinale() {
-        return noteFinale;
-    }
-
-    public void setNoteFinale(Double noteFinale) {
-        this.noteFinale = noteFinale;
-    }
-
-    public String getCommentaires() {
-        return commentaires;
-    }
-
-    public void setCommentaires(String commentaires) {
-        this.commentaires = commentaires;
-    }
-
-    public DossierAnnuel getDossierAnnuel() {
-        return dossierAnnuel;
-    }
-
-    public void setDossierAnnuel(DossierAnnuel dossierAnnuel) {
-        this.dossierAnnuel = dossierAnnuel;
-    }
 }

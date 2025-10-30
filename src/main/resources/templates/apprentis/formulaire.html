@@ -21,6 +21,15 @@
             margin-bottom: 1.5rem;
             font-weight: 500;
         }
+        .alert-error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c2c7;
+            color: #842029;
+            padding: 1rem;
+            border-radius: 0.375rem;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
         .select-with-add {
             display: flex;
             gap: 0.5rem;
@@ -42,6 +51,11 @@
         <!-- Message de succès (retour du formulaire d'entreprise) -->
         <div th:if="${successMessage}" class="alert-success" th:text="${successMessage}">
             Message de succès
+        </div>
+
+        <!-- Message d'erreur (apprenti déjà existant) -->
+        <div th:if="${errorMessage}" class="alert-error" th:text="${errorMessage}">
+            Message d'erreur
         </div>
 
         <div class="card">
