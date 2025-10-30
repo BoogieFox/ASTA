@@ -14,10 +14,10 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 public class SecurityConfig {
 
-    private final DetailsUtilisateurService userDetailsService;
+    private final DetailsUtilisateurService detailsUtilisateurService;
 
-    public SecurityConfig(DetailsUtilisateurService userDetailsService) {
-        this.userDetailsService = userDetailsService;
+    public SecurityConfig(DetailsUtilisateurService detailsUtilisateurService) {
+        this.detailsUtilisateurService = detailsUtilisateurService;
     }
 
     @Bean
@@ -34,9 +34,9 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
-                .userDetailsService(userDetailsService)
+                .userDetailsService(detailsUtilisateurService)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/css/**").permitAll()
+                        .requestMatchers("/login", "/css/**", "/swagger-ui/**").permitAll()
                         .anyRequest().hasRole("TUTOR")
                 )
                 .formLogin(form -> form

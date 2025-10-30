@@ -27,14 +27,13 @@ public class SoutenanceService {
     /**
      * Ajoute une nouvelle soutenance à un dossier annuel.
      * Vérifie qu'aucune soutenance n'existe déjà pour ce dossier.
-     * 
+     *
      * @param dto les données de la soutenance à créer
-     * @return la soutenance créée avec son ID généré
      * @throws RessourceIntrouvableException si le dossier annuel n'existe pas
-     * @throws RuntimeException si une soutenance existe déjà pour ce dossier
+     * @throws RuntimeException              si une soutenance existe déjà pour ce dossier
      */
     @Transactional
-    public Soutenance ajouterSoutenance(CreerSoutenanceDto dto) {
+    public void ajouterSoutenance(CreerSoutenanceDto dto) {
         // Récupérer le dossier annuel
         DossierAnnuel dossierAnnuel = dossierAnnuelRepository.findById(dto.getDossierAnnuelId())
                 .orElseThrow(() -> new RessourceIntrouvableException("DossierAnnuel", dto.getDossierAnnuelId()));
@@ -51,19 +50,18 @@ public class SoutenanceService {
         soutenance.setCommentaires(dto.getCommentaires());
         soutenance.setDossierAnnuel(dossierAnnuel);
 
-        return soutenanceRepository.save(soutenance);
+        soutenanceRepository.save(soutenance);
     }
 
     /**
      * Modifie une soutenance existante.
-     * 
+     *
      * @param soutenanceId l'ID de la soutenance à modifier
-     * @param dto les nouvelles données de la soutenance
-     * @return la soutenance modifiée
+     * @param dto          les nouvelles données de la soutenance
      * @throws RessourceIntrouvableException si la soutenance n'existe pas
      */
     @Transactional
-    public Soutenance modifierSoutenance(Integer soutenanceId, CreerSoutenanceDto dto) {
+    public void modifierSoutenance(Integer soutenanceId, CreerSoutenanceDto dto) {
         Soutenance soutenance = soutenanceRepository.findById(soutenanceId)
                 .orElseThrow(() -> new RessourceIntrouvableException("Soutenance", soutenanceId));
 
@@ -71,7 +69,7 @@ public class SoutenanceService {
         soutenance.setNoteFinale(dto.getNoteFinale());
         soutenance.setCommentaires(dto.getCommentaires());
 
-        return soutenanceRepository.save(soutenance);
+        soutenanceRepository.save(soutenance);
     }
 
     /**

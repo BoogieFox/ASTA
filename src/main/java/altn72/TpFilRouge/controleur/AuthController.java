@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class AuthController {
 
     @Operation(
-        summary = "Page de connexion",
-        description = "Affiche la page Thymeleaf du formulaire de connexion."
+            summary = "Page de connexion",
+            description = "Affiche la page Thymeleaf du formulaire de connexion."
     )
     @GetMapping("/login")
     public String loginPage() {

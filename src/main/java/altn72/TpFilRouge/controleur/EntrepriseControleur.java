@@ -50,7 +50,6 @@ public class EntrepriseControleur {
     public String afficherFormulaireCreation(@RequestParam(required = false) String returnTo,
                                             HttpSession session,
                                             Model model) {
-        // Récupérer les données d'apprenti depuis la session
         CreerApprentiDto apprentiData = (CreerApprentiDto) session.getAttribute("apprentiData");
         if (apprentiData == null) {
             apprentiData = new CreerApprentiDto();
@@ -72,7 +71,6 @@ public class EntrepriseControleur {
                                   @RequestParam(required = false) String returnTo,
                                   HttpSession session,
                                   Model model) {
-        // Récupérer les données d'apprenti depuis la session
         CreerApprentiDto apprentiData = (CreerApprentiDto) session.getAttribute("apprentiData");
         if (apprentiData == null) {
             apprentiData = new CreerApprentiDto();
@@ -87,12 +85,7 @@ public class EntrepriseControleur {
         try {
             Entreprise entreprise = modelMapper.map(dto, Entreprise.class);
             entrepriseService.ajouterEntreprise(entreprise);
-            
-            // Ne pas nettoyer la session ici - elle sera nettoyée par ApprentiControleur
-            // après avoir récupéré les données
-            // session.removeAttribute("apprentiData"); // ← SUPPRIMÉ
-            
-            // Rediriger vers la page appropriée
+
             if (returnTo != null && !returnTo.isEmpty()) {
                 return "redirect:/" + returnTo + "?success=entreprise-created";
             } else {

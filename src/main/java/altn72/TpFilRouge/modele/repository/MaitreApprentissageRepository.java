@@ -11,7 +11,5 @@ public interface MaitreApprentissageRepository extends JpaRepository<MaitreAppre
 
     boolean existsByEmail(String email);
 
-    Optional<MaitreApprentissage> findByEmail(String email);
-
 }
 

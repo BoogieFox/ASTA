@@ -1,8 +1,13 @@
 package altn72.TpFilRouge.modele;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.LocalDate;
 
+@Setter
+@Getter
 @Entity
 @Table(name = "visite", schema = "base_asta")
 public class Visite {
@@ -31,47 +36,6 @@ public class Visite {
     public Visite(LocalDate date, String format, DossierAnnuel dossierAnnuel) {
         this.date = date;
         this.format = format;
-        this.dossierAnnuel = dossierAnnuel;
-    }
-
-    // Getters and Setters
-    public Integer getVisiteId() {
-        return visiteId;
-    }
-
-    public void setVisiteId(Integer visiteId) {
-        this.visiteId = visiteId;
-    }
-
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public void setDate(LocalDate date) {
-        this.date = date;
-    }
-
-    public String getFormat() {
-        return format;
-    }
-
-    public void setFormat(String format) {
-        this.format = format;
-    }
-
-    public String getCommentaires() {
-        return commentaires;
-    }
-
-    public void setCommentaires(String commentaires) {
-        this.commentaires = commentaires;
-    }
-
-    public DossierAnnuel getDossierAnnuel() {
-        return dossierAnnuel;
-    }
-
-    public void setDossierAnnuel(DossierAnnuel dossierAnnuel) {
         this.dossierAnnuel = dossierAnnuel;
     }
 }

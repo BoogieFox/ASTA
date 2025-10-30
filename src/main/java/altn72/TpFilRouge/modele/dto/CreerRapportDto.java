@@ -4,9 +4,14 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
 
+@Setter
+@Getter
 public class CreerRapportDto {
 
+    // Getters and Setters
     @NotBlank(message = "Le sujet est obligatoire")
     @Size(max = 255, min = 5, message = "Le sujet doit contenir entre 5 et 255 caractères")
     private String sujet;
@@ -29,37 +34,5 @@ public class CreerRapportDto {
         this.dossierAnnuelId = dossierAnnuelId;
     }
 
-    // Getters and Setters
-    public String getSujet() {
-        return sujet;
-    }
-
-    public void setSujet(String sujet) {
-        this.sujet = sujet;
-    }
-
-    public Double getNoteFinale() {
-        return noteFinale;
-    }
-
-    public void setNoteFinale(Double noteFinale) {
-        this.noteFinale = noteFinale;
-    }
-
-    public String getCommentaires() {
-        return commentaires;
-    }
-
-    public void setCommentaires(String commentaires) {
-        this.commentaires = commentaires;
-    }
-
-    public Integer getDossierAnnuelId() {
-        return dossierAnnuelId;
-    }
-
-    public void setDossierAnnuelId(Integer dossierAnnuelId) {
-        this.dossierAnnuelId = dossierAnnuelId;
-    }
 }
 

@@ -29,8 +29,6 @@ public class MaitreApprentissageControleur {
         this.maitreApprentissageService = maitreApprentissageService;
     }
 
-    // ========== Pages Thymeleaf ==========
-
     @Operation(
         summary = "Formulaire de création d'un maître d'apprentissage",
         description = "Affiche la page Thymeleaf du formulaire pour créer un nouveau maître d'apprentissage."
@@ -39,7 +37,6 @@ public class MaitreApprentissageControleur {
     public String afficherFormulaireCreation(@RequestParam(required = false) String returnTo,
                                             HttpSession session,
                                             Model model) {
-        // Récupérer les données d'apprenti depuis la session
         CreerApprentiDto apprentiData = (CreerApprentiDto) session.getAttribute("apprentiData");
         if (apprentiData == null) {
             apprentiData = new CreerApprentiDto();
@@ -61,7 +58,6 @@ public class MaitreApprentissageControleur {
                                           @RequestParam(required = false) String returnTo,
                                           HttpSession session,
                                           Model model) {
-        // Récupérer les données d'apprenti depuis la session
         CreerApprentiDto apprentiData = (CreerApprentiDto) session.getAttribute("apprentiData");
         if (apprentiData == null) {
             apprentiData = new CreerApprentiDto();
@@ -77,11 +73,7 @@ public class MaitreApprentissageControleur {
             MaitreApprentissage maitreApprentissage = modelMapper.map(dto, MaitreApprentissage.class);
             maitreApprentissageService.ajouterMaitreApprentissage(maitreApprentissage);
 
-            // Ne pas nettoyer la session ici - elle sera nettoyée par ApprentiControleur
-            // après avoir récupéré les données
-            // session.removeAttribute("apprentiData"); // ← SUPPRIMÉ
 
-            // Rediriger vers la page appropriée
             if (returnTo != null && !returnTo.isEmpty()) {
                 return "redirect:/" + returnTo + "?success=maitre-created";
             } else {

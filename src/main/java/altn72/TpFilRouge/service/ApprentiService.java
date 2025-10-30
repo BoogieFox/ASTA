@@ -137,14 +137,13 @@ public class ApprentiService {
      * Ajoute un nouvel apprenti dans le système.
      * Crée automatiquement un dossier annuel pour la promotion L1.
      * Vérifie que l'email n'est pas déjà utilisé.
-     * 
+     *
      * @param dto les données de l'apprenti à créer
-     * @return l'apprenti créé avec son ID généré
      * @throws ApprentiDejaExistantException si l'email existe déjà
      * @throws RessourceIntrouvableException si l'entreprise ou le maître d'apprentissage spécifié n'existe pas
      */
     @Transactional
-    public Apprenti ajouterApprenti(CreerApprentiDto dto) {
+    public void ajouterApprenti(CreerApprentiDto dto) {
         // Check si le mail est déjà utilisé
         if (apprentiRepository.existsByEmail(dto.getEmail())) {
             throw new ApprentiDejaExistantException(dto.getEmail());
@@ -177,28 +176,27 @@ public class ApprentiService {
             apprenti.setEntreprise(entreprise);
         }
 
-        // Associer le MA existant si il est spécifié
+        // Associer le MA existant s'il est spécifié
         if (dto.getMaitreApprentissageId() != null) {
             MaitreApprentissage maitreApprentissage = maitreApprentissageRepository.findById(dto.getMaitreApprentissageId())
                     .orElseThrow(() -> new RessourceIntrouvableException("Maître d'apprentissage", dto.getMaitreApprentissageId()));
             apprenti.setMaitreApprentissage(maitreApprentissage);
         }
 
-        return apprentiRepository.save(apprenti);
+        apprentiRepository.save(apprenti);
     }
 
     /**
      * Modifie les informations personnelles d'un apprenti existant.
      * Vérifie que l'apprenti existe et que l'email n'est pas déjà utilisé par un autre apprenti.
-     * 
+     *
      * @param apprentiId l'ID de l'apprenti à modifier
-     * @param dto les nouvelles informations de l'apprenti
-     * @return l'apprenti mis à jour
+     * @param dto        les nouvelles informations de l'apprenti
      * @throws RessourceIntrouvableException si l'apprenti n'existe pas
      * @throws ApprentiDejaExistantException si l'email est déjà utilisé par un autre apprenti
      */
     @Transactional
-    public Apprenti modifierApprenti(Integer apprentiId, ModifierApprentiDto dto) {
+    public void modifierApprenti(Integer apprentiId, ModifierApprentiDto dto) {
         // Vérifier que l'apprenti existe
         Apprenti apprenti = apprentiRepository.findById(apprentiId)
                 .orElseThrow(() -> new RessourceIntrouvableException("Apprenti", apprentiId));
@@ -225,19 +223,18 @@ public class ApprentiService {
         mission.setMetierCible(dto.getMetierCibleMission());
         mission.setCommentaires(dto.getCommentairesMission());
 
-        return apprentiRepository.save(apprenti);
+        apprentiRepository.save(apprenti);
     }
 
     /**
      * Modifie l'entreprise d'un apprenti existant.
      *
-     * @param apprentiId l'ID de l'apprenti à modifier
+     * @param apprentiId   l'ID de l'apprenti à modifier
      * @param entrepriseId l'ID de la nouvelle entreprise (peut être null pour retirer l'entreprise)
-     * @return l'apprenti mis à jour
      * @throws RessourceIntrouvableException si l'apprenti ou l'entreprise n'existe pas
      */
     @Transactional
-    public Apprenti modifierEntreprise(Integer apprentiId, Integer entrepriseId) {
+    public void modifierEntreprise(Integer apprentiId, Integer entrepriseId) {
         Apprenti apprenti = apprentiRepository.findById(apprentiId)
                 .orElseThrow(() -> new RessourceIntrouvableException("Apprenti", apprentiId));
 
@@ -249,19 +246,18 @@ public class ApprentiService {
             apprenti.setEntreprise(null);
         }
 
-        return apprentiRepository.save(apprenti);
+        apprentiRepository.save(apprenti);
     }
 
     /**
      * Modifie le maître d'apprentissage d'un apprenti existant.
      *
-     * @param apprentiId l'ID de l'apprenti à modifier
+     * @param apprentiId            l'ID de l'apprenti à modifier
      * @param maitreApprentissageId l'ID du nouveau maître d'apprentissage (peut être null pour retirer le maître)
-     * @return l'apprenti mis à jour
      * @throws RessourceIntrouvableException si l'apprenti ou le maître d'apprentissage n'existe pas
      */
     @Transactional
-    public Apprenti modifierMaitreApprentissage(Integer apprentiId, Integer maitreApprentissageId) {
+    public void modifierMaitreApprentissage(Integer apprentiId, Integer maitreApprentissageId) {
         Apprenti apprenti = apprentiRepository.findById(apprentiId)
                 .orElseThrow(() -> new RessourceIntrouvableException("Apprenti", apprentiId));
 
@@ -273,7 +269,7 @@ public class ApprentiService {
             apprenti.setMaitreApprentissage(null);
         }
 
-        return apprentiRepository.save(apprenti);
+        apprentiRepository.save(apprenti);
     }
 
     /**

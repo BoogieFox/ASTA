@@ -1,9 +1,14 @@
 package altn72.TpFilRouge.modele;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "apprenti", schema = "base_asta")
 public class Apprenti {
@@ -68,103 +73,6 @@ public class Apprenti {
         this.majeure = majeure;
         this.promotion = Promotion.L1; // Par défaut en L1
         this.dossierAnnuels = new ArrayList<>();
-    }
-
-    // Getters and Setters
-    public Integer getApprentiId() {
-        return apprentiId;
-    }
-
-    public void setApprentiId(Integer apprentiId) {
-        this.apprentiId = apprentiId;
-    }
-
-    public String getNom() {
-        return nom;
-    }
-
-    public void setNom(String nom) {
-        this.nom = nom;
-    }
-
-    public String getPrenom() {
-        return prenom;
-    }
-
-    public void setPrenom(String prenom) {
-        this.prenom = prenom;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getTelephone() {
-        return telephone;
-    }
-
-    public void setTelephone(String telephone) {
-        this.telephone = telephone;
-    }
-
-    public String getMajeure() {
-        return majeure;
-    }
-
-    public void setMajeure(String majeure) {
-        this.majeure = majeure;
-    }
-
-    public String getAnneeAcademique() {
-        return anneeAcademique;
-    }
-
-    public void setAnneeAcademique(String anneeAcademique) {
-        this.anneeAcademique = anneeAcademique;
-    }
-
-    public List<DossierAnnuel> getDossierAnnuels() {
-        return dossierAnnuels;
-    }
-
-    public void setDossierAnnuels(List<DossierAnnuel> dossierAnnuels) {
-        this.dossierAnnuels = dossierAnnuels;
-    }
-
-    public Entreprise getEntreprise() {
-        return entreprise;
-    }
-
-    public void setEntreprise(Entreprise entreprise) {
-        this.entreprise = entreprise;
-    }
-
-    public MaitreApprentissage getMaitreApprentissage() {
-        return maitreApprentissage;
-    }
-
-    public void setMaitreApprentissage(MaitreApprentissage maitreApprentissage) {
-        this.maitreApprentissage = maitreApprentissage;
-    }
-
-    public Mission getMission() {
-        return mission;
-    }
-
-    public void setMission(Mission mission) {
-        this.mission = mission;
-    }
-
-    public Promotion getPromotion() {
-        return promotion;
-    }
-
-    public void setPromotion(Promotion promotion) {
-        this.promotion = promotion;
     }
 
     public void ajouterDossierAnnuel(DossierAnnuel dossierAnnuel) {
