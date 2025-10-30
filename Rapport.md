@@ -11,7 +11,7 @@
 
 ### Via Internet
 
-Vous pouvez tester notre application directement sur Internet depuis n'importe quel appareil connecté à Internet ! Pour cela, il suffit d'utiliser le lien suivant : <https://asta-production.up.railway.app/>.
+Vous pouvez tester notre application directement sur Internet depuis n'importe quel appareil connecté à Internet ! Pour cela, il suffit d'utiliser le lien suivant :<https://asta-production.up.railway.app/>.
 
 ### Via projet local
 
@@ -116,83 +116,83 @@ Les relations bidirectionnelles offrent une grande flexibilité, mais nécessite
 
 Nous avons trouvé qu'en Spring Boot, la gestion des exceptions (customs et globale) est particulièrement efficace et simple d'utilisation en termes de code. Le document fourni (Clean Code - Gestion des exceptions) est très clair et a permi de bien nous aiguiller sur les bonnes pratiques.
 
-### Les fonctionnalités que vous n'avez pas eu le temps de mettre en œuvre et pourquoi
+### Les fonctionnalités que vous n'avez pas eues le temps de mettre en œuvre et pourquoi
 
 Nous estimons que nous avons rempli le cahier des charges minimum (MVP) du projet. Nous pensons qu'il n'y a pas vraiment de fonctionnalités que nous avont manqués. Cependant, il reste pour nous un point qui n'a pas été évoqué dans le rapport : la gestion de plusieurs utilisateurs simultanés. Nous n'avons pas lié le tuteur à des apprentis spécifiques. C'est-à-dire que nous avons un tuteur qui a accès à tous les apprentis du système. Il faudrait sécuriser les endpoints et services pour s'assurer de récupérer uniquement les apprentis du tuteur qui est actuellement connecté.
 
 De plus, même si non indiqué explicitement dans les consignes du projet, nous n'avons pas implémenté le fait de pouvoir modifier directement les entreprises et maîtres d'apprentissage créés. De même, nous ne pouvons créer de nouveaux tuteurs (utilisateurs) directement depuis l'application.
 
+Pour finir, nous aurions bien aimé factoriser un peu plus le code, notamment au niveau des services. En effet, certaines méthodes sont très similaires entre les services (particulièrement pour les entités Rapport, Visite et Soutenance). Nous aurions pu créer une classe abstraite ou une interface commune pour ces services afin de réduire la duplication de code. De même pour le css que nous avons laissé pour la plupart dans les fichiers html.
+
 ### À quel niveau, dans votre projet, avez-vous réussi à respecter entièrement ou partiellement les principes SOLID ?
 
 #### **S - Single Responsibility Principle (Responsabilité Unique)**
 
-Chaque classe a une responsabilité unique et bien définie :
+On a essayé de faire en sorte que chaque classe ait une seule responsabilité bien définie. Par exemple :
 
-- `ApprentiService` : Gestion de la logique métier des apprentis uniquement
-- `VisiteService` : Gestion des visites (CRUD + validations spécifiques)
-- `ApprentiControleur` : Gestion des requêtes HTTP liées aux apprentis
-- `CustomUserDetailsService` : Chargement des utilisateurs pour l'authentification uniquement
+- `ApprentiService` s'occupe uniquement de la logique métier des apprentis
+- `VisiteService` gère tout ce qui concerne les visites (création, modification, suppression, validations)
+- `ApprentiControleur` se charge de traiter les requêtes HTTP liées aux apprentis et de renvoyer les bonnes vues
+- `DetailsUtilisateurService` ne fait que charger les utilisateurs pour l'authentification
+
+Globalement, on a bien respecté ce principe. Chaque classe a un rôle précis et ne fait pas trop de choses différentes.
 
 #### **O - Open/Closed Principle (Ouvert/Fermé)**
 
-Le code est ouvert à l'extension mais pourrait être amélioré.
+Ce principe dit qu'on devrait pouvoir étendre le code sans avoir à modifier l'existant. On l'a partiellement appliqué :
 
+- L'utilisation des DTOs (`CreerApprentiDto`, `ModifierApprentiDto`, etc.) nous permet d'ajouter de nouveaux champs de formulaire sans toucher aux entités
+- Le `GlobalExceptionHandler` nous permet d'ajouter de nouveaux types d'exceptions sans modifier les contrôleurs
 
-- Utilisation de DTOs permet d'ajouter de nouveaux champs sans modifier les entités
-- `GlobalExceptionHandler` permet d'ajouter de nouveaux types d'exceptions sans toucher aux contrôleurs
+Par contre, si on voulait ajouter un nouveau type d'entité similaire à Visite, Rapport ou Soutenance, on serait obligés de créer beaucoup de code similaire. On aurait pu faire mieux avec une classe abstraite commune, mais on n'a pas eu le temps.
 
 #### **L - Liskov Substitution Principle (Substitution de Liskov)**
 
-Pas d'héritage dans le projet, donc pas vraiment d'occasions d'appliquer ce principe.
+Ce principe concerne l'héritage et les classes dérivées. Dans notre projet, on n'a quasiment pas utilisé d'héritage (à part pour les exceptions qui héritent de `RuntimeException`), donc on n'a pas vraiment eu l'occasion d'appliquer ce principe.
 
-#### **I - Interface Segregation Principle (Ségrégation des Interfaces)** ✅ **Respecté**
+#### **I - Interface Segregation Principle (Ségrégation des Interfaces)**
 
-Aucune classe n'est forcée d'implémenter des méthodes inutiles.
+C'est le principe de ne pas forcer une classe à implémenter des méthodes dont elle n'a pas besoin. On a plutôt bien respecté ça :
 
-- Les repositories JPA n'exposent que les méthodes nécessaires
-- Les DTOs sont spécifiques à chaque cas d'usage :
-  - `CreerApprentiDto` : Pour la création
-  - `ModifierApprentiDto` : Pour la modification (moins de champs)
-  - `CreerRapportDto`, `CreerVisiteDto`, `CreerSoutenanceDto` : Spécifiques à chaque entité
+- Les repositories JPA (via `JpaRepository`) héritent seulement des méthodes qu'on utilise vraiment
+- On a créé des DTOs spécifiques pour chaque cas d'usage plutôt qu'un seul gros DTO :
+  - `CreerApprentiDto` pour la création d'un apprenti
+  - `ModifierApprentiDto` pour la modification (avec moins de champs obligatoires)
+  - `CreerRapportDto`, `CreerVisiteDto`, `CreerSoutenanceDto` pour chaque type d'entité
+
+Comme ça, on évite d'avoir des champs inutiles ou des validations qui ne s'appliquent pas selon le contexte.
 
 #### **D - Dependency Inversion Principle (Inversion des Dépendances)**
 
-Les classes devraient dépendre d'abstractions (interfaces) plutôt que d'implémentations concrètes.
-En soit, Spring et JPA intègrent déjà ce principe (services qui dépendent des interfaces Repository, injection de dépendances...).
+Ce principe dit qu'on devrait dépendre d'abstractions (interfaces) plutôt que d'implémentations concrètes.
 
-Cpendantour vraiment mettre en pratique ce principe, on aurait du utiliser des interfaces pour chaque service, et utiliser ces interfaces en tant que dépendances des contrôleurs. Car actuellement, tous les contrôleurs dépendant directement des classes de services.
+Dans notre projet, on a partiellement respecté ce principe. Spring et JPA l'intègrent déjà naturellement : nos services dépendent des interfaces `Repository` fournies par Spring Data JPA, et on utilise l'injection de dépendances partout.
 
-## 6. Persistance - Analyse critique
+Par contre, pour vraiment appliquer ce principe à fond, on aurait dû créer des interfaces pour tous nos services (comme `IApprentiService`, `IVisiteService`, etc.) et faire en sorte que les contrôleurs dépendent de ces interfaces plutôt que des classes concrètes. Là, nos contrôleurs dépendent directement des classes `ApprentiService`, `VisiteService`, etc. Ce n'est pas extrêmement grave pour un projet de cette taille, mais sur un gros projet ça permettrait de mieux découpler le code et de faire des tests unitaires plus facilement.
 
-### Utilisation d'une requête SQL native
+## Persistance - Analyse critique
 
-Nous avons implémenté une requête SQL native dans `ApprentiRepository.findByEmailNative()` :
+### Choix entre SQL natif et JPQL
 
-**Avantages de SQL natif :**
+Dans notre projet, on a fait le choix d'utiliser principalement JPQL plutôt que du SQL natif. On a quand même une requête SQL native dans `ApprentiRepository.searchApprentisByAnneeAcademique()`, mais c'était surtout pour respecter la consigne du sujet qui demandait d'avoir au moins une requête SQL.
 
-- Performance brute maximale
-- Accès aux fonctions SQL spécifiques (fenêtrage, CTE, etc.)
+Pourquoi on préfère JPQL ?
 
-**Inconvénients (pourquoi nous préférons JPQL) :**
+- C'est plus simple à écrire et à maintenir : on manipule directement nos entités Java
+- Ça marche avec n'importe quelle base de données sans avoir à réécrire les requêtes (on pourrait passer de PostgreSQL à MySQL facilement).
+- Spring Data JPA optimise automatiquement nos requêtes
+- Les méthodes générées comme `findById()` ou `existsByEmail()` nous évitent d'écrire du SQL répétitif
 
-- Perte de portabilité : la requête est liée à PostgreSQL/MySQL/etc.
-- Pas de validation à la compilation
-- Difficile à maintenir et à tester
+Le SQL natif a ses avantages (performances brutes, fonctions SQL avancées), mais pour notre projet, on n'en a pas vraiment eu besoin. Les requêtes JPQL et les méthodes dérivées de Spring Data suffisent largement pour nos besoins.
 
-**Notre choix architectural :** Nous privilégions JPQL pour 99% des requêtes
-car notre application doit pouvoir changer de base de données facilement
-et bénéficier des requêtes prédefinies et des optimisations.
+### Utilisation de @Transactional
 
-### Justification de @Transactional
+On a mis `@Transactional` sur nos méthodes de service qui modifient la base de données (création, modification, suppression). L'idée, c'est de garantir que si une opération plante en cours de route, tout est annulé automatiquement pour éviter d'avoir des données incohérentes.
 
-Nous appliquons @Transactional selon le principe ACID :
+Par exemple, dans la méthode `incrementerAnneeAcademiqueCourante()`, on modifie l'année académique courante en base. Si ça plante au milieu de l'opération, le `@Transactional` va annuler la modification pour éviter d'avoir une année académique dans un état incohérent.
 
-- Sur toutes les méthodes d'écriture (create, update, delete)
-- Sur les opérations impliquant plusieurs entités liées
-- Pas sur les lectures simples
+Autre exemple important : dans le service des apprentis, les méthodes comme `creerApprenti()` ou `modifierApprenti()` sont transactionnelles. Si on crée un apprenti avec ses dossiers annuels et que ça plante en cours de route, tout est annulé (atomicité).
 
-Exemple critique : `commencerNouvelleAnnee()`
-→ DOIT être transactionnel pour garantir que TOUS les apprentis passent
-en L2 ou AUCUN (atomicité).
+Pour les méthodes qui font juste de la lecture (comme `getApprentis()` ou `getApprentisActifs()`), on ne met pas `@Transactional` car ce n'est pas nécessaire.
 
 **Auteurs** : Bryan Bohec, Armando Lopes De Sousa, Benjamin Thibout (ING2 APP LSI2)
