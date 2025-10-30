@@ -1,5 +1,6 @@
 package altn72.TpFilRouge.controleur;
 
+import altn72.TpFilRouge.exception.ApprentiDejaExistantException;
 import altn72.TpFilRouge.exception.RessourceIntrouvableException;
 import altn72.TpFilRouge.modele.Apprenti;
 import altn72.TpFilRouge.modele.DossierAnnuel;
@@ -116,6 +117,7 @@ public class ApprentiControleur {
     @PostMapping("/nouveau")
     public String creerApprenti(@Valid @ModelAttribute(ATTR_APPRENTI) CreerApprentiDto dto,
                                 BindingResult bindingResult,
+                                RedirectAttributes redirectAttributes,
                                 Model model) {
         if (bindingResult.hasErrors()) {
             model.addAttribute(ATTR_IS_CREATION, true);
@@ -124,10 +126,14 @@ public class ApprentiControleur {
             return VIEW_FORMULAIRE;
         }
 
-        // Les exceptions (ApprentiDejaExistantException, RessourceIntrouvableException)
-        // sont automatiquement gérées par le GlobalExceptionHandler
-        apprentiService.ajouterApprenti(dto);
-        return REDIRECT_APPRENTIS;
+        try {
+            apprentiService.ajouterApprenti(dto);
+            return REDIRECT_APPRENTIS;
+        } catch (ApprentiDejaExistantException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            redirectAttributes.addFlashAttribute(ATTR_APPRENTI, dto);
+            return "redirect:/apprentis/nouveau";
+        }
     }
 
     @Operation(
@@ -250,8 +256,7 @@ public class ApprentiControleur {
             return VIEW_GERER;
         }
 
-        // Les exceptions (ApprentiDejaExistantException, RessourceIntrouvableException)
-        // sont automatiquement gérées par le GlobalExceptionHandler
+
         apprentiService.modifierApprenti(id, dto);
         redirectAttributes.addFlashAttribute(ATTR_SUCCESS, "✅ Les informations ont été modifiées avec succès !");
         return REDIRECT_GERER_PREFIX + id + GERER_SUFFIX;
