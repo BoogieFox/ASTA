@@ -27,6 +27,9 @@ public class Apprenti {
     @Column(name = "majeure", nullable = false, length = 100)
     private String majeure;
 
+    @Column(name = "annee_academique", length = 9)
+    private String anneeAcademique;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "promotion", nullable = false)
     private Promotion promotion = Promotion.L1;
@@ -114,6 +117,14 @@ public class Apprenti {
 
     public void setMajeure(String majeure) {
         this.majeure = majeure;
+    }
+
+    public String getAnneeAcademique() {
+        return anneeAcademique;
+    }
+
+    public void setAnneeAcademique(String anneeAcademique) {
+        this.anneeAcademique = anneeAcademique;
     }
 
     public List<DossierAnnuel> getDossierAnnuels() {

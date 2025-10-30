@@ -29,15 +29,18 @@ public class ApprentiService {
     private final EntrepriseRepository entrepriseRepository;
     private final MaitreApprentissageRepository maitreApprentissageRepository;
     private final DossierAnnuelService dossierAnnuelService;
+    private final AnneeAcademiqueService anneeAcademiqueService;
 
     public ApprentiService(ApprentiRepository apprentiRepository, 
                           EntrepriseRepository entrepriseRepository,
                           MaitreApprentissageRepository maitreApprentissageRepository,
-                          DossierAnnuelService dossierAnnuelService) {
+                          DossierAnnuelService dossierAnnuelService,
+                          AnneeAcademiqueService anneeAcademiqueService) {
         this.apprentiRepository = apprentiRepository;
         this.entrepriseRepository = entrepriseRepository;
         this.maitreApprentissageRepository = maitreApprentissageRepository;
         this.dossierAnnuelService = dossierAnnuelService;
+        this.anneeAcademiqueService = anneeAcademiqueService;
     }
 
     /**
@@ -152,6 +155,7 @@ public class ApprentiService {
         apprenti.setTelephone(dto.getTelephone());
         apprenti.setMajeure(dto.getMajeure());
         apprenti.setPromotion(Promotion.L1);
+        apprenti.setAnneeAcademique(anneeAcademiqueService.getAnneeAcademiqueCourante());
 
         DossierAnnuel dossierInitial = new DossierAnnuel(apprenti, Promotion.L1);
         apprenti.ajouterDossierAnnuel(dossierInitial);
@@ -262,6 +266,7 @@ public class ApprentiService {
     public int commencerNouvelleAnnee() {
         List<Apprenti> tousLesApprentis = apprentiRepository.findAll();
         int apprentisModifies = 0;
+        String nouvelleAnneeAcademique = anneeAcademiqueService.incrementerAnneeAcademiqueCourante();
 
         for (Apprenti apprenti : tousLesApprentis) {
             Promotion anciennePromotion = apprenti.getPromotion();
@@ -270,6 +275,7 @@ public class ApprentiService {
             // Ne pas modifier les apprentis déjà archivés
             if (anciennePromotion != nouvellePromotion) {
                 apprenti.setPromotion(nouvellePromotion);
+                apprenti.setAnneeAcademique(nouvelleAnneeAcademique);
                 apprentiRepository.save(apprenti);
 
                 // Créer automatiquement un nouveau dossier pour la nouvelle promotion
@@ -286,6 +292,4 @@ public class ApprentiService {
 
         return apprentisModifies;
     }
-
 }
-
