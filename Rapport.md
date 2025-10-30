@@ -71,7 +71,7 @@ Nous aimerions mettre en avant les points suivants :
 
 De par nos expériences en développement fullstack, nous étions au début parti sur la création de Controlleur REST (d'ou l'endpoint commenté dans le service Entreprise) car nous pensions que c'était la meilleure manière de créer des services. Cela nous aurait aussi permis d'utiliser la documentation automatique de Swagger, qui permet plûtot de documenter des endpoints REST. Dans notre cas, elle documente manuellement les endpoints pour thymeleaf.
 
-Nous avons donc utilisé des endpoints thymeleaf et avons géré les appels directement dans les formulaires. Nous utilisons le "FlashAttribute" pour ce qui est message de succès et d'erreurs.
+Nous avons fait le choix d'utiliser des endpoints thymeleaf et avons géré les appels directement dans les formulaires. La documentation Swagger est donc généré manuellement. Nous utilisons le "FlashAttribute" pour ce qui est message de succès et d'erreurs.
 
 
 ### c) Quelle a été la contribution de chaque membre de l'équipe ?
