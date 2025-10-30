@@ -69,9 +69,13 @@ Nous aimerions mettre en avant les points suivants :
 
 **Difficulté principale** :
 
-De par nos expériences en développement fullstack, nous étions au début parti sur la création de Controlleur REST (d'ou l'endpoint commenté dans le service Entreprise) car nous pensions que c'était la meilleure manière de créer des services. Cela nous aurait aussi permis d'utiliser la documentation automatique de Swagger, qui permet plûtot de documenter des endpoints REST. Dans notre cas, elle documente manuellement les endpoints pour thymeleaf.
+La partie qui nous a donné du mal est le choix entre des controleurs REST ou des controleurs thymeleaf. Nous avons trouvé le sujet assez incohérent, car il requiert thymeleaf (donc un moteur de template géré côté serveur), mais à la fois une documentation Swagger, ce qui nous a paru comme une incitation implicite de créer des endpoints REST (donc retournant du JSON). Nous pensons que ce choix de consignes était probablement voulu pour nous pousser à réfléchir ce sujet.
 
-Nous avons fait le choix d'utiliser des endpoints thymeleaf et avons géré les appels directement dans les formulaires. La documentation Swagger est donc généré manuellement. Nous utilisons le "FlashAttribute" pour ce qui est message de succès et d'erreurs.
+Nous n'avons pas exploré la possibilité de créer des endpoints REST, puis de les appeler dans des controleurs thymeleaf car cela ne nous a pas paru comme une bonne pratique : Pourquoi créer une couche en plus et appeler des controlleurs REST alors que nous pouvons gérer les données sans faire d'appels HTTP ? Cette méthode aurait pu être utile si nous avions un frontend different de thymeleaf (ou avons voulu faire le bonus avec un framework frontend).
+
+Des endpoints REST nous auraient aussi permis d'utiliser la documentation automatique de Swagger. Dans notre cas, elle documente manuellement les endpoints pour thymeleaf (nous nous posons des questions quant à la pertinence de celle-ci).
+
+Avec ces endpoints thymeleaf, nous avons géré les appels directement dans les formulaires, avec la méthode vu en cours pour gérer les PATCH/DELETE sur des forms HTML qui ne les supporte pas par défaut. Pour les messages d'erreurs, nous n'utilisons donc pas des status code HTTP, mais gérons les erreurs dans les models à l'aide de FlashAttribute.
 
 
 ### c) Quelle a été la contribution de chaque membre de l'équipe ?
@@ -82,6 +86,7 @@ Nous avons fait le choix d'utiliser des endpoints thymeleaf et avons géré les 
     - Participation au front (nav, page de liste, page de création, page de modification)
     - Participation à la création des services (Controlleurs/Services/Repository) + les routeurs thymeleaf
     - Gestion des exceptions avec ControllerAdvice/GlobalExceptionHandler et création d'exceptions custom
+    - Gestion de l'année académique automatique
 - Contributions d'Armando : 
     - Participation au front (page de liste, modification, historique, login)
     - Participation à la création des services (Controlleurs/Services/Repository) + les routeurs thymeleaf
