@@ -86,7 +86,7 @@
 
         <!-- Indicateur de résultats de recherche -->
         <div th:if="${searchTerm != null and searchTerm != ''}" class="search-result-info">
-            🔎 Résultats de recherche pour : <strong th:text="${searchTerm}"></strong>
+            Résultats de recherche pour : <strong th:text="${searchTerm}"></strong>
             <span class="search-mode-badge" th:switch="${searchMode}">
                 <span th:case="'apprenti'">👤 Apprenti</span>
                 <span th:case="'entreprise'">🏢 Entreprise</span>
@@ -116,7 +116,6 @@
         <!-- Barre de recherche -->
         <div class="search-container">
             <form method="get" action="/apprentis" class="search-box">
-                <span class="search-icon">🔍</span>
                 <div class="search-fields">
                     <label for="searchMode"></label><select name="mode" id="searchMode" class="search-select" th:value="${searchMode}">
                         <option value="tout" th:selected="${searchMode == null or searchMode == 'tout'}">🌐 Tout</option>
@@ -138,9 +137,7 @@
                    href="/apprentis" 
                    class="btn btn-secondary">✖ Effacer</a>
             </form>
-            <div class="search-help">
-                💡 <span id="searchHelpText">Recherchez dans tous les critères</span>
-            </div>
+
         </div>
 
         <script>
@@ -236,7 +233,7 @@
             <div class="card">
                 <!-- Message si aucun résultat de recherche -->
                 <div th:if="${searchTerm != null and searchTerm != '' and #lists.isEmpty(apprentisArchives)}" class="no-results">
-                    <div class="no-results-icon">�</div>
+                    <div class="no-results-icon">🔍</div>
                     <p><strong>Aucun résultat trouvé</strong></p>
                     <p>Aucun apprenti archivé ne correspond à votre recherche "<span th:text="${searchTerm}"></span>"</p>
                     <p><a href="/apprentis" class="btn btn-secondary" style="margin-top: 1rem;">Réinitialiser la recherche</a></p>
@@ -278,7 +275,7 @@
                                 <td th:text="${apprenti.entreprise != null ? apprenti.entreprise.raisonSociale : 'N/A'}">TechCorp</td>
                                 <td>
                                     <div class="table-actions">
-                                        <a th:href="@{/apprentis/{id}/historique(id=${apprenti.apprentiId})}" class="btn btn-primary btn-small">📚 Historique</a>
+                                        <a th:href="@{/apprentis/{id}/historique(id=${apprenti.apprentiId})}" class="btn btn-primary btn-small">Historique</a>
                                     </div>
                                 </td>
                             </tr>

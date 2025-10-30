@@ -191,19 +191,15 @@
             <div class="apprenti-name" th:text="${apprenti.prenom} + ' ' + ${apprenti.nom}">Nom Prénom</div>
             <div class="apprenti-info">
                 <div class="apprenti-info-item">
-                    <span>📧</span>
                     <span th:text="${apprenti.email}">email@example.com</span>
                 </div>
                 <div class="apprenti-info-item">
-                    <span>📱</span>
                     <span th:text="${apprenti.telephone}">0123456789</span>
                 </div>
                 <div class="apprenti-info-item">
-                    <span>🎓</span>
                     <span th:text="${apprenti.majeure}">Majeure</span>
                 </div>
                 <div class="apprenti-info-item" th:if="${apprenti.entreprise != null}">
-                    <span>🏢</span>
                     <span th:text="${apprenti.entreprise.raisonSociale}">Entreprise</span>
                 </div>
             </div>
@@ -221,7 +217,7 @@
 
                     <!-- Visite -->
                     <div class="dossier-section">
-                        <div class="section-subtitle">📅 Visite</div>
+                        <div class="section-subtitle">Visite</div>
                         <div th:if="${dossierL1.visite != null}" class="info-grid">
                             <div class="info-item">
                                 <span class="info-label">Date</span>
@@ -241,7 +237,7 @@
 
                     <!-- Soutenance -->
                     <div class="dossier-section">
-                        <div class="section-subtitle">🎤 Soutenance</div>
+                        <div class="section-subtitle">Soutenance</div>
                         <div th:if="${dossierL1.soutenance != null}" class="info-grid">
                             <div class="info-item">
                                 <span class="info-label">Date</span>
@@ -261,7 +257,7 @@
 
                     <!-- Rapport -->
                     <div class="dossier-section">
-                        <div class="section-subtitle">📄 Rapport</div>
+                        <div class="section-subtitle">Rapport</div>
                         <div th:if="${dossierL1.rapport != null}" class="info-grid">
                             <div class="info-item">
                                 <span class="info-label">Sujet</span>
@@ -291,7 +287,7 @@
 
                     <!-- Visite -->
                     <div class="dossier-section">
-                        <div class="section-subtitle">📅 Visite</div>
+                        <div class="section-subtitle">Visite</div>
                         <div th:if="${dossierL2.visite != null}" class="info-grid">
                             <div class="info-item">
                                 <span class="info-label">Date</span>
@@ -311,7 +307,7 @@
 
                     <!-- Soutenance -->
                     <div class="dossier-section">
-                        <div class="section-subtitle">🎤 Soutenance</div>
+                        <div class="section-subtitle">Soutenance</div>
                         <div th:if="${dossierL2.soutenance != null}" class="info-grid">
                             <div class="info-item">
                                 <span class="info-label">Date</span>
@@ -331,7 +327,7 @@
 
                     <!-- Rapport -->
                     <div class="dossier-section">
-                        <div class="section-subtitle">📄 Rapport</div>
+                        <div class="section-subtitle">Rapport</div>
                         <div th:if="${dossierL2.rapport != null}" class="info-grid">
                             <div class="info-item">
                                 <span class="info-label">Sujet</span>
@@ -361,7 +357,7 @@
 
                     <!-- Visite -->
                     <div class="dossier-section">
-                        <div class="section-subtitle">📅 Visite</div>
+                        <div class="section-subtitle">Visite</div>
                         <div th:if="${dossierL3.visite != null}" class="info-grid">
                             <div class="info-item">
                                 <span class="info-label">Date</span>
@@ -381,7 +377,7 @@
 
                     <!-- Soutenance -->
                     <div class="dossier-section">
-                        <div class="section-subtitle">🎤 Soutenance</div>
+                        <div class="section-subtitle">Soutenance</div>
                         <div th:if="${dossierL3.soutenance != null}" class="info-grid">
                             <div class="info-item">
                                 <span class="info-label">Date</span>
@@ -401,7 +397,7 @@
 
                     <!-- Rapport -->
                     <div class="dossier-section">
-                        <div class="section-subtitle">📄 Rapport</div>
+                        <div class="section-subtitle">Rapport</div>
                         <div th:if="${dossierL3.rapport != null}" class="info-grid">
                             <div class="info-item">
                                 <span class="info-label">Sujet</span>
@@ -428,9 +424,6 @@
                         <h2 class="year-title">✅ Formation terminée</h2>
                         <span class="year-badge badge-archive">ARCHIVÉ</span>
                     </div>
-                    <p style="color: var(--text-secondary); text-align: center; margin: 0;">
-                        Cet apprenti a terminé sa formation avec succès.
-                    </p>
                 </div>
             </div>
         </div>

@@ -388,7 +388,7 @@
         <div class="card section-card">
             <div class="card-header-actions">
                 <h2>
-                    📁 Dossier annuel
+                    Dossier annuel
                     <span th:text="'- ' + ${apprenti.promotion.label}">- Promotion</span>
                 </h2>
             </div>
@@ -396,7 +396,7 @@
                 <div th:if="${dossierCourant != null}">
                     <div class="info-section">
                         <div class="section-header">
-                            <div class="section-title">📅 Visite</div>
+                            <div class="section-title">Visite</div>
                             <div>
                                 <button th:if="${dossierCourant.visite == null}"
                                         type="button"
@@ -405,13 +405,13 @@
                                 <button th:if="${dossierCourant.visite != null}"
                                         type="button"
                                         class="btn btn-primary btn-small"
-                                        onclick="toggleEditForm('visite')">✏️ Modifier</button>
+                                        onclick="toggleEditForm('visite')">Modifier</button>
                                 <form th:if="${dossierCourant.visite != null}"
                                       th:action="@{/dossiers/visite/{visiteId}/supprimer(visiteId=${dossierCourant.visite.visiteId})}"
                                       method="post"
                                       style="display: inline;">
                                     <input type="hidden" name="apprentiId" th:value="${apprenti.apprentiId}">
-                                    <button type="submit" class="btn btn-secondary btn-small" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette visite ?')">🗑️ Supprimer</button>
+                                    <button type="submit" class="btn btn-secondary btn-small" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette visite ?')">Supprimer</button>
                                 </form>
                             </div>
                         </div>
@@ -495,7 +495,7 @@
 
                     <div class="info-section">
                         <div class="section-header">
-                            <div class="section-title">🎤 Soutenance</div>
+                            <div class="section-title">Soutenance</div>
                             <div>
                                 <button th:if="${dossierCourant.soutenance == null}"
                                         type="button"
@@ -504,14 +504,14 @@
                                 <button th:if="${dossierCourant.soutenance != null}"
                                         type="button"
                                         class="btn btn-primary btn-small"
-                                        onclick="toggleEditForm('soutenance')">✏️ Modifier</button>
+                                        onclick="toggleEditForm('soutenance')">Modifier</button>
                                 <form th:if="${dossierCourant.soutenance != null}"
                                       th:action="@{/dossiers/soutenance/{soutenanceId}/supprimer(soutenanceId=${dossierCourant.soutenance.soutenanceId})}"
                                       method="post"
                                       style="display: inline;"
                                       onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette soutenance ?')">
                                     <input type="hidden" name="apprentiId" th:value="${apprenti.apprentiId}">
-                                    <button type="submit" class="btn btn-secondary btn-small">🗑️ Supprimer</button>
+                                    <button type="submit" class="btn btn-secondary btn-small">Supprimer</button>
                                 </form>
                             </div>
                         </div>
@@ -595,7 +595,7 @@
 
                     <div class="info-section">
                         <div class="section-header">
-                            <div class="section-title">📄 Rapport</div>
+                            <div class="section-title">Rapport</div>
                             <div>
                                 <button th:if="${dossierCourant.rapport == null}"
                                         type="button"
@@ -604,14 +604,14 @@
                                 <button th:if="${dossierCourant.rapport != null}"
                                         type="button"
                                         class="btn btn-primary btn-small"
-                                        onclick="toggleEditForm('rapport')">✏️ Modifier</button>
+                                        onclick="toggleEditForm('rapport')">Modifier</button>
                                 <form th:if="${dossierCourant.rapport != null}"
                                       th:action="@{/dossiers/rapport/{rapportId}/supprimer(rapportId=${dossierCourant.rapport.rapportId})}"
                                       method="post"
                                       style="display: inline;"
                                       onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce rapport ?')">
                                     <input type="hidden" name="apprentiId" th:value="${apprenti.apprentiId}">
-                                    <button type="submit" class="btn btn-secondary btn-small">🗑️ Supprimer</button>
+                                    <button type="submit" class="btn btn-secondary btn-small">Supprimer</button>
                                 </form>
                             </div>
                         </div>

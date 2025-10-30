@@ -93,8 +93,10 @@ Avec ces endpoints thymeleaf, nous avons géré les appels directement dans les 
   - Création de la fonctionnalité de recherche
   - Création de la doc Swagger
 - Contributions de Benjamin :
-  - Création de la page login
-  - Gestion globale de l'authentification
+    - Création de la page login
+    - Gestion globale de l'authentification
+    - Refactoring intégral du projet
+    - cleaning du code
 
 ### d) Si vous deviez retenir trois points de ce cours en général et de ce projet en particulier, quels seraient ces trois points ?
 
