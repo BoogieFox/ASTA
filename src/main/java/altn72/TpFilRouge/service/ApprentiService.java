@@ -81,7 +81,7 @@ public class ApprentiService {
      * Recherche des apprentis actifs selon un terme et un mode de recherche spécifique.
      * 
      * @param searchTerm le terme de recherche
-     * @param searchMode le mode de recherche : "tout", "apprenti", "entreprise", "mission"
+     * @param searchMode le mode de recherche : "tout", "apprenti", "entreprise", "mission", "annee"
      * @return la liste des apprentis actifs correspondants
      */
     public List<Apprenti> searchApprentisActifs(String searchTerm, String searchMode) {
@@ -93,6 +93,7 @@ public class ApprentiService {
             case "apprenti" -> apprentiRepository.searchApprentisByName(searchTerm.trim(), null);
             case "entreprise" -> apprentiRepository.searchApprentisByEntreprise(searchTerm.trim(), null);
             case "mission" -> apprentiRepository.searchApprentisByMission(searchTerm.trim(), null);
+            case "annee" -> apprentiRepository.searchApprentisByAnneeAcademique(searchTerm.trim(), null); // null = toutes les promotions
             default -> apprentiRepository.searchApprentis(searchTerm.trim(), null); // "tout"
         };
         
@@ -105,7 +106,7 @@ public class ApprentiService {
      * Recherche des apprentis archivés selon un terme et un mode de recherche spécifique.
      * 
      * @param searchTerm le terme de recherche
-     * @param searchMode le mode de recherche : "tout", "apprenti", "entreprise", "mission"
+     * @param searchMode le mode de recherche : "tout", "apprenti", "entreprise", "mission", "annee"
      * @return la liste des apprentis archivés correspondants
      */
     public List<Apprenti> searchApprentisArchives(String searchTerm, String searchMode) {
@@ -117,6 +118,7 @@ public class ApprentiService {
             case "apprenti" -> apprentiRepository.searchApprentisByName(searchTerm.trim(), Promotion.ARCHIVE);
             case "entreprise" -> apprentiRepository.searchApprentisByEntreprise(searchTerm.trim(), Promotion.ARCHIVE);
             case "mission" -> apprentiRepository.searchApprentisByMission(searchTerm.trim(), Promotion.ARCHIVE);
+            case "annee" -> apprentiRepository.searchApprentisByAnneeAcademique(searchTerm.trim(), "ARCHIVE"); // Promotion en String pour SQL natif
             default -> apprentiRepository.searchApprentis(searchTerm.trim(), Promotion.ARCHIVE); // "tout"
         };
     }

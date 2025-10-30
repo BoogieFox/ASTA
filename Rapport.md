@@ -175,6 +175,39 @@ Les classes dépendent d'abstractions (interfaces) plutôt que d'implémentation
 
 ---
 
+## 6. Persistance - Analyse critique
+
+### b) Utilisation d'une requête SQL native
+
+Nous avons implémenté une requête SQL native dans `ApprentiRepository.findByEmailNative()` :
+
+**Avantages de SQL natif :**
+- Performance brute maximale
+- Accès aux fonctions SQL spécifiques (fenêtrage, CTE, etc.)
+- Familier pour les développeurs SQL
+
+**Inconvénients (pourquoi nous préférons JPQL) :**
+-  Perte de portabilité : la requête est liée à PostgreSQL/MySQL/etc.
+-  Pas de validation à la compilation
+-  Contourne le cache JPA de premier niveau
+-  Difficile à maintenir et à tester
+
+**Notre choix architectural :** Nous privilégions JPQL pour 99% des requêtes
+car notre application doit pouvoir changer de base de données facilement
+et bénéficier des optimisations JPA.
+
+### c) Justification de @Transactional
+
+Nous appliquons @Transactional selon le principe ACID :
+-  Sur toutes les méthodes d'ÉCRITURE (create, update, delete)
+-  Sur les opérations impliquant PLUSIEURS entités liées
+-  PAS sur les lectures simples (inutile, impacte les performances)
+
+Exemple critique : `commencerNouvelleAnnee()`
+→ DOIT être transactionnel pour garantir que TOUS les apprentis passent
+en L2 ou AUCUN (atomicité).
+
+
 ## Conclusion
 
 ?
