@@ -15,7 +15,7 @@ public class Rapport {
     @Column(name = "rapport_id", nullable = false)
     private Integer rapportId;
 
-    @Column(name = "sujet", length = 255)
+    @Column(name = "sujet")
     private String sujet;
 
     @Column(name = "note_finale")

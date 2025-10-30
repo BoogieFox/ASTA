@@ -56,13 +56,13 @@ public class Apprenti {
     private Tuteur tuteur;
 
     // Relation bidirectionnelle OneToOne avec Mission
-    @OneToOne(mappedBy = "apprenti", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "apprenti", cascade = CascadeType.ALL, orphanRemoval = true)
     private Mission mission;
 
 
     // Constructors
     public Apprenti() {
-        // Pas besoin d'initialiser mission car c'est une relation OneToOne
+        // Pas besoin d'initialiser mission, car c'est une relation OneToOne
     }
 
     public Apprenti(String nom, String prenom, String email, String telephone, String majeure) {
@@ -71,7 +71,6 @@ public class Apprenti {
         this.email = email;
         this.telephone = telephone;
         this.majeure = majeure;
-        this.promotion = Promotion.L1; // Par défaut en L1
         this.dossierAnnuels = new ArrayList<>();
     }
 

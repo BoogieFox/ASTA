@@ -14,7 +14,7 @@ public class Mission {
     @Column(name = "mission_id", nullable = false)
     private Integer missionId;
 
-    @Column(name = "mots_cles", length = 255)
+    @Column(name = "mots_cles")
     private String motsCles;
 
     @Column(name = "metier_cible", length = 100)

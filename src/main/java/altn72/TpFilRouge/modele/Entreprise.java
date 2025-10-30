@@ -21,7 +21,7 @@ public class Entreprise {
     @Column(name = "raison_sociale", nullable = false, length = 100, unique = true)
     private String raisonSociale;
 
-    @Column(name = "adresse", nullable = false, length = 255)
+    @Column(name = "adresse", nullable = false)
     private String adresse;
 
     @Column(name = "informations_locaux", length = 1024)
