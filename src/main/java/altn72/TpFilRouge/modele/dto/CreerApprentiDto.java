@@ -8,47 +8,63 @@ import jakarta.validation.constraints.Size;
 import java.io.Serializable;
 
 /**
- * DTO pour la création d'un apprenti.
- * Contient toutes les informations nécessaires pour créer un nouvel apprenti,
- * y compris les identifiants optionnels de l'entreprise et du maître d'apprentissage.
+ * DTO pour la creation d'un apprenti.
+ * Contient toutes les informations necessaires pour creer un nouvel apprenti,
+ * y compris les identifiants optionnels de l'entreprise et du maitre d'apprentissage.
  */
 public class CreerApprentiDto implements Serializable {
-    
+
     private static final long serialVersionUID = 1L;
 
     /** Nom de famille de l'apprenti */
     @NotBlank(message = "Le nom est obligatoire")
-    @Size(max = 100, message = "Le nom ne doit pas dépasser 100 caractères")
+    @Size(max = 100, message = "Le nom ne doit pas depasser 100 caracteres")
     private String nom;
 
-    /** Prénom de l'apprenti */
-    @NotBlank(message = "Le prénom est obligatoire")
-    @Size(max = 100, message = "Le prénom ne doit pas dépasser 100 caractères")
+    /** Prenom de l'apprenti */
+    @NotBlank(message = "Le prenom est obligatoire")
+    @Size(max = 100, message = "Le prenom ne doit pas depasser 100 caracteres")
     private String prenom;
 
-    /** Adresse email de l'apprenti (doit être unique) */
+    /** Adresse email de l'apprenti (doit etre unique) */
     @NotBlank(message = "L'email est obligatoire")
-    @Email(message = "L'email doit être valide")
-    @Size(max = 100, message = "L'email ne doit pas dépasser 100 caractères")
+    @Email(message = "L'email doit etre valide")
+    @Size(max = 100, message = "L'email ne doit pas depasser 100 caracteres")
     private String email;
 
-    /** Numéro de téléphone de l'apprenti (10 à 15 chiffres) */
-    @NotBlank(message = "Le téléphone est obligatoire")
-    @Pattern(regexp = "^[0-9]{10,15}$", message = "Le téléphone doit contenir entre 10 et 15 chiffres")
+    /** Numero de telephone de l'apprenti (10 a 15 chiffres) */
+    @NotBlank(message = "Le telephone est obligatoire")
+    @Pattern(regexp = "^[0-9]{10,15}$", message = "Le telephone doit contenir entre 10 et 15 chiffres")
     private String telephone;
 
-    /** Majeure ou spécialisation de l'apprenti */
+    /** Majeure ou specialisation de l'apprenti */
     @NotBlank(message = "La majeure est obligatoire")
-    @Size(max = 100, message = "La majeure ne doit pas dépasser 100 caractères")
+    @Size(max = 100, message = "La majeure ne doit pas depasser 100 caracteres")
     private String majeure;
+
+    /** Mots-cles associes a la mission */
+    @NotBlank(message = "Les mots-cles de mission sont obligatoires")
+    @Size(max = 255, message = "Les mots-cles ne doivent pas depasser 255 caracteres")
+    private String motsClesMission;
+
+    /** Metier vise par la mission */
+    @NotBlank(message = "Le metier cible est obligatoire")
+    @Size(max = 100, message = "Le metier cible ne doit pas depasser 100 caracteres")
+    private String metierCibleMission;
+
+    /** Commentaires autour de la mission */
+    @Size(max = 1024, message = "Les commentaires ne doivent pas depasser 1024 caracteres")
+    private String commentairesMission;
 
     /** Identifiant de l'entreprise (optionnel) */
     private Integer entrepriseId;
-    
-    /** Identifiant du maître d'apprentissage (optionnel) */
+
+    /** Identifiant du maitre d'apprentissage (optionnel) */
     private Integer maitreApprentissageId;
 
-    public CreerApprentiDto() {}
+    public CreerApprentiDto() {
+        // Constructeur par defaut
+    }
 
     public CreerApprentiDto(String nom, String prenom, String email, String telephone, String majeure) {
         this.nom = nom;
@@ -96,6 +112,30 @@ public class CreerApprentiDto implements Serializable {
 
     public void setMajeure(String majeure) {
         this.majeure = majeure;
+    }
+
+    public String getMotsClesMission() {
+        return motsClesMission;
+    }
+
+    public void setMotsClesMission(String motsClesMission) {
+        this.motsClesMission = motsClesMission;
+    }
+
+    public String getMetierCibleMission() {
+        return metierCibleMission;
+    }
+
+    public void setMetierCibleMission(String metierCibleMission) {
+        this.metierCibleMission = metierCibleMission;
+    }
+
+    public String getCommentairesMission() {
+        return commentairesMission;
+    }
+
+    public void setCommentairesMission(String commentairesMission) {
+        this.commentairesMission = commentairesMission;
     }
 
     public Integer getEntrepriseId() {

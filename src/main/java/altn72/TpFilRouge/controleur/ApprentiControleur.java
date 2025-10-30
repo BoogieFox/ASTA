@@ -3,6 +3,7 @@ package altn72.TpFilRouge.controleur;
 import altn72.TpFilRouge.exception.RessourceIntrouvableException;
 import altn72.TpFilRouge.modele.Apprenti;
 import altn72.TpFilRouge.modele.DossierAnnuel;
+import altn72.TpFilRouge.modele.Mission;
 import altn72.TpFilRouge.modele.dto.CreerApprentiDto;
 import altn72.TpFilRouge.modele.dto.ModifierApprentiDto;
 import altn72.TpFilRouge.service.*;
@@ -195,6 +196,12 @@ public class ApprentiControleur {
             dto.setEmail(apprenti.getEmail());
             dto.setTelephone(apprenti.getTelephone());
             dto.setMajeure(apprenti.getMajeure());
+
+            Mission mission = apprenti.getMission();
+            dto.setMotsClesMission(mission != null && mission.getMotsCles() != null ? mission.getMotsCles() : "");
+            dto.setMetierCibleMission(mission != null && mission.getMetierCible() != null ? mission.getMetierCible() : "");
+            dto.setCommentairesMission(mission != null && mission.getCommentaires() != null ? mission.getCommentaires() : "");
+
             model.addAttribute(ATTR_MODIFIER_DTO, dto);
         }
 

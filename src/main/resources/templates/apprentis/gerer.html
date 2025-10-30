@@ -243,6 +243,21 @@
                         <input type="text" id="majeure" th:field="*{majeure}" required>
                         <span class="error-message" th:if="${#fields.hasErrors('majeure')}" th:errors="*{majeure}"></span>
                     </div>
+                    <div class="form-group">
+                        <label for="motsClesMission">Mission - mots-cles *</label>
+                        <input type="text" id="motsClesMission" th:field="*{motsClesMission}" required>
+                        <span class="error-message" th:if="${#fields.hasErrors('motsClesMission')}" th:errors="*{motsClesMission}"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="metierCibleMission">Mission - metier cible *</label>
+                        <input type="text" id="metierCibleMission" th:field="*{metierCibleMission}" required>
+                        <span class="error-message" th:if="${#fields.hasErrors('metierCibleMission')}" th:errors="*{metierCibleMission}"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="commentairesMission">Mission - commentaires</label>
+                        <textarea id="commentairesMission" th:field="*{commentairesMission}" rows="3"></textarea>
+                        <span class="error-message" th:if="${#fields.hasErrors('commentairesMission')}" th:errors="*{commentairesMission}"></span>
+                    </div>
                     <div class="action-buttons">
                         <button type="submit" class="btn btn-primary">Modifier</button>
                     </div>

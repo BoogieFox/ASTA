@@ -111,6 +111,24 @@
                     </div>
                 </div>
 
+                <div class="form-group">
+                    <label for="motsClesMission">Mission - mots-cles *</label>
+                    <input type="text" id="motsClesMission" th:field="*{motsClesMission}" required>
+                    <span th:if="${#fields.hasErrors('motsClesMission')}" th:errors="*{motsClesMission}" class="error-message"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="metierCibleMission">Mission - metier cible *</label>
+                    <input type="text" id="metierCibleMission" th:field="*{metierCibleMission}" required>
+                    <span th:if="${#fields.hasErrors('metierCibleMission')}" th:errors="*{metierCibleMission}" class="error-message"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="commentairesMission">Mission - commentaires</label>
+                    <textarea id="commentairesMission" th:field="*{commentairesMission}" rows="3"></textarea>
+                    <span th:if="${#fields.hasErrors('commentairesMission')}" th:errors="*{commentairesMission}" class="error-message"></span>
+                </div>
+
                 <div class="form-actions">
                     <button type="submit" class="btn btn-primary">Enregistrer</button>
                     <a href="/apprentis" class="btn btn-secondary">Annuler</a>
@@ -131,13 +149,27 @@
             const majeure = document.getElementById('majeure').value;
             const entrepriseId = document.getElementById('entrepriseId').value;
             const maitreApprentissageId = document.getElementById('maitreApprentissageId').value;
+            const motsClesMission = document.getElementById('motsClesMission').value;
+            const metierCibleMission = document.getElementById('metierCibleMission').value;
+            const commentairesMission = document.getElementById('commentairesMission').value;
             
             // Créer un formulaire temporaire pour envoyer les données
             const form = document.createElement('form');
             form.method = 'POST';
             form.action = '/apprentis/sauvegarder-session';
             
-            const fields = {nom, prenom, email, telephone, majeure, entrepriseId, maitreApprentissageId};
+            const fields = {
+                nom,
+                prenom,
+                email,
+                telephone,
+                majeure,
+                entrepriseId,
+                maitreApprentissageId,
+                motsClesMission,
+                metierCibleMission,
+                commentairesMission
+            };
             for (const [key, value] of Object.entries(fields)) {
                 const input = document.createElement('input');
                 input.type = 'hidden';
@@ -161,13 +193,27 @@
             const majeure = document.getElementById('majeure').value;
             const entrepriseId = document.getElementById('entrepriseId').value;
             const maitreApprentissageId = document.getElementById('maitreApprentissageId').value;
+            const motsClesMission = document.getElementById('motsClesMission').value;
+            const metierCibleMission = document.getElementById('metierCibleMission').value;
+            const commentairesMission = document.getElementById('commentairesMission').value;
 
             // Créer un formulaire temporaire pour envoyer les données
             const form = document.createElement('form');
             form.method = 'POST';
             form.action = '/apprentis/sauvegarder-session-maitre';
 
-            const fields = {nom, prenom, email, telephone, majeure, entrepriseId, maitreApprentissageId};
+            const fields = {
+                nom,
+                prenom,
+                email,
+                telephone,
+                majeure,
+                entrepriseId,
+                maitreApprentissageId,
+                motsClesMission,
+                metierCibleMission,
+                commentairesMission
+            };
             for (const [key, value] of Object.entries(fields)) {
                 const input = document.createElement('input');
                 input.type = 'hidden';

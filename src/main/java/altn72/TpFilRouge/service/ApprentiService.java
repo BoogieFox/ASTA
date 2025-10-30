@@ -6,6 +6,7 @@ import altn72.TpFilRouge.modele.Apprenti;
 import altn72.TpFilRouge.modele.DossierAnnuel;
 import altn72.TpFilRouge.modele.Entreprise;
 import altn72.TpFilRouge.modele.MaitreApprentissage;
+import altn72.TpFilRouge.modele.Mission;
 import altn72.TpFilRouge.modele.Promotion;
 import altn72.TpFilRouge.modele.dto.CreerApprentiDto;
 import altn72.TpFilRouge.modele.dto.ModifierApprentiDto;
@@ -160,6 +161,13 @@ public class ApprentiService {
         DossierAnnuel dossierInitial = new DossierAnnuel(apprenti, Promotion.L1);
         apprenti.ajouterDossierAnnuel(dossierInitial);
 
+        Mission mission = new Mission();
+        mission.setMotsCles(dto.getMotsClesMission());
+        mission.setMetierCible(dto.getMetierCibleMission());
+        mission.setCommentaires(dto.getCommentairesMission());
+        mission.setApprenti(apprenti);
+        apprenti.setMission(mission);
+
         // Associer l'entreprise existante si elle est spécifiée
         if (dto.getEntrepriseId() != null) {
             Entreprise entreprise = entrepriseRepository.findById(dto.getEntrepriseId())
@@ -204,6 +212,16 @@ public class ApprentiService {
         apprenti.setEmail(dto.getEmail());
         apprenti.setTelephone(dto.getTelephone());
         apprenti.setMajeure(dto.getMajeure());
+
+        Mission mission = apprenti.getMission();
+        if (mission == null) {
+            mission = new Mission();
+            mission.setApprenti(apprenti);
+            apprenti.setMission(mission);
+        }
+        mission.setMotsCles(dto.getMotsClesMission());
+        mission.setMetierCible(dto.getMetierCibleMission());
+        mission.setCommentaires(dto.getCommentairesMission());
 
         return apprentiRepository.save(apprenti);
     }
