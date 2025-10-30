@@ -19,7 +19,7 @@ public interface ApprentiRepository extends JpaRepository<Apprenti, Integer> {
     boolean existsByEmailAndApprentiIdNot(String email, Integer apprentiId);
     
     /**
-     * Recherche des apprentis selon plusieurs critères (nom, prénom, entreprise, mots-clés de mission).
+     * Recherche des apprentis selon plusieurs critères (nom, prénom, entreprise, mots-clés de mission, année académique).
      * Recherche insensible à la casse.
      * 
      * @param searchTerm le terme de recherche
@@ -36,7 +36,8 @@ public interface ApprentiRepository extends JpaRepository<Apprenti, Integer> {
            "LOWER(CONCAT(a.prenom, ' ', a.nom)) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
            "LOWER(CONCAT(a.nom, ' ', a.prenom)) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
            "LOWER(e.raisonSociale) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
-           "LOWER(m.motsCles) LIKE LOWER(CONCAT('%', :searchTerm, '%')))")
+           "LOWER(m.motsCles) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
+           "LOWER(a.anneeAcademique) LIKE LOWER(CONCAT('%', :searchTerm, '%')))")
     List<Apprenti> searchApprentis(@Param("searchTerm") String searchTerm, @Param("promotion") Promotion promotion);
     
     /**
@@ -82,4 +83,20 @@ public interface ApprentiRepository extends JpaRepository<Apprenti, Integer> {
            "AND (:searchTerm IS NULL OR :searchTerm = '' OR " +
            "LOWER(m.motsCles) LIKE LOWER(CONCAT('%', :searchTerm, '%')))")
     List<Apprenti> searchApprentisByMission(@Param("searchTerm") String searchTerm, @Param("promotion") Promotion promotion);
+
+    /**
+     * Recherche des apprentis uniquement par année académique.
+     * Utilise une requête SQL native pour respecter la consigne 6b du projet.
+     * Cette approche permet d'utiliser directement SQL plutôt que JPQL.
+     *
+     * @param searchTerm le terme de recherche
+     * @param promotion la promotion pour filtrer (null pour toutes)
+     * @return la liste des apprentis correspondants
+     */
+    @Query(value = "SELECT * FROM base_asta.apprenti " +
+           "WHERE (:promotion IS NULL OR promotion = CAST(:promotion AS VARCHAR)) " +
+           "AND (:searchTerm IS NULL OR :searchTerm = '' OR " +
+           "LOWER(annee_academique) LIKE LOWER(CONCAT('%', :searchTerm, '%')))",
+           nativeQuery = true)
+    List<Apprenti> searchApprentisByAnneeAcademique(@Param("searchTerm") String searchTerm, @Param("promotion") String promotion);
 }

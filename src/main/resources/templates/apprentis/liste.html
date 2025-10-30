@@ -91,6 +91,7 @@
                 <span th:case="'apprenti'">👤 Apprenti</span>
                 <span th:case="'entreprise'">🏢 Entreprise</span>
                 <span th:case="'mission'">📋 Mission</span>
+                <span th:case="'annee'">📅 Année académique</span>
                 <span th:case="*">🌐 Tout</span>
             </span>
             <br>
@@ -121,7 +122,8 @@
                         <option value="tout" th:selected="${searchMode == null or searchMode == 'tout'}">🌐 Tout</option>
                         <option value="apprenti" th:selected="${searchMode == 'apprenti'}">👤 Apprenti</option>
                         <option value="entreprise" th:selected="${searchMode == 'entreprise'}">🏢 Entreprise</option>
-                        <option value="mission" th:selected="${searchMode == 'mission'}">📋 Mission</option>
+                        <option value="mission" th:selected="${searchMode == 'mission'}">📋 Mot-clé mission</option>
+                        <option value="annee" th:selected="${searchMode == 'annee'}">📅 Année académique</option>
                     </select>
                     <label for="searchInput"></label><input type="text"
                                                             id="searchInput"
